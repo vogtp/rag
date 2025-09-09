@@ -34,7 +34,7 @@ func (srv *Server) schedulePeriodicVecDBUpdates(ctx context.Context) error {
 
 func (srv *Server) embeddConfluence(ctx context.Context) error {
 	collectionName := "intranet"
-	if time.Since(srv.lastEmbedd[collectionName]) < time.Hour {
+	if time.Since(srv.lastEmbedd[collectionName]) < viper.GetDuration(cfg.VecDBUpdateIntervall) {
 		return fmt.Errorf("Not updating collection %s since it was updated %v ago", collectionName, time.Since(srv.lastEmbedd[collectionName]))
 	}
 	return confluence.Embbed(ctx, srv.slog, collectionName)
