@@ -60,6 +60,11 @@ func (c *confluence) init() error {
 	if api == nil {
 		return fmt.Errorf("confluence api was not created")
 	}
+	api.Client.Transport = &uaRT{
+		RoundTripper: api.Client.Transport,
+		Name:         viper.GetString(cfg.HTTPUserAgent),
+	}
+
 	api.Client = throttled.WrapClient(api.Client, rate.NewLimiter(c.rateLimit, 1))
 	c.api = api
 	c.slog.Info("loaded confluence rest api", "url", url)
@@ -118,7 +123,7 @@ func (c *confluence) querySpace(ctx context.Context, spaceKey string) {
 				return
 			}
 			slogPage.Warn("Cannot get confluence content...", "err", err, "start_index", start, "retryCnt", retryCnt, "retryMax", retryMax, "retryDelay", retryDelay)
-			time.Sleep(retryDelay*time.Duration(retryCnt))
+			time.Sleep(retryDelay * time.Duration(retryCnt))
 			continue
 		}
 		start += res.Limit

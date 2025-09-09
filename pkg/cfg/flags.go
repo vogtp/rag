@@ -63,6 +63,9 @@ const (
 	OIDCIssuer = "oidc.issuer"
 	// OIDCRedirectURI OIDC redirect URI (AKA local auth callback)
 	OIDCRedirectURI = "oidc.redirect_uri"
+
+	// HTTPUserAgent sets the user agent of the http request
+	HTTPUserAgent = "http.user_agent"
 )
 
 var (
@@ -96,4 +99,5 @@ func init() {
 	pflag.String(OIDCClientSecret, "", "OIDC Secret")
 	pflag.String(OIDCIssuer, "", "OIDC issuer (AKA auth endpoint)")
 	pflag.String(OIDCRedirectURI, "", "OIDC redirect URI (AKA local auth callback)")
+	pflag.String(HTTPUserAgent, "go-rag", "sets the user agent of the http request")
 }
