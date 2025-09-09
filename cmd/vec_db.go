@@ -183,8 +183,8 @@ var vecDbColLsCmd = &cobra.Command{
 			return fmt.Errorf("cannot get collection documents: %w", err)
 		}
 		for i, d := range res.Metadatas {
-			// fmt.Printf("%s %s\n", d[vecdb.MetaPath], d[vecdb.MetaUpdated])
-			fmt.Printf("  ID: %v Len: %v Meta: %v\n", res.Ids[i], len(res.Documents[i]), d)
+			fmt.Printf("%v: %s %s\n", i, d[vecdb.MetaURL], d[vecdb.MetaUpdated])
+			//fmt.Printf("  ID: %v Len: %v Meta: %v\n", res.Ids[i], len(res.Documents[i]), d)
 		}
 		fmt.Printf("Found %v docs in collection %s\n", len(res.Documents), colName)
 		return nil
