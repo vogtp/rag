@@ -54,6 +54,8 @@ const (
 	ConfluenceMaxAge = "confluence.maxAge"
 	//VecDBUpdateIntervall is the intervall the vectorDB is updated
 	VecDBUpdateIntervall = "vecdb.update_intervall"
+	//VecDBColName is the name prefix of the vectorDB collections
+	VecDBColName = "vecdb.collection_name"
 
 	// OIDCClientID OIDC Client ID
 	OIDCClientID = "oidc.client_id"
@@ -84,14 +86,16 @@ func init() {
 	pflag.String(WebListen, ":8080", "Address the webserver should listen on")
 
 	pflag.String(ModelDefault, "gpt-oss", "The default model when no model is given")
+	pflag.String(ModelEmbedding, "bge-m3", "The default model used for embeddings")
 	// pflag.String(ModelEmbedding, "mxbai-embed-large", "The default model used for embeddings")
-	pflag.String(ModelEmbedding, "nomic-embed-text", "The default model used for embeddings")
+	//pflag.String(ModelEmbedding, "nomic-embed-text", "The default model used for embeddings")
 
 	pflag.String(ConfluenceKey, "", "The confluence access token")
 	pflag.String(ConfluenceBaseURL, "", "The confluence access token")
 	pflag.StringSlice(ConfluenceSpaces, nil, "The confluence spaces to scrap")
 	pflag.Duration(ConfluenceMaxAge, DefaultConfluenceMaxAge, "The maximum age a confluence page can have to be included in")
 	pflag.Duration(VecDBUpdateIntervall, 24*time.Hour, "the intervall the vectorDB is updated")
+	pflag.String(VecDBColName, "go-rag", "the name prefix of the vectorDB collections")
 	pflag.String(ChromaUrl, "http://localhost:8000", "the URL where chroma can be reached")
 	pflag.Int(ChromaPort, 8000, "the port chroma should be started on (0: disable)")
 	pflag.String(ChromaContainer, "chromadb/chroma:0.5.23", "chroma container to pull")
