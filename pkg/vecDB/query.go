@@ -26,11 +26,11 @@ func (v *VecDB) Query(ctx context.Context, collection string, queryTexts []strin
 	v.slog.Info("Query vecDB", "collection", collection, "queryTexts", queryTexts, "embeddingsModel", v.embeddingsModel, "nResults", nResults)
 	col, err := v.GetCollection(ctx, collection)
 	if err != nil {
-		return nil, fmt.Errorf("cannot get collection %s: %w", collection, err)
+		return nil, fmt.Errorf("get collection %s: %w", collection, err)
 	}
 	qr, err := col.Query(ctx, queryTexts, nResults, nil, nil, nil)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("query colection: %w", err)
 	}
 	results := make([]QueryResult, len(queryTexts))
 	for idx, question := range queryTexts {

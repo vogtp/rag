@@ -95,12 +95,12 @@ func (srv *Server) vecDBsearch(w http.ResponseWriter, r *http.Request) {
 func searchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error) {
 	client, err := vecdb.New(ctx, slog, vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
 	if err != nil {
-		return nil, fmt.Errorf("Failed to create vector DB: %w", err)
+		return nil, fmt.Errorf("create vector DB: %w", err)
 	}
 
 	res, err := client.Query(ctx, collection, []string{query}, int32(maxResults))
 	if err != nil {
-		return nil, fmt.Errorf("Failed to query vector DB: %w", err)
+		return nil, fmt.Errorf("query vector DB: %w", err)
 	}
 	return res[0].Documents, nil
 }
