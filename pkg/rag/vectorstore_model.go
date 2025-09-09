@@ -17,42 +17,42 @@ import (
 	"github.com/vogtp/rag/pkg/cfg"
 )
 
-var _ Model = (*ChromaModel)(nil)
+var _ Model = (*VectorStoreModel)(nil)
 
-type ChromaModel struct {
+type VectorStoreModel struct {
 	Name    string
 	LLMName string
 
 	OwnedBy string
 
-	Collection string
-	chroma     *chroma.Store
-	embedder   *embeddings.EmbedderImpl
+	Collection  string
+	vectorStore vectorstores.VectorStore
+	embedder    *embeddings.EmbedderImpl
 }
 
-func (m ChromaModel) GetName() string {
+func (m VectorStoreModel) GetName() string {
 	return m.Name
 }
 
-func (m ChromaModel) String() string {
+func (m VectorStoreModel) String() string {
 	return m.GetName()
 }
 
-func (m ChromaModel) GetLLMName() string {
+func (m VectorStoreModel) GetLLMName() string {
 	return m.LLMName
 }
 
-func (m ChromaModel) ToOpenAI() openai.Model {
+func (m VectorStoreModel) ToOpenAI() openai.Model {
 	return openai.Model{
 		// CreatedAt:  0,
 		ID:      m.Name,
-		Object:  "ChromaModel",
+		Object:  "VectorStoreModel",
 		OwnedBy: m.OwnedBy,
 		Parent:  m.LLMName,
 	}
 }
 
-func (m ChromaModel) GenerateContent(ctx context.Context, messages []llms.MessageContent, temperature float64, streamingFunc StreamingFunc) (string, error) {
+func (m VectorStoreModel) GenerateContent(ctx context.Context, messages []llms.MessageContent, temperature float64, streamingFunc StreamingFunc) (string, error) {
 	store, err := m.getChroma(ctx)
 	if err != nil {
 		return "", err
@@ -116,9 +116,9 @@ func (m ChromaModel) GenerateContent(ctx context.Context, messages []llms.Messag
 	return chains.Run(ctx, c, text, chains.WithStreamingFunc(streamingFunc))
 }
 
-func (m *ChromaModel) getChroma(ctx context.Context) (*chroma.Store, error) {
-	if m.chroma != nil {
-		return m.chroma, nil
+func (m *VectorStoreModel) getChroma(ctx context.Context) (vectorstores.VectorStore, error) {
+	if m.vectorStore != nil {
+		return m.vectorStore, nil
 	}
 	e, err := m.getEmbedder(ctx)
 	if err != nil {
@@ -136,7 +136,7 @@ func (m *ChromaModel) getChroma(ctx context.Context) (*chroma.Store, error) {
 	return &store, nil
 }
 
-func (m *ChromaModel) getEmbedder(ctx context.Context) (*embeddings.EmbedderImpl, error) {
+func (m *VectorStoreModel) getEmbedder(ctx context.Context) (*embeddings.EmbedderImpl, error) {
 	if m.embedder != nil {
 		return m.embedder, nil
 	}

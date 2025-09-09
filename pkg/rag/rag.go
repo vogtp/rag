@@ -51,18 +51,18 @@ func (m *Manager) updateModelsFromChroma(ctx context.Context) error {
 
 	model := viper.GetString(cfg.ModelDefault)
 	for _, c := range collections {
-		m.models = append(m.models, ChromaModel{Name: c.Name, Collection: c.Name, LLMName: model})
+		m.models = append(m.models, VectorStoreModel{Name: c.Name, Collection: c.Name, LLMName: model})
 	}
-	m.slog.Info("Models raw ","models", m.models)
+	m.slog.Info("Models raw ", "models", m.models)
 	slices.SortFunc(m.models, func(a, b Model) int { return strings.Compare(a.GetName(), b.GetName()) })
-	m.slog.Info("Models sort","models", m.models)
+	m.slog.Info("Models sort", "models", m.models)
 	m.models = slices.CompactFunc(m.models, func(a, b Model) bool { return strings.EqualFold(a.GetName(), b.GetName()) })
-	m.slog.Info("Models comp","models", m.models)
+	m.slog.Info("Models comp", "models", m.models)
 	return nil
 }
 
 func (m *Manager) Models(ctx context.Context) []Model {
-	if err:=m.updateModelsFromChroma(ctx); err != nil {
+	if err := m.updateModelsFromChroma(ctx); err != nil {
 		m.slog.WarnContext(ctx, "Cannot update models from chroma", "err", err)
 	}
 	return m.models
