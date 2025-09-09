@@ -54,5 +54,6 @@ func scapper2vecDB(ctx context.Context, url string, collectionName string) error
 		return fmt.Errorf("Failed to create vector DB: %w", err)
 	}
 
-	return client.Embedd(ctx, collectionName, docsChannel)
+	_, err = client.Embedd(ctx, collectionName, docsChannel)
+	return err
 }

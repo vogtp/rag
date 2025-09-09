@@ -28,8 +28,16 @@ func Embbed(ctx context.Context, slog *slog.Logger, collectionName string) error
 		}
 		o1, o2 := fanOut(c)
 
-		go embbed(ctx, client, fmt.Sprintf("%s-%s", collectionName, "all"), o1)
-		go embbed(ctx, client, fmt.Sprintf("%s-%s", collectionName, strings.ToLower(space)), o2)
+		go func() {
+			if err := embedd(ctx, client, fmt.Sprintf("%s-%s", collectionName, "all"), o1); err != nil {
+				slog.Warn("Embedding returned an error", "collectionName", collectionName, "space", "all", "err", err)
+			}
+		}()
+		go func() {
+			if err := embedd(ctx, client, fmt.Sprintf("%s-%s", collectionName, strings.ToLower(space)), o2); err != nil {
+				slog.Warn("Embedding returned an error", "collectionName", collectionName, "space", space, "err", err)
+			}
+		}()
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
@@ -38,17 +46,17 @@ func Embbed(ctx context.Context, slog *slog.Logger, collectionName string) error
 	return nil
 }
 
-func embbed(ctx context.Context, client *vecdb.VecDB, collectionName string, c chan vecdb.EmbeddDocument) error {
+func embedd(ctx context.Context, client *vecdb.VecDB, collectionName string, c chan vecdb.EmbeddDocument) error {
 	wg.Add(1)
 	defer wg.Done()
-	err := client.Embedd(ctx, collectionName, c)
+	cnt, err := client.Embedd(ctx, collectionName, c)
 	if errors.Is(err, context.Canceled) {
 		err = nil
 	}
 	if err != nil {
 		return fmt.Errorf("confluence embedding failed: %w", err)
 	}
-	slog.Info("Embebbing finished", "collection", collectionName)
+	slog.Info("Embebbing finished", "collection", collectionName, "document.count", cnt)
 	return nil
 }
 

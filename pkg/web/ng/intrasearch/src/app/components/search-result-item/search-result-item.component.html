@@ -10,7 +10,8 @@
         <p class="max-line-3">{{ doc?.Summary }}</p>
     </mat-card-content>
     <mat-card-footer class="card-footer">
-        <small>Modified: {{doc?.Modified | slice:0:16}}</small>
+        <p><small>Modified: {{doc?.Modified | slice:0:16}}</small></p>
+        <p><small>URL: {{doc?.URL| slice:0:16}}</small></p>
         <small style="display: flex;">
             <mat-card-actions>
                 <button mat-button (click)="toggleShowPage()" type="checkbox">{{showPageButton}}</button>

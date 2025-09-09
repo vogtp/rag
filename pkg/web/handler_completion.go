@@ -36,7 +36,7 @@ func (srv *Server) completionHandler(w http.ResponseWriter, r *http.Request) {
 	// rag.handleCompletion(&req, ragModel, w, r)
 }
 
-func (srv Server) chatCompletionHandler(w http.ResponseWriter, r *http.Request) {
+func (srv *Server) chatCompletionHandler(w http.ResponseWriter, r *http.Request) {
 	var req openai.ChatCompletionRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -57,7 +57,7 @@ func (srv Server) chatCompletionHandler(w http.ResponseWriter, r *http.Request) 
 	//a.handleChatCompletion(&req, ragModel, w, r)
 }
 
-func (srv Server) handleCompletionStream(req *openai.ChatCompletionRequest, ragModel rag.Model, w http.ResponseWriter, r *http.Request) {
+func (srv *Server) handleCompletionStream(req *openai.ChatCompletionRequest, ragModel rag.Model, w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	msgs := make([]llms.MessageContent, 0, len(req.Messages)*3)

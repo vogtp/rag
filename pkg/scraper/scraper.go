@@ -250,5 +250,4 @@ func (s Scraper) call(ctx context.Context, c *colly.Collector, docsOutput chan v
 		c.Wait()
 	}
 	slog.InfoContext(ctx, "Finished scrapping", "url", s.baseURL)
-	return
 }

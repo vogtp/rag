@@ -2,7 +2,6 @@ package web
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
@@ -10,7 +9,6 @@ import (
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/rag"
-	"github.com/vogtp/rag/pkg/web/oidc"
 )
 
 // Server is the struct holding the webserver
@@ -21,7 +19,7 @@ type Server struct {
 
 	httpSrv *http.Server
 	mux     *http.ServeMux
-	oidcMux *oidc.Mux
+	// oidcMux *oidc.Mux
 
 	rag        *rag.Manager
 	lastEmbedd map[string]time.Time
@@ -47,17 +45,17 @@ func New(ctx context.Context, slog *slog.Logger, rag *rag.Manager) (*Server, err
 	srv.slog = srv.slog.With("listem_addr", addr)
 	srv.httpSrv.Addr = addr
 	srv.mux = http.NewServeMux()
-	oidcCfg := oidc.Config{
-		ClientID:     viper.GetString(cfg.OIDCClientID),
-		ClientSecret: viper.GetString(cfg.OIDCClientSecret),
-		Issuer:       viper.GetString(cfg.OIDCIssuer),
-		RedirectURI:  viper.GetString(cfg.OIDCRedirectURI),
-	}
-	om, err := oidc.NewMux(ctx, srv.slog, srv.mux, addr, oidcCfg)
-	if err != nil {
-		return nil, fmt.Errorf("cannot create oidc mux: %w", err)
-	}
-	srv.oidcMux = om
+	// oidcCfg := oidc.Config{
+	// 	ClientID:     viper.GetString(cfg.OIDCClientID),
+	// 	ClientSecret: viper.GetString(cfg.OIDCClientSecret),
+	// 	Issuer:       viper.GetString(cfg.OIDCIssuer),
+	// 	RedirectURI:  viper.GetString(cfg.OIDCRedirectURI),
+	// }
+	// om, err := oidc.NewMux(ctx, srv.slog, srv.mux, addr, oidcCfg)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("cannot create oidc mux: %w", err)
+	// }
+	// srv.oidcMux = om
 	return srv, nil
 }
 

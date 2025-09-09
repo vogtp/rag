@@ -15,7 +15,8 @@ func (srv *Server) routes() error {
 		panic(err)
 	}
 	ngFS := angular.FileSystem(fsys)
-	srv.oidcMux.Handle("/", http.FileServer(ngFS))
+	// srv.oidcMux.Handle("/", http.FileServer(ngFS))
+	srv.mux.Handle("/", http.FileServer(ngFS))
 	srv.mux.Handle("/static/", http.StripPrefix(srv.baseURL, http.FileServer(http.FS(assetData))))
 
 	srv.openAiAPI("/api/")

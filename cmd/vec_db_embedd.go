@@ -20,9 +20,9 @@ var vecDbEmbbedCmd = &cobra.Command{
 
 var vecDbEmbbedPathCmd = &cobra.Command{
 	Use:   "path <collection> <path>",
-	Short: "Embbed to content of a path to a collection",
+	Short: "Embbed the content of a path to a collection",
 
-	Aliases: []string{"path", "p", "dir"},
+	Aliases: []string{"path", "dir"},
 	Long:    ``,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 2 {
@@ -32,7 +32,7 @@ var vecDbEmbbedPathCmd = &cobra.Command{
 		path := args[1]
 		start := time.Now()
 		defer func(t time.Time) {
-			fmt.Printf("Updating collection %s took %s\n", collectionName, time.Since(t))
+			slog.Info(fmt.Sprintf("Updating collection %s took %s", collectionName, time.Since(t)))
 		}(start)
 		ctx := cmd.Context()
 		client, err := vecdb.New(ctx, slog.Default(), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
@@ -40,7 +40,8 @@ var vecDbEmbbedPathCmd = &cobra.Command{
 			return fmt.Errorf("Failed to create vector DB: %w", err)
 		}
 
-		return client.Embedd(ctx, collectionName, filesystem.Generate(ctx, path))
+		_, err = client.Embedd(ctx, collectionName, filesystem.Generate(ctx, path))
+		return err
 	},
 }
 

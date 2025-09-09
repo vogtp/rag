@@ -77,7 +77,7 @@ var vecDbSearchCmd = &cobra.Command{
 		search := args[1]
 		start := time.Now()
 		defer func(t time.Time) {
-			fmt.Printf("Updating collection %s took %s\n", collectionName, time.Since(t))
+			fmt.Printf("Searching collection %s took %s\n", collectionName, time.Since(t))
 		}(start)
 		ctx := cmd.Context()
 		client, err := vecdb.New(ctx, slog.Default(), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))

@@ -25,18 +25,18 @@ func parseTime(t string) (time.Time, error) {
 	return time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", t)
 }
 
-func (v *VecDB) Embedd(ctx context.Context, collectionName string, in <-chan EmbeddDocument) error {
+func (v *VecDB) Embedd(ctx context.Context, collectionName string, in <-chan EmbeddDocument) (int, error) {
 	slog := v.slog.With("collection", collectionName)
 	slogBase := slog
 	slog.Info("Starting embedding")
 	embedFunc, err := v.GetEmbeddingFunc()
 	if err != nil {
-		return fmt.Errorf("error creating ollama embedding function: %w", err)
+		return 0, fmt.Errorf("error creating ollama embedding function: %w", err)
 	}
 
 	coll, err := v.CreateCollection(ctx, collectionName, map[string]interface{}{MetaIsRag: true, MetaCreated: time.Now().Unix})
 	if err != nil {
-		return fmt.Errorf("failed to create collection: %v", err)
+		return 0, fmt.Errorf("failed to create collection: %v", err)
 	}
 	docUpdated := 0
 
@@ -44,7 +44,8 @@ func (v *VecDB) Embedd(ctx context.Context, collectionName string, in <-chan Emb
 		slog = slogBase.With(fmt.Sprintf("MetaKey<%s>", d.IDMetaKey), d.IDMetaValue)
 		res, err := coll.Get(ctx, map[string]interface{}{d.IDMetaKey: d.IDMetaValue}, nil, nil, nil)
 		if err != nil {
-			return fmt.Errorf("cannot check for existing docs: %w", err)
+			slog.Warn("cannot check for existing docs", "err", err, "title", d.Title)
+			continue
 		}
 		existCnt := len(res.Documents)
 		slog = slog.With("existing_records", existCnt)
@@ -68,7 +69,7 @@ func (v *VecDB) Embedd(ctx context.Context, collectionName string, in <-chan Emb
 		}
 		if skipFile {
 			slog.Info("document allready exists and not updated")
-			return nil
+			continue
 		}
 		for _, s := range d.Split(slog) {
 			rs, err := types.NewRecordSet(
@@ -77,7 +78,7 @@ func (v *VecDB) Embedd(ctx context.Context, collectionName string, in <-chan Emb
 			)
 			if err != nil {
 				slog.Warn("cannot create record set", "err", err)
-				return fmt.Errorf("error creating record set: %w", err)
+				continue
 			}
 
 			metadata := []types.Option{
@@ -115,7 +116,7 @@ func (v *VecDB) Embedd(ctx context.Context, collectionName string, in <-chan Emb
 			_, err = coll.Upsert(ctx, rs.GetEmbeddings(), rs.GetMetadatas(), rs.GetDocuments(), ids)
 			if err != nil {
 				slog.Warn("cannot add document", "err", err)
-				return fmt.Errorf("error adding documents: %w", err)
+				continue
 			}
 		}
 		docUpdated++
@@ -124,10 +125,10 @@ func (v *VecDB) Embedd(ctx context.Context, collectionName string, in <-chan Emb
 	// Count the number of documents in the collection
 	countDocs, qrerr := coll.Count(ctx)
 	if qrerr != nil {
-		return fmt.Errorf("error counting documents: %w", qrerr)
+		return docUpdated, fmt.Errorf("error counting documents: %w", qrerr)
 	}
 
 	slog.Info("Finished embedding", "docsCount", countDocs, "docsUpdates", docUpdated)
 
-	return nil
+	return docUpdated, nil
 }

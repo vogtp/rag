@@ -80,8 +80,9 @@ func init() {
 	pflag.String(HTTPProxy, "", "enables SOCKS5 proxies for http requests, eg. localhost:1928")
 	pflag.String(WebListen, ":8080", "Address the webserver should listen on")
 
-	pflag.String(ModelDefault, "llama3.2-vision", "The default model when no model is given")
-	pflag.String(ModelEmbedding, "mxbai-embed-large", "The default model used for embeddings")
+	pflag.String(ModelDefault, "gpt-oss", "The default model when no model is given")
+	// pflag.String(ModelEmbedding, "mxbai-embed-large", "The default model used for embeddings")
+	pflag.String(ModelEmbedding, "nomic-embed-text", "The default model used for embeddings")
 
 	pflag.String(ConfluenceKey, "", "The confluence access token")
 	pflag.String(ConfluenceBaseURL, "", "The confluence access token")
