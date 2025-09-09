@@ -112,7 +112,7 @@ func (v *VecDB) Embedd(ctx context.Context, collectionName string, in <-chan Emb
 				ids = res.Ids
 				slog.Debug("Using IDs from existing document")
 			}
-			slog.InfoContext(ctx, "Embedding document")
+			slog.DebugContext(ctx, "Embedding document")
 			_, err = coll.Upsert(ctx, rs.GetEmbeddings(), rs.GetMetadatas(), rs.GetDocuments(), ids)
 			if err != nil {
 				slog.Warn("cannot add document", "err", err)
