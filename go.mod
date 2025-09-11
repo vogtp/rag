@@ -1,6 +1,6 @@
 module github.com/vogtp/rag
 
-go 1.23.0
+go 1.25.1
 
 require (
 	github.com/JohannesKaufmann/html-to-markdown/v2 v2.2.2
@@ -40,7 +40,7 @@ require (
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/klauspost/compress v1.17.6 // indirect
-	github.com/ledongthuc/pdf v0.0.0-20220302134840-0c2507a12d80 // indirect
+	github.com/ledongthuc/pdf v0.0.0-20250511090121-5959a4027728 // indirect
 	github.com/magefile/mage v1.14.0 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.26 // indirect
 	github.com/muhlemmer/gu v0.3.1 // indirect
