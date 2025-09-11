@@ -2,16 +2,14 @@ package filesystem
 
 import (
 	"context"
-	"fmt"
 	"io/fs"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/tmc/langchaingo/documentloaders"
-	"github.com/tmc/langchaingo/textsplitter"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
+	"github.com/vogtp/rag/pkg/vecDB/pdf"
 )
 
 func Generate(ctx context.Context, path string) chan vecdb.EmbeddDocument {
@@ -45,27 +43,13 @@ func walkPath(ctx context.Context, out chan vecdb.EmbeddDocument, path string) {
 		}
 
 		if strings.HasSuffix(strings.ToLower(path), ".pdf") {
-			f, err := os.Open(path)
+			docs, err := pdf.SplitFromFile(ctx, path)
 			if err != nil {
-				slog.Warn("Cannot read pdf file", "err", err)
-				return nil
-			}
-			pdfLoader := documentloaders.NewPDF(f, i.Size())
-			docs, err := pdfLoader.LoadAndSplit(ctx, textsplitter.NewTokenSplitter())
-			if err != nil {
-				slog.Warn("Cannot split docs", "err", err)
+				slog.Warn("Cannot split PDF", "path", path, "err", err)
 				return nil
 			}
 			for _, d := range docs {
-				doc := vecdb.EmbeddDocument{
-					IDMetaKey:   vecdb.MetaPath,
-					IDMetaValue: path,
-					MetaData:    make(map[string]any),
-					Modified:    i.ModTime(),
-					Document:    d.PageContent,
-				}
-				doc.MetaData[vecdb.MetaURL] = fmt.Sprintf("file://%s", path)
-				out <- doc
+				out <- d
 			}
 			slog.Info("Added PDF")
 			return nil

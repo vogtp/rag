@@ -64,6 +64,7 @@ func (srv *Server) handleCompletionStream(req *openai.ChatCompletionRequest, rag
 	for i, m := range req.Messages {
 		srv.slog.Info("Chat message", "role", m.Role, "content", m.Content, "idx", i)
 		role := rag.RoleOpenAI2langchain(m.Role)
+		
 		// if len(ragModel.Collection) > 0 && role == llms.ChatMessageTypeHuman {
 		// 	docs, err := getDocs(ctx, ragModel.Collection, m.Content)
 		// 	if err == nil {

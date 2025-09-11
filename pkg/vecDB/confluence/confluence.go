@@ -13,6 +13,7 @@ import (
 	conflu "github.com/virtomize/confluence-go-api"
 	"github.com/vogtp/rag/pkg/cfg"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
+	"github.com/vogtp/rag/pkg/vecDB/pdf"
 	"golang.org/x/time/rate"
 )
 
@@ -62,7 +63,6 @@ func (c *confluence) init() error {
 	}
 	api.Client.Transport = &uaRT{
 		RoundTripper: api.Client.Transport,
-		Name:         viper.GetString(cfg.HTTPUserAgent),
 	}
 
 	api.Client = throttled.WrapClient(api.Client, rate.NewLimiter(c.rateLimit, 1))
@@ -138,10 +138,11 @@ func (c *confluence) querySpace(ctx context.Context, spaceKey string) {
 			}
 			slog.Debug("processing confluence document", "title", d.Title)
 			//	txt := html2text.HTML2Text(d.Body.View.Value)
+			bodyMD, pdfLinks := parsePage(slog, d.Body.View.Value)
 			doc := vecdb.EmbeddDocument{
 				Title:       d.Title,
 				URL:         c.getURL(d.Links.WebUI),
-				Document:    parsePage(slog, d.Body.View.Value),
+				Document:    bodyMD,
 				IDMetaKey:   vecdb.MetaURL,
 				IDMetaValue: d.Links.WebUI,
 				MetaData:    make(map[string]any),
@@ -160,6 +161,16 @@ func (c *confluence) querySpace(ctx context.Context, spaceKey string) {
 
 			doc.MetaData["confluence_space"] = spaceKey
 			c.out <- doc
+			for _, pl := range pdfLinks {
+				docs, err := pdf.SplitFromLink(ctx, pl)
+				if err != nil {
+					slog.Warn("Cannot embedd PDF", "pdf.url", pl, "err", err)
+					continue
+				}
+				for _, d := range docs {
+					c.out <- d
+				}
+			}
 		}
 
 		slogPage.Info("confluence query batch done", "start", res.Start, "size", res.Size, "result_len", len(res.Results), "limit", res.Limit, "total", total)
