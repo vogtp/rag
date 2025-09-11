@@ -20,7 +20,7 @@ const (
 	MetaURL     = "URL"
 	MetaTitle   = "title"
 )
-
+//2025-09-11 16:30:36.875593874 +0200 CEST m=+207.045403821
 func parseTime(t string) (time.Time, error) {
 	return time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", t)
 }
@@ -28,7 +28,7 @@ func parseTime(t string) (time.Time, error) {
 func (v *VecDB) Embedd(ctx context.Context, collectionName string, in <-chan EmbeddDocument) (int, error) {
 	slog := v.slog.With("collection", collectionName)
 	slogBase := slog
-	slog.Info("Starting embedding")
+	slog.Warn("Starting embedding")
 	embedFunc, err := v.GetEmbeddingFunc()
 	if err != nil {
 		return 0, fmt.Errorf("error creating ollama embedding function: %w", err)
@@ -59,7 +59,7 @@ func (v *VecDB) Embedd(ctx context.Context, collectionName string, in <-chan Emb
 				}
 				if d.Modified.After(t) {
 					skipFile = false
-					slog.Info("File was modified")
+					slog.Info("Document was modified")
 					break
 				}
 			} else {

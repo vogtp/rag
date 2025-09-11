@@ -38,7 +38,9 @@ func (srv *Server) completionHandler(w http.ResponseWriter, r *http.Request) {
 
 func (srv *Server) chatCompletionHandler(w http.ResponseWriter, r *http.Request) {
 	var req openai.ChatCompletionRequest
-
+	defer func(t time.Time) {
+		srv.slog.Info("Chat completion request finished", "duration", time.Since(t).String(), "duration_ms", time.Since(t).Milliseconds(), "url", r.URL.String())
+	}(time.Now())
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -64,7 +66,7 @@ func (srv *Server) handleCompletionStream(req *openai.ChatCompletionRequest, rag
 	for i, m := range req.Messages {
 		srv.slog.Info("Chat message", "role", m.Role, "content", m.Content, "idx", i)
 		role := rag.RoleOpenAI2langchain(m.Role)
-		
+
 		// if len(ragModel.Collection) > 0 && role == llms.ChatMessageTypeHuman {
 		// 	docs, err := getDocs(ctx, ragModel.Collection, m.Content)
 		// 	if err == nil {
@@ -180,7 +182,7 @@ func generateChatStreamResponse(ragModel rag.Model, chunk []byte) *openai.ChatCo
 	if len(chunk) < 1 {
 		choice.Delta = openai.ChatCompletionStreamChoiceDelta{}
 		choice.FinishReason = openai.FinishReasonStop
-		slog.Info("ollama DONE")
+		//slog.Info("ollama DONE")
 	}
 	res.Choices = append(res.Choices, choice)
 	return &res
