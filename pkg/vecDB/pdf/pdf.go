@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/tmc/langchaingo/documentloaders"
@@ -84,6 +85,7 @@ func SplitFromReaderAt(ctx context.Context, ra io.ReaderAt, size int64, idKey st
 			continue
 		}
 		doc := vecdb.EmbeddDocument{
+			Title:       filepath.Base(idValue),
 			IDMetaKey:   idKey,
 			IDMetaValue: idValue,
 			MetaData:    make(map[string]any),
