@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
@@ -49,6 +50,8 @@ func Embbed(ctx context.Context, slog *slog.Logger, collectionName string) error
 func embedd(ctx context.Context, client *vecdb.VecDB, collectionName string, c chan vecdb.EmbeddDocument) error {
 	wg.Add(1)
 	defer wg.Done()
+	slog.Info("Embebbing start", "collection", collectionName)
+	start := time.Now()
 	cnt, err := client.Embedd(ctx, collectionName, c)
 	if errors.Is(err, context.Canceled) {
 		err = nil
@@ -56,7 +59,8 @@ func embedd(ctx context.Context, client *vecdb.VecDB, collectionName string, c c
 	if err != nil {
 		return fmt.Errorf("confluence embedding failed: %w", err)
 	}
-	slog.Info("Embebbing finished", "collection", collectionName, "document.count", cnt)
+	d := time.Since(start)
+	slog.Info("Embebbing finished", "collection", collectionName, "document.count", cnt, "duration", d.String(), "duration_ms", d.Milliseconds())
 	return nil
 }
 

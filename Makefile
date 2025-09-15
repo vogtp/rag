@@ -50,7 +50,7 @@ remote-copy:
 
 .PHONY: deploy-config
 deploy-config: 
-	scp ./ragctl.yml $(user)@$(host):srv/rag/
+	scp ignore_ragctl_intranet.yml $(user)@$(host):srv/rag/
 
 .PHONY: deploy
 deploy: build remote-stop-rag remote-copy remote-start-rag remote-autocomplete

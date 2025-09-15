@@ -59,7 +59,7 @@ func SplitFromFile(ctx context.Context, path string) ([]vecdb.EmbeddDocument, er
 	}
 	for i, d := range docs {
 		if !fi.ModTime().IsZero() {
-			d.MetaData[vecdb.MetaUpdated] = fi.ModTime()
+			d.MetaData[vecdb.MetaUpdated] = fi.ModTime().String()
 		}
 		d.MetaData[vecdb.MetaURL] = fmt.Sprintf("file://%s", path)
 		docs[i] = d

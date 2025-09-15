@@ -2,7 +2,6 @@ package web
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"time"
 
@@ -23,26 +22,28 @@ func (srv *Server) schedulePeriodicVecDBUpdates(ctx context.Context) error {
 		if err := srv.embeddConfluence(ctx); err != nil {
 			srv.slog.Error("Cannot embedd confluence", "err", err)
 		}
-		slog.Warn("Finished vector DB update", "duration", time.Since(start))
 		select {
 		case <-ticker.C:
 		case <-ctx.Done():
 			return
 		}
+		slog.Warn("Finished vector DB update", "duration", time.Since(start))
 	}()
 	return nil
 }
 
 func (srv *Server) embeddConfluence(ctx context.Context) error {
 	collectionName := viper.GetString(cfg.VecDBColName)
-	last := time.Now()
-	for _, v := range srv.lastEmbedd {
-		if last.After(v) {
-			last = v
-		}
-	}
-	if time.Since(last) < viper.GetDuration(cfg.VecDBUpdateIntervall) {
-		return fmt.Errorf("Not updating collection %s since it was updated %v ago", collectionName, time.Since(srv.lastEmbedd[collectionName]))
-	}
+	// last := time.Now()
+	// for _, v := range srv.lastEmbedd {
+	// 	if last.After(v) {
+	// 		last = v
+	// 		slog.Info("last update","last", last.String(), "v", v.String())
+	// 	}
+	// }
+	// srv.slog.Info("Last vecDB update", "time", last.String(), "since", time.Since(last).String() )
+	// if time.Since(last) < viper.GetDuration(cfg.VecDBUpdateIntervall) {
+	// 	return fmt.Errorf("Not updating collection %s since it was updated %v ago", collectionName, time.Since(last))
+	// }
 	return confluence.Embbed(ctx, srv.slog, collectionName)
 }
