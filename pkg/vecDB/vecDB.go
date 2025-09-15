@@ -26,7 +26,7 @@ type VecDB struct {
 func New(ctx context.Context, slog *slog.Logger, opts ...Option) (*VecDB, error) {
 	v := &VecDB{
 		slog:       slog,
-		chromaAddr: viper.GetString(cfg.ChromaUrl),
+		chromaAddr: cfg.ChromaUrl(),
 		//embeddingsModel: "nomic-embed-text",
 		embeddingsModel: viper.GetString(cfg.ModelEmbedding),
 	}

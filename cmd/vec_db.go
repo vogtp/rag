@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 	"github.com/vogtp/rag/pkg/vecDB/chroma"
@@ -59,7 +58,7 @@ var vecDbStartChromaCmd = &cobra.Command{
 	Aliases: []string{"run", "r"},
 	Long:    ``,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return chroma.EnsureStarted(slog.Default(), cmd.Context(), viper.GetInt(cfg.ChromaPort))
+		return chroma.EnsureStarted(slog.Default(), cmd.Context())
 	},
 }
 

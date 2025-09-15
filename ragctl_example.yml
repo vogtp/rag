@@ -17,7 +17,13 @@ model:
 #  embedding: "bge-m3"
 #  default: "deepseek-r1:32b"
 vecdb:
-  update_intervall: 24m
+  update_intervall: 24h
+chroma:
+  url: "http://localhost:8000"
+  container:
+    name: "chroma"
+    port: "8000"
+    image: "chromadb/chroma:latest"
 confluence:
   key: "CONFLUENCE_API_KEY"
   baseURL: "https://confluence.example.net/"

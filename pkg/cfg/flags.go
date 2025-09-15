@@ -37,12 +37,14 @@ const (
 	// OllamaHosts is an URL
 	ollamaHosts = "ollama.hosts"
 
+	// ChromaContainerName the name of the chroma container
+	ChromaContainerName = "chroma.container.name"
 	// ChromaUrl the URL where chroma can be reached
-	ChromaUrl = "chroma.url"
-	// ChromaPort is the port chroma should be started on (0: disable)
-	ChromaPort = "chroma.port"
-	// ChromaContainer chroma container to pull
-	ChromaContainer = "chroma.container"
+	chromaUrl = "chroma.url"
+	// ChromaContainerPort is the port chroma should be started on (0: disable)
+	ChromaContainerPort = "chroma.container.port"
+	// ChromaContainerImage chroma container to pull
+	ChromaContainerImage = "chroma.container.image"
 
 	// ConfluenceKey is the confluence access token
 	ConfluenceKey = "confluence.key"
@@ -96,9 +98,10 @@ func init() {
 	pflag.Duration(ConfluenceMaxAge, DefaultConfluenceMaxAge, "The maximum age a confluence page can have to be included in")
 	pflag.Duration(VecDBUpdateIntervall, 24*time.Hour, "the intervall the vectorDB is updated")
 	pflag.String(VecDBColName, "go-rag", "the name prefix of the vectorDB collections")
-	pflag.String(ChromaUrl, "http://localhost:8000", "the URL where chroma can be reached")
-	pflag.Int(ChromaPort, 8000, "the port chroma should be started on (0: disable)")
-	pflag.String(ChromaContainer, "chromadb/chroma:0.5.23", "chroma container to pull")
+	pflag.String(chromaUrl, chromaDefaultURL, "the URL where chroma can be reached")
+	pflag.String(ChromaContainerPort, chromaDefaultPort, "the port chroma should be started on (0: disable)")
+	pflag.String(ChromaContainerName, "chroma", "the name of the chroma container")
+	pflag.String(ChromaContainerImage, chromaDefaultContainerImage, "chroma container to pull")
 	pflag.String(OIDCClientID, "", "OIDCClientID OIDC Client ID")
 	pflag.String(OIDCClientSecret, "", "OIDC Secret")
 	pflag.String(OIDCIssuer, "", "OIDC issuer (AKA auth endpoint)")

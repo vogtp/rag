@@ -6,7 +6,6 @@ import (
 	"log/slog"
 
 	"github.com/amikos-tech/chroma-go/types"
-	"github.com/spf13/viper"
 	"github.com/tmc/langchaingo/embeddings"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/ollama"
@@ -45,7 +44,7 @@ func getDocs(ctx context.Context, index string, query string) ([]schema.Document
 		return nil, err
 	}
 	store, err := chroma.New(
-		chroma.WithChromaURL(viper.GetString(cfg.ChromaUrl)),
+		chroma.WithChromaURL(cfg.ChromaUrl()),
 		chroma.WithNameSpace(index),
 		chroma.WithEmbedder(e),
 		chroma.WithDistanceFunction(types.COSINE),

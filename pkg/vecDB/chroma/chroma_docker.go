@@ -25,15 +25,15 @@ type Container struct {
 }
 
 func NewContainer(slog *slog.Logger) (*Container, error) {
-	containerName := "chroma"
-	imageName := viper.GetString(cfg.ChromaContainer)
+	containerName := viper.GetString(cfg.ChromaContainerName)
+	imageName := viper.GetString(cfg.ChromaContainerImage)
 	c := &Container{
 		containerName: containerName,
 		imageName:     imageName,
 		slog:          slog.With("containerName", containerName, "imageName", imageName),
 	}
 	cli, err := client.NewClientWithOpts(
-		client.FromEnv,
+		client.FromEnv, 
 		client.WithAPIVersionNegotiation(),
 	)
 	if err != nil {
@@ -43,20 +43,18 @@ func NewContainer(slog *slog.Logger) (*Container, error) {
 	return c, nil
 }
 
-func EnsureStarted(slog *slog.Logger, ctx context.Context, port int) error {
+func EnsureStarted(slog *slog.Logger, ctx context.Context) error {
 	c, err := NewContainer(slog)
 	if err != nil {
 		return err
 	}
-	_, err = c.EnsureStarted(ctx, port)
+	_, err = c.EnsureStarted(ctx)
 	return err
 }
 
-func (c *Container) EnsureStarted(ctx context.Context, port int) (func(ctx context.Context) error, error) {
-	if port < 1 {
-		return func(ctx context.Context) error { return nil }, nil
-	}
-	id, running, err := c.getOrCreateContainer(ctx, fmt.Sprintf("%v", port))
+func (c *Container) EnsureStarted(ctx context.Context) (func(ctx context.Context) error, error) {
+
+	id, running, err := c.getOrCreateContainer(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("cannot find docker image: %w", err)
 	}
@@ -83,7 +81,7 @@ func (c *Container) stopContainer(ctx context.Context, id string) error {
 }
 
 func (c *Container) EnsureStopped(ctx context.Context) error {
-	id, running, err := c.getOrCreateContainer(ctx, "")
+	id, running, err := c.getOrCreateContainer(ctx)
 	if err != nil {
 		return fmt.Errorf("cannot find docker image: %w", err)
 	}
@@ -93,7 +91,7 @@ func (c *Container) EnsureStopped(ctx context.Context) error {
 	return c.stopContainer(ctx, id)
 }
 
-func (c *Container) getOrCreateContainer(ctx context.Context, port string) (string, bool, error) {
+func (c *Container) getOrCreateContainer(ctx context.Context) (string, bool, error) {
 	containers, err := c.cli.ContainerList(ctx, container.ListOptions{All: true})
 	if err != nil {
 		return "", false, err
@@ -106,17 +104,36 @@ func (c *Container) getOrCreateContainer(ctx context.Context, port string) (stri
 			return container.ID, state, nil
 		}
 	}
-	id, err := c.create(ctx, port)
+	id, err := c.create(ctx)
 	return id, false, err
 }
 
-func (c *Container) create(ctx context.Context, port string) (string, error) {
+func (c *Container) create(ctx context.Context) (string, error) {
+	contPort := "8000/tcp"
+	port := viper.GetString(cfg.ChromaContainerPort)
 	containerCfg := &container.Config{
 		Image:        c.imageName,
 		AttachStdout: true,
 		AttachStderr: true,
-		ExposedPorts: nat.PortSet{nat.Port(port): struct{}{}},
-		Env:          []string{"IS_PERSISTENT=TRUE", "ANONYMIZED_TELEMETRY=FALSE", fmt.Sprintf("CHROMA_HOST_PORT=%s", port)},
+		ExposedPorts: map[nat.Port]struct{}{
+			nat.Port(contPort): {},
+		},
+		Env: []string{"IS_PERSISTENT=TRUE", "ANONYMIZED_TELEMETRY=FALSE", fmt.Sprintf("CHROMA_HOST_PORT=%s", "8000")},
+	}
+
+	// Set port binding
+	hostBinding := nat.PortBinding{
+		HostIP:   "0.0.0.0",
+		HostPort: port,
+	}
+
+	containerPortBinding := nat.PortMap{
+		nat.Port(contPort): []nat.PortBinding{hostBinding},
+	}
+
+	// Create host configuration
+	hostCfg := &container.HostConfig{
+		PortBindings: containerPortBinding,
 	}
 
 	c.slog.Info("Pulling image")
@@ -142,19 +159,20 @@ func (c *Container) create(ctx context.Context, port string) (string, error) {
 		}
 		sl.Info(fmt.Sprintf("%v", resp["status"]))
 	}
-	hostCfg := &container.HostConfig{
-		PortBindings: map[nat.Port][]nat.PortBinding{nat.Port(port): {{HostPort: port}}},
-		// Mounts: []mount.Mount{
-		// 	{
-		// 		Type:   mount.TypeVolume,
-		// 		Target: "./chroma",
-		// 		Source: "/chroma/chroma",
-		// 	},
-		// },
-		// Binds: []string{
-		// 	"./chroma:/srv/chroma",
-		// },
-	}
+	// hostCfg := &container.HostConfig{
+	// 	PortBindings: map[nat.Port][]nat.PortBinding{nat.Port(contPort): {{HostPort: port}}},
+
+	// 	// Mounts: []mount.Mount{
+	// 	// 	{
+	// 	// 		Type:   mount.TypeVolume,
+	// 	// 		Target: "./chroma",
+	// 	// 		Source: "/chroma/chroma",
+	// 	// 	},
+	// 	// },
+	// 	// Binds: []string{
+	// 	// 	"./chroma:/srv/chroma",
+	// 	// },
+	// }
 	resp, err := c.cli.ContainerCreate(ctx, containerCfg, hostCfg, nil, nil, c.containerName)
 	if err != nil {
 		c.slog.Warn("docker create", "err", err)
