@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	chroma "github.com/amikos-tech/chroma-go"
 	ollamaEmbedd "github.com/amikos-tech/chroma-go/pkg/embeddings/ollama"
@@ -99,5 +100,17 @@ func (v *VecDB) DeleteCollection(ctx context.Context, collectionName string) err
 
 // ListCollections lists all colletions
 func (v *VecDB) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
-	return v.chroma.ListCollections(ctx)
+	prefix := viper.GetString(cfg.VecDBColName)
+	cols, err := v.chroma.ListCollections(ctx)
+	if err != nil {
+		return nil, err
+	}
+	collections := make([]*chroma.Collection, 0, len(cols))
+	for _, col := range cols {
+		if !strings.HasPrefix(col.Name, prefix) {
+			continue
+		}
+		collections = append(collections, col)
+	}
+	return collections, nil
 }
