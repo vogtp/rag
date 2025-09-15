@@ -49,9 +49,9 @@ func (m OllamaModel) GenerateContent(ctx context.Context, messages []llms.Messag
 		return "", fmt.Errorf("cannot get ollama client: %w", err)
 	}
 
-	chains.LoadCondenseQuestionGenerator(llm)
+	chain := chains.LoadCondenseQuestionGenerator(llm)
 
-	resp, err := llm.GenerateContent(ctx, messages, llms.WithTemperature(temperature), llms.WithStreamingFunc(func(ctx context.Context, chunk []byte) error {
+	resp, err := chain.LLM.GenerateContent(ctx, messages, llms.WithTemperature(temperature), llms.WithStreamingFunc(func(ctx context.Context, chunk []byte) error {
 		return streamingFunc(ctx, chunk)
 	}))
 
