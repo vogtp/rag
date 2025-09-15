@@ -117,9 +117,9 @@ func (m VectorStoreModel) GenerateContent(ctx context.Context, messages []llms.M
 	if err != nil {
 		return "", fmt.Errorf("query vector DB: %w", err)
 	}
-	for i, r := range res[0].Documents {
-		fmt.Printf("\n\nDocument %v: %+v\n", i, r)
-	}
+	// for i, r := range res[0].Documents {
+	// 	fmt.Printf("\n\nDocument %v: %+v\n", i, r)
+	// }
 
 	var knowledge strings.Builder
 
