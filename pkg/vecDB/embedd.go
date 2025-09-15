@@ -20,9 +20,17 @@ const (
 	MetaURL     = "URL"
 	MetaTitle   = "title"
 )
-//2025-09-11 16:30:36.875593874 +0200 CEST m=+207.045403821
+
+const timeFormat = "2006-01-02 15:04:05.999999999 -0700"
+
+// const timeFormat = "2006-01-02 15:04:05.999999999 -0700 MST"
+// 2025-09-11 16:30:36.875593874 +0200 CEST m=+207.045403821
+// 2006-01-02 15:04:05.999999999 -0700
 func parseTime(t string) (time.Time, error) {
-	return time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", t)
+	if len(t) > len(timeFormat) {
+		t = t[:len(timeFormat)]
+	}
+	return time.Parse(timeFormat, t)
 }
 
 func (v *VecDB) Embedd(ctx context.Context, collectionName string, in <-chan EmbeddDocument) (int, error) {
@@ -59,7 +67,7 @@ func (v *VecDB) Embedd(ctx context.Context, collectionName string, in <-chan Emb
 				}
 				if d.Modified.After(t) {
 					skipFile = false
-					slog.Info("Document was modified")
+					slog.Debug("Document was modified", "modification_time", d.Modified.String())
 					break
 				}
 			} else {
