@@ -6,8 +6,6 @@ import (
 	"log/slog"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/rag"
 	"github.com/vogtp/rag/pkg/vecDB/chroma"
 	"github.com/vogtp/rag/pkg/web"
@@ -29,29 +27,32 @@ var webStartCmd = &cobra.Command{
 	Short: "Start RAG web server",
 	//Aliases: []string{"w", "rag", "r"},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		slog := slog.Default()
-		ctx := cmd.Context()
-		_, err := startChroma(ctx, slog)
-		if err != nil {
-			return fmt.Errorf("chroma would not start: %w", err)
-		}
-
-		rag, err := rag.New(ctx, slog)
-		if err != nil {
-			return fmt.Errorf("cannot start rag backend: %w", err)
-		}
-		api, err := web.New(ctx, slog, rag)
-		if err != nil {
-			return fmt.Errorf("cannot start http server: %w", err)
-		}
-		return api.Run(cmd.Context())
+		return startWeb(cmd.Context())
 	},
+}
+
+func startWeb(ctx context.Context) error {
+	slog := slog.Default()
+	_, err := startChroma(ctx, slog)
+	if err != nil {
+		return fmt.Errorf("start chroma: %w", err)
+	}
+
+	rag, err := rag.New(ctx, slog)
+	if err != nil {
+		return fmt.Errorf("start rag backend: %w", err)
+	}
+	api, err := web.New(ctx, slog, rag)
+	if err != nil {
+		return fmt.Errorf("start http server: %w", err)
+	}
+	return api.Run(ctx)
 }
 
 func startChroma(ctx context.Context, slog *slog.Logger) (func(ctx context.Context) error, error) {
 	c, err := chroma.NewContainer(slog)
 	if err != nil {
-		return nil, fmt.Errorf("cannot create chroma container: %w", err)
+		return nil, fmt.Errorf("create chroma container: %w", err)
 	}
-	return c.EnsureStarted(ctx, viper.GetInt(cfg.ChromaPort))
+	return c.EnsureStarted(ctx)
 }
