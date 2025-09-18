@@ -47,9 +47,15 @@ func (v *VecDB) Embedd(ctx context.Context, collectionName string, in <-chan Emb
 		return 0, fmt.Errorf("failed to create collection: %v", err)
 	}
 	docUpdated := 0
-
+	history := emeddHistory{
+		slog:           slog,
+		collectionName: collectionName,
+	}
 	for d := range in {
 		slog = slogBase.With(fmt.Sprintf("MetaKey<%s>", d.IDMetaKey), d.IDMetaValue)
+		if !history.shouldEmbedd(&d) {
+			continue
+		}
 		res, err := coll.Get(ctx, map[string]interface{}{d.IDMetaKey: d.IDMetaValue}, nil, nil, nil)
 		if err != nil {
 			slog.Warn("cannot check for existing docs", "err", err, "title", d.Title)
@@ -127,6 +133,7 @@ func (v *VecDB) Embedd(ctx context.Context, collectionName string, in <-chan Emb
 				continue
 			}
 		}
+		history.reqisterEmedded(&d)
 		docUpdated++
 	}
 
