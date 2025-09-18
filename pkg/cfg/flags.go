@@ -70,6 +70,9 @@ const (
 
 	// HTTPUserAgent sets the user agent of the http request
 	HTTPUserAgent = "http.user_agent"
+
+	// PProf enable pprof
+	PProf = "pprof.file"
 )
 
 var (
@@ -107,4 +110,6 @@ func init() {
 	pflag.String(OIDCIssuer, "", "OIDC issuer (AKA auth endpoint)")
 	pflag.String(OIDCRedirectURI, "", "OIDC redirect URI (AKA local auth callback)")
 	pflag.String(HTTPUserAgent, "go-rag", "sets the user agent of the http request")
+
+	pflag.String(PProf, "", "enable pprof")
 }

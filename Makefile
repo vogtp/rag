@@ -60,3 +60,18 @@ remote-autocomplete:
 	ssh $(user)@$(host) "srv/rag/ragctl completion bash > ~/.rag.autocomplete"
 	ssh $(user)@$(host) "chmod +x ~/.rag.autocomplete"
 	
+.PHONY: pprof-run
+pprof-run: build
+	nice -19 ./build/ragctl v e path hr-path ./ignore_hr_pdf_failed --pprof.file profile_ragctl --log.level error | tee ignore_pdf_import.log
+
+.PHONY: pprof-cpu
+pprof-cpu: 
+	go tool pprof -http :1234 ./build/ragctl ignore_profile_ragctl_cpu.pprof
+
+.PHONY: pprof-mem
+pprof-mem: 
+	go tool pprof -http :1234 ./build/ragctl ignore_profile_ragctl_mem.pprof
+
+.PHONY: pprof-rm
+pprof-rm:
+	rm ignore_profile_ragctl_*.pprof

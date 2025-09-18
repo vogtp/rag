@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	"github.com/spf13/viper"
@@ -33,7 +33,7 @@ func NewContainer(slog *slog.Logger) (*Container, error) {
 		slog:          slog.With("containerName", containerName, "imageName", imageName),
 	}
 	cli, err := client.NewClientWithOpts(
-		client.FromEnv, 
+		client.FromEnv,
 		client.WithAPIVersionNegotiation(),
 	)
 	if err != nil {
@@ -137,7 +137,7 @@ func (c *Container) create(ctx context.Context) (string, error) {
 	}
 
 	c.slog.Info("Pulling image")
-	out, err := c.cli.ImagePull(ctx, c.imageName, types.ImagePullOptions{})
+	out, err := c.cli.ImagePull(ctx, c.imageName, image.PullOptions{})
 	if err != nil {
 		c.slog.Warn("docker pull", "err", err)
 		return "", fmt.Errorf("cannot pull image %s: %w", c.imageName, err)
