@@ -2,6 +2,7 @@ package filesystem
 
 import (
 	"context"
+	"fmt"
 	"io/fs"
 	"log/slog"
 	"os"
@@ -24,6 +25,10 @@ func walkPath(ctx context.Context, out chan vecdb.EmbeddDocument, path string) {
 	err := filepath.WalkDir(path, func(path string, d fs.DirEntry, err error) error {
 		if ctx.Err() != nil {
 			return ctx.Err()
+		}
+		if d == nil {
+			slog.Warn("Directory not present", "path", path, "dirEntry", d)
+			return fmt.Errorf("directory does not exist: %s",path)
 		}
 		slog.Debug("Processing walkdir", "path", path, "dirEntry", d, "err", err)
 		if d.IsDir() {
