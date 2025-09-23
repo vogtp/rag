@@ -18,20 +18,21 @@ import (
 )
 
 // GetDocuments retrives confluence spaces and generates vecdb.EmbeddDocuments
-func GetDocuments(ctx context.Context, slog *slog.Logger, spaces ...string) (chan vecdb.EmbeddDocument, error) {
-	baseURL := viper.GetString(cfg.ConfluenceBaseURL)
+func GetDocuments(ctx context.Context, slog *slog.Logger, config *cfg.RagConfig, spaces ...string) (chan vecdb.EmbeddDocument, error) {
+	baseURL := config.Confluence.BaseURL
 	baseURL = strings.TrimRight(baseURL, "/")
 	conf := confluence{
 		slog:       slog.With("confluence_url", baseURL),
 		baseURL:    baseURL,
 		out:        make(chan vecdb.EmbeddDocument, 10),
-		accessKey:  viper.GetString(cfg.ConfluenceKey),
+		accessKey:  config.Confluence.Key,
 		rateLimit:  rate.Limit(0.4),
 		queryLimit: 100,
 		spaces:     spaces,
+		config:     config,
 	}
 	if len(spaces) < 1 {
-		conf.spaces = viper.GetStringSlice(cfg.ConfluenceSpaces)
+		conf.spaces = config.Confluence.Spaces
 	}
 	if err := conf.init(); err != nil {
 		return nil, err
@@ -50,6 +51,7 @@ type confluence struct {
 	queryLimit int
 	spaces     []string
 	mu         sync.Mutex
+	config     *cfg.RagConfig
 }
 
 func (c *confluence) init() error {

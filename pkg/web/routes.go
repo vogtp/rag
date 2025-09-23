@@ -20,9 +20,9 @@ func (srv *Server) routes() error {
 	srv.mux.Handle("/static/", http.StripPrefix(srv.baseURL, http.FileServer(http.FS(assetData))))
 
 	srv.openAiAPI("/api/")
-	srv.mux.HandleFunc("/vecdb/", srv.vecDBlist)
-	srv.mux.HandleFunc("/vecdb/{collection}", srv.vecDBsearch)
-	srv.mux.HandleFunc("/summary/{uuid}", srv.handleSummary)
+	srv.oidcMux.HandleFunc("/vecdb/", srv.vecDBlist)
+	srv.oidcMux.HandleFunc("/vecdb/{collection}", srv.vecDBsearch)
+	srv.oidcMux.HandleFunc("/summary/{uuid}", srv.handleSummary)
 	// srv.mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 	// 	http.Redirect(w, r, "/search/", http.StatusTemporaryRedirect)
 	// })

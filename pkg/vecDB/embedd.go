@@ -48,8 +48,9 @@ func (v *VecDB) Embedd(ctx context.Context, collectionName string, in <-chan Emb
 	}
 	docUpdated := 0
 	history := emeddHistory{
-		slog:           slog,
-		collectionName: collectionName,
+		slog:                 slog,
+		collectionName:       collectionName,
+		vecDBUpdateIntervall: v.config.VecDBUpdateIntervall(),
 	}
 	for d := range in {
 		slog = slogBase.With(fmt.Sprintf("MetaKey<%s>", d.IDMetaKey), d.IDMetaValue)

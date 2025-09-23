@@ -49,7 +49,7 @@ func scapper2vecDB(ctx context.Context, url string, collectionName string) error
 		return err
 	}
 
-	client, err := vecdb.New(ctx, slog.Default(), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
+	client, err := vecdb.New(ctx, slog.Default(), cfg.DefaultRagCfg(), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
 	if err != nil {
 		return fmt.Errorf("Failed to create vector DB: %w", err)
 	}

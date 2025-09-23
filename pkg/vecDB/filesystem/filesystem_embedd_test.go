@@ -6,13 +6,14 @@ import (
 	"os"
 	"testing"
 
+	"github.com/vogtp/rag/pkg/cfg"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 	"github.com/vogtp/rag/pkg/vecDB/filesystem"
 )
 
 func TestGenerate(t *testing.T) {
 	ctx := context.Background()
-	client, err := vecdb.New(ctx, slog.Default(), vecdb.WithChromaAddress("http://localhost:8000"), vecdb.WithOllamaAddress("https://llama-1.its.unibas.ch"))
+	client, err := vecdb.New(ctx, slog.Default(), cfg.DefaultRagCfg(), vecdb.WithChromaAddress("http://localhost:8000"), vecdb.WithOllamaAddress("https://llama-1.its.unibas.ch"))
 	if err != nil {
 		t.Fatalf("Failed to create vector DB: %v", err)
 	}

@@ -1,15 +1,12 @@
 package web
 
 import (
-	"context"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/vogtp/rag/pkg/cfg"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 )
 
@@ -51,7 +48,7 @@ func (srv *Server) vecDBsearch(w http.ResponseWriter, r *http.Request) {
 	}
 	if len(query) > 0 {
 		ctx := r.Context()
-		docs, err := searchVecDB(ctx, slog, collection, query, maxResults)
+		docs, err := srv.rag.SearchVecDB(ctx, slog, collection, query, maxResults)
 		if err != nil {
 			slog.Error("Cannot query vecDB", "err", err)
 			srv.Error(w, r, err.Error(), http.StatusInternalServerError)
@@ -90,17 +87,4 @@ func (srv *Server) vecDBsearch(w http.ResponseWriter, r *http.Request) {
 	}
 	data.StatusMessage = fmt.Sprintf("Duration %v - %v", time.Since(start).Truncate(time.Second), data.StatusMessage)
 	srv.render(w, r, "vecdb_search.gohtml", data)
-}
-
-func searchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error) {
-	client, err := vecdb.New(ctx, slog, vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
-	if err != nil {
-		return nil, fmt.Errorf("create vector DB: %w", err)
-	}
-
-	res, err := client.Query(ctx, collection, []string{query}, int32(maxResults))
-	if err != nil {
-		return nil, fmt.Errorf("query vector DB: %w", err)
-	}
-	return res[0].Documents, nil
 }

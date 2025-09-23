@@ -8,8 +8,6 @@ import (
 	"strings"
 
 	chroma "github.com/amikos-tech/chroma-go"
-
-	vecdb "github.com/vogtp/rag/pkg/vecDB"
 )
 
 func (srv *Server) vecDBlist(w http.ResponseWriter, r *http.Request) {
@@ -24,13 +22,8 @@ func (srv *Server) vecDBlist(w http.ResponseWriter, r *http.Request) {
 		Path:       r.URL.Path,
 	}
 	ctx := r.Context()
-	client, err := vecdb.New(ctx, slog)
-	if err != nil {
-		slog.Error("Failed to create vectorDB client", "err", err)
-		srv.Error(w, r, fmt.Sprintf("Failed to create vectorDB client: %v", err), http.StatusInternalServerError)
-		return
-	}
-	cols, err := client.ListCollections(ctx)
+
+	cols, err := srv.rag.ListCollections(ctx)
 	if err != nil {
 		slog.Error("Error listing vectorDB collections", "err", err)
 		srv.Error(w, r, fmt.Sprintf("Error listing vectorDB collections: %v", err), http.StatusInternalServerError)

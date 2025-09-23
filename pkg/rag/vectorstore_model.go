@@ -9,14 +9,12 @@ import (
 
 	"github.com/amikos-tech/chroma-go/types"
 	"github.com/sashabaranov/go-openai"
-	"github.com/spf13/viper"
 	"github.com/tmc/langchaingo/embeddings"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/memory"
 	"github.com/tmc/langchaingo/vectorstores"
 	"github.com/tmc/langchaingo/vectorstores/chroma"
 	"github.com/vogtp/rag/pkg/cfg"
-	"github.com/vogtp/rag/pkg/logger"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 	"github.com/vogtp/rag/pkg/web/bearer"
 )
@@ -26,6 +24,9 @@ var _ Model = (*VectorStoreModel)(nil)
 type VectorStoreModel struct {
 	Name    string
 	LLMName string
+
+	vecDB  *vecdb.VecDB
+	config *cfg.RagConfig
 
 	OwnedBy    string
 	bearerAuth bearer.Auth
@@ -115,11 +116,8 @@ func (m VectorStoreModel) GenerateContent(ctx context.Context, messages []llms.M
 	} else {
 		slog.Warn("No history", "err", err)
 	}
-	client, err := vecdb.New(ctx, logger.New(), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
-	if err != nil {
-		return "", fmt.Errorf("create vector DB: %w", err)
-	}
-	res, err := client.Query(ctx, m.Collection, []string{text}, 5)
+
+	res, err := m.vecDB.Query(ctx, m.Collection, []string{text}, 5)
 	if err != nil {
 		return "", fmt.Errorf("query vector DB: %w", err)
 	}
@@ -202,8 +200,7 @@ func (m *VectorStoreModel) getEmbedder(ctx context.Context) (*embeddings.Embedde
 	if m.embedder != nil {
 		return m.embedder, nil
 	}
-	model := viper.GetString(cfg.ModelEmbedding)
-	llm, err := getOllamaClient(ctx, model)
+	llm, err := getOllamaClient(ctx, m.config.Model.Embedding)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create llm client: %w", err)
 	}

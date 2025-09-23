@@ -74,7 +74,7 @@ const (
 	// PProf enable pprof
 	PProf = "pprof.file"
 
-	// FIXME 
+	// FIXME
 	ApiBearerToken = "web.api_token"
 )
 
@@ -102,7 +102,7 @@ func init() {
 	pflag.String(ConfluenceBaseURL, "", "The confluence access token")
 	pflag.StringSlice(ConfluenceSpaces, nil, "The confluence spaces to scrap")
 	pflag.Duration(ConfluenceMaxAge, DefaultConfluenceMaxAge, "The maximum age a confluence page can have to be included in")
-	pflag.Duration(VecDBUpdateIntervall, 24*time.Hour, "the intervall the vectorDB is updated")
+	pflag.Duration(VecDBUpdateIntervall, DefaultVecDBUpdateIntervall, "the intervall the vectorDB is updated")
 	pflag.String(VecDBColName, "go-rag", "the name prefix of the vectorDB collections")
 	pflag.String(chromaUrl, chromaDefaultURL, "the URL where chroma can be reached")
 	pflag.String(ChromaContainerPort, chromaDefaultPort, "the port chroma should be started on (0: disable)")

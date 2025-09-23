@@ -9,21 +9,21 @@ import (
 	"sync"
 	"time"
 
-	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 )
 
 var wg sync.WaitGroup
 
-func Embbed(ctx context.Context, slog *slog.Logger, collectionName string) error {
-	client, err := vecdb.New(ctx, slog, vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
+func Embed(ctx context.Context, slog *slog.Logger, config *cfg.RagConfig) error {
+	collectionName := config.Vecdb.CollectionName
+	client, err := vecdb.New(ctx, slog, config, vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
 	if err != nil {
 		return fmt.Errorf("Failed to create vector DB: %w", err)
 	}
 
-	for _, space := range viper.GetStringSlice(cfg.ConfluenceSpaces) {
-		c, err := GetDocuments(ctx, slog, space)
+	for _, space := range config.Confluence.Spaces {
+		c, err := GetDocuments(ctx, slog, config, space)
 		if err != nil {
 			return err
 		}

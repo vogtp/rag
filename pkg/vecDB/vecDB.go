@@ -10,7 +10,6 @@ import (
 	"github.com/amikos-tech/chroma-go/pkg/embeddings"
 	ollamaEmbedd "github.com/amikos-tech/chroma-go/pkg/embeddings/ollama"
 	"github.com/amikos-tech/chroma-go/types"
-	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
 )
 
@@ -22,15 +21,17 @@ type VecDB struct {
 	embedFunc       types.EmbeddingFunction
 	ollamaAddr      string
 	embeddingsModel string
+	config          *cfg.RagConfig
 }
 
 // New creates a vectorDB
-func New(ctx context.Context, slog *slog.Logger, opts ...Option) (*VecDB, error) {
+func New(ctx context.Context, slog *slog.Logger, config *cfg.RagConfig, opts ...Option) (*VecDB, error) {
 	v := &VecDB{
 		slog:       slog,
 		chromaAddr: cfg.ChromaUrl(),
+		config:     config,
 		//embeddingsModel: "nomic-embed-text",
-		embeddingsModel: viper.GetString(cfg.ModelEmbedding),
+		embeddingsModel: config.Model.Embedding,
 	}
 	for _, o := range opts {
 		o(v)
@@ -86,7 +87,7 @@ func (v *VecDB) GetEmbeddingFunc() (types.EmbeddingFunction, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error creating ollama embedding function: %w", err)
 	}
-	wrapper:=embeddingFunctionWrapper{ embedFunc }
+	wrapper := embeddingFunctionWrapper{embedFunc}
 	v.embedFunc = wrapper
 	return wrapper, nil
 }
@@ -102,7 +103,7 @@ func (v *VecDB) DeleteCollection(ctx context.Context, collectionName string) err
 
 // ListCollections lists all colletions
 func (v *VecDB) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
-	prefix := viper.GetString(cfg.VecDBColName)
+	prefix := v.config.Vecdb.CollectionName
 	cols, err := v.chroma.ListCollections(ctx)
 	if err != nil {
 		return nil, err

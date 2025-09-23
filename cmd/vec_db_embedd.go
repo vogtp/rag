@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -35,7 +36,7 @@ var vecDbEmbbedPathCmd = &cobra.Command{
 			slog.Info(fmt.Sprintf("Updating collection %s took %s", collectionName, time.Since(t)))
 		}(start)
 		ctx := cmd.Context()
-		client, err := vecdb.New(ctx, slog.Default(), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
+		client, err := vecdb.New(ctx, slog.Default(), cfg.DefaultRagCfg(), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
 		if err != nil {
 			return fmt.Errorf("Failed to create vector DB: %w", err)
 		}
@@ -46,17 +47,29 @@ var vecDbEmbbedPathCmd = &cobra.Command{
 }
 
 var vecDbEmbbedConfluenceCmd = &cobra.Command{
-	Use:     "confluence <collection_name>",
+	Use:     "confluence <rag_name>",
 	Short:   "Embbed confluence spaces into a collection",
 	Aliases: []string{"conf", "c"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		slog := slog.Default()
 		ctx := cmd.Context()
-		if len(args) < 1 {
-			return cmd.Usage()
+		ragCfgs, err := cfg.GetRagConfig()
+		if err != nil {
+			return err
 		}
-		collectionName := args[0]
-
-		return confluence.Embbed(ctx, slog, collectionName)
+		notUsed := ""
+		for _, ragCfg := range ragCfgs {
+			if len(args) > 0 && !strings.EqualFold(args[0], ragCfg.Name) {
+				notUsed = fmt.Sprintf("%s %s", notUsed, ragCfg.Name)
+				continue
+			}
+			if err := confluence.Embed(ctx, slog, &ragCfg); err != nil {
+				fmt.Printf("Embed confluence: %v", err)
+			}
+		}
+		if len(notUsed) > 0 {
+			return fmt.Errorf("RAG %q not found, possible RAGs:%s", args[0], notUsed)
+		}
+		return nil
 	},
 }

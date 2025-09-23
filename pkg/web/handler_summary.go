@@ -7,9 +7,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/spf13/viper"
 	"github.com/tmc/langchaingo/llms"
-	"github.com/vogtp/rag/pkg/cfg"
 )
 
 const (
@@ -39,8 +37,8 @@ func (srv *Server) handleSummary(w http.ResponseWriter, r *http.Request) {
 		srv.Error(w, r, err.Error(), http.StatusBadRequest)
 		return
 	}
-	model := viper.GetString(cfg.ModelDefault)
-	//model="deepseek-r1"
+
+	model := srv.rag.ModelDefault()
 	llm, err := getOllamaClient(ctx, model)
 	if err != nil {
 		slog.Warn("Cannot connect to ollama", "err", err)
@@ -76,7 +74,7 @@ func clipDeepSeekThinking(model, summary string) string {
 	thinkEnd := "</think>"
 	idx := strings.Index(summary, thinkEnd)
 	if idx > 0 && len(summary) > idx+len(thinkEnd) {
-		slog.Info("cliping summary","clipped",summary[idx+len(thinkEnd):])
+		slog.Info("cliping summary", "clipped", summary[idx+len(thinkEnd):])
 		summary = summary[idx+len(thinkEnd):]
 	}
 	return summary

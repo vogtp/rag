@@ -6,16 +6,14 @@ import (
 	"log/slog"
 	"os"
 	"time"
-
-	"github.com/spf13/viper"
-	"github.com/vogtp/rag/pkg/cfg"
 )
 
 type emeddHistory struct {
-	slog           *slog.Logger
-	collectionName string
-	history        map[string]time.Time
-	minAge         time.Duration
+	slog                 *slog.Logger
+	collectionName       string
+	history              map[string]time.Time
+	minAge               time.Duration
+	vecDBUpdateIntervall time.Duration
 }
 
 func (eh *emeddHistory) shouldEmbedd(d *EmbeddDocument) bool {
@@ -55,7 +53,7 @@ func (eh *emeddHistory) init() error {
 	if eh.slog == nil {
 		eh.slog = slog.Default()
 	}
-	interval := viper.GetDuration(cfg.VecDBUpdateIntervall)
+	interval := eh.vecDBUpdateIntervall
 	if interval > 24*time.Hour || interval < time.Hour {
 		interval = time.Hour
 	}
