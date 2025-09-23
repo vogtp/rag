@@ -125,8 +125,9 @@ func (m VectorStoreModel) GenerateContent(ctx context.Context, messages []llms.M
 
 	knowledge.WriteString("Anwser the next question based the the following knowledge:\n")
 	for _, d := range res[0].Documents {
-		knowledge.WriteString(fmt.Sprintf("<knowledge reference=%q >%s</knowledge>\n", d.URL, d.Content))
+		knowledge.WriteString(fmt.Sprintf("<knowledge href=%q >%s</knowledge>\n", d.URL, d.Content))
 	}
+	knowledge.WriteString("Always reference the used knowledge by the name and link to the href tag\n")
 
 	last := messages[len(messages)-1]
 	messages[len(messages)-1] = llms.MessageContent{
