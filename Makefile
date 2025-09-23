@@ -15,7 +15,7 @@ user=vogtp
 
 .PHONY: run
 run: ng-build
-	go run . --log.source web start --log.json | jq
+	go run . --log.source web start --log.json --log.level warn | jq -R 'fromjson? | .' 
 
 .PHONY: build
 build: ng-build
