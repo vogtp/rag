@@ -29,7 +29,11 @@ func (eh *emeddHistory) shouldEmbedd(d *EmbeddDocument) bool {
 	}
 	last := time.Since(h)
 	b := last > eh.minAge
-	eh.slog.Info("should embedd", "should", b, "age", last.String(), "last", h.String())
+	log := eh.slog.Info
+	if b {
+		log = eh.slog.Debug
+	}
+	log("should embedd", "should", b, "age", last.String(), "last", h.String())
 	return b
 }
 
