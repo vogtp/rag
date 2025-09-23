@@ -75,7 +75,8 @@ func (eh emeddHistory) filename() string {
 func (eh *emeddHistory) load() error {
 	jsonData, err := os.ReadFile(eh.filename())
 	if err != nil {
-		return fmt.Errorf("read collection history file: %w", err)
+		eh.slog.Info("Cannot read embed history", "err", err)
+		return nil
 	}
 	return json.Unmarshal(jsonData, &eh.history)
 }
