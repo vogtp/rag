@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	chroma "github.com/amikos-tech/chroma-go"
+	"github.com/amikos-tech/chroma-go/pkg/embeddings"
 	ollamaEmbedd "github.com/amikos-tech/chroma-go/pkg/embeddings/ollama"
 	"github.com/amikos-tech/chroma-go/types"
 	"github.com/spf13/viper"
@@ -18,7 +19,7 @@ type VecDB struct {
 	slog            *slog.Logger
 	chromaAddr      string
 	chroma          *chroma.Client
-	embedFunc       *ollamaEmbedd.OllamaEmbeddingFunction
+	embedFunc       types.EmbeddingFunction
 	ollamaAddr      string
 	embeddingsModel string
 }
@@ -45,7 +46,7 @@ func New(ctx context.Context, slog *slog.Logger, opts ...Option) (*VecDB, error)
 	}
 	v.slog = slog.With("chroma_addr", v.chromaAddr, "ollama_addr", v.ollamaAddr)
 
-	client, err := chroma.NewClient(v.chromaAddr)
+	client, err := chroma.NewClient(chroma.WithBasePath(v.chromaAddr))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create chroma client: %w", err)
 	}
@@ -73,20 +74,21 @@ func (v *VecDB) GetCollection(ctx context.Context, name string) (*chroma.Collect
 }
 
 // GetEmbeddingFunc load the embedding function from the llm
-func (v *VecDB) GetEmbeddingFunc() (*ollamaEmbedd.OllamaEmbeddingFunction, error) {
+func (v *VecDB) GetEmbeddingFunc() (types.EmbeddingFunction, error) {
 	if v.embedFunc != nil {
 		return v.embedFunc, nil
 	}
 	v.slog.Debug("Loading embedding function", "embeddingsModel", v.embeddingsModel)
 	embedFunc, err := ollamaEmbedd.NewOllamaEmbeddingFunction(
 		ollamaEmbedd.WithBaseURL(v.ollamaAddr),
-		ollamaEmbedd.WithModel(v.embeddingsModel),
+		ollamaEmbedd.WithModel(embeddings.EmbeddingModel(v.embeddingsModel)),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error creating ollama embedding function: %w", err)
 	}
-	v.embedFunc = embedFunc
-	return embedFunc, nil
+	wrapper:=embeddingFunctionWrapper{ embedFunc }
+	v.embedFunc = wrapper
+	return wrapper, nil
 }
 
 // DeleteCollection delete a collection

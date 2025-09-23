@@ -9,6 +9,7 @@ import (
 const (
 	chromaDefaultPort           = "8000"
 	chromaDefaultContainerImage = "chromadb/chroma:0.5.23"
+	// chromaDefaultContainerImage = "chromadb/chroma:latest"
 )
 
 var chromaDefaultURL string
