@@ -18,7 +18,7 @@ func generateState() string {
 	return uuid.NewString()
 }
 
-func (om *Mux) init(ctx context.Context, slog *slog.Logger) error {
+func (om *mux) init(ctx context.Context, slog *slog.Logger) error {
 
 	om.cookieHandler = httphelper.NewCookieHandler(randomKey(16), randomKey(16), httphelper.WithMaxAge(15*60*60))
 

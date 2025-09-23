@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func (om *Mux) oidcErrorHandler(w http.ResponseWriter, r *http.Request, errorType string, errorDesc string, state string) {
+func (om *mux) oidcErrorHandler(w http.ResponseWriter, r *http.Request, errorType string, errorDesc string, state string) {
 
 	info := struct {
 		Hanlder   string

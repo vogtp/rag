@@ -11,3 +11,7 @@ type Config struct {
 	ResponseMode string
 	KeyPath      string
 }
+
+func (c Config) Valid() bool {
+	return len(c.ClientID) > 0 &&len(c.ClientSecret) > 0 &&len(c.Issuer) > 0 &&len(c.RedirectURI) > 0 
+}

@@ -8,8 +8,8 @@ import (
 	"github.com/zitadel/oidc/v3/pkg/oidc"
 )
 
-func (om *Mux) reqisterLoginHandler() {
-	om.mux.Handle(om.loginPath, rp.AuthURLHandler(
+func (om *mux) reqisterLoginHandler() {
+	om.serveMux.Handle(om.loginPath, rp.AuthURLHandler(
 		generateState,
 		om.providerOIDC,
 		om.urlOptionsOIDC...,
@@ -34,6 +34,6 @@ func (om *Mux) reqisterLoginHandler() {
 		http.Redirect(w, r, getOrigPath(r), http.StatusTemporaryRedirect)
 	}
 
-	om.mux.Handle(om.callbackPath, rp.CodeExchangeHandler(rp.UserinfoCallback(callbackHandler), om.providerOIDC))
+	om.serveMux.Handle(om.callbackPath, rp.CodeExchangeHandler(rp.UserinfoCallback(callbackHandler), om.providerOIDC))
 
 }

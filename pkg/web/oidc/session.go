@@ -42,7 +42,7 @@ type Session struct {
 	Created time.Time
 }
 
-func (om *Mux) setSession(w http.ResponseWriter, info *oidc.UserInfo) error {
+func (om *mux) setSession(w http.ResponseWriter, info *oidc.UserInfo) error {
 	session := Session{
 		User:    info,
 		Created: time.Now(),
@@ -56,7 +56,7 @@ func (om *Mux) setSession(w http.ResponseWriter, info *oidc.UserInfo) error {
 }
 
 // GetSession returns session information with user info
-func (om *Mux) GetSession(w http.ResponseWriter, r *http.Request) (*Session, error) {
+func (om *mux) GetSession(w http.ResponseWriter, r *http.Request) (*Session, error) {
 	s, err := om.cookieHandler.CheckCookie(r, sessionCookieName)
 	if err != nil {
 		return nil, fmt.Errorf("get session cookie: %w", err)

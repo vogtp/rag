@@ -11,12 +11,12 @@ import (
 )
 
 // NewMux creates a new OIDC authenticated mux
-func NewMux(ctx context.Context, slog *slog.Logger, mux *http.ServeMux, addr string, cfg Config) (*Mux, error) {
-	om := &Mux{
-		slog: slog.With("oidc", "oidc"),
-		mux:  mux,
-		addr: addr,
-		cfg:  cfg,
+func NewMux(ctx context.Context, slog *slog.Logger, serveMux *http.ServeMux, addr string, cfg Config) (Mux, error) {
+	om := &mux{
+		slog:     slog.With("oidc", "oidc"),
+		serveMux: serveMux,
+		addr:     addr,
+		cfg:      cfg,
 	}
 	redURI, err := url.Parse(cfg.RedirectURI)
 	if err != nil {
@@ -41,17 +41,17 @@ func NewMux(ctx context.Context, slog *slog.Logger, mux *http.ServeMux, addr str
 	return om, nil
 }
 
-// Mux OIDC authenticated mux
-type Mux struct {
+// mux OIDC authenticated mux
+type mux struct {
 	slog *slog.Logger
 
-	mux  *http.ServeMux
-	addr string
-	cfg  Config
+	serveMux *http.ServeMux
+	addr     string
+	cfg      Config
 
 	loginPath    string
 	callbackPath string
-	scopes []string
+	scopes       []string
 	responseMode string
 
 	cookieHandler  *httphelper.CookieHandler
