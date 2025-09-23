@@ -48,7 +48,7 @@ func (srv *Server) vecDBsearch(w http.ResponseWriter, r *http.Request) {
 	}
 	if len(query) > 0 {
 		ctx := r.Context()
-		docs, err := srv.rag.SearchVecDB(ctx, slog, collection, query, maxResults)
+		docs, err := srv.rag(r).SearchVecDB(ctx, slog, collection, query, maxResults)
 		if err != nil {
 			slog.Error("Cannot query vecDB", "err", err)
 			srv.Error(w, r, err.Error(), http.StatusInternalServerError)

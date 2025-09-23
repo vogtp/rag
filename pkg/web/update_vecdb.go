@@ -18,8 +18,10 @@ func (srv *Server) schedulePeriodicVecDBUpdates(ctx context.Context) error {
 	ticker := time.NewTicker(updateIntervall)
 	go func() {
 		start := time.Now()
-		if err := srv.rag.Embbed(ctx); err != nil {
-			srv.slog.Error("Cannot embedd confluence", "err", err)
+		for _, rag := range srv.rags {
+			if err := rag.Embbed(ctx); err != nil {
+				srv.slog.Error("Cannot embedd", "err", err, "rag.name", rag.Name())
+			}
 		}
 		select {
 		case <-ticker.C:

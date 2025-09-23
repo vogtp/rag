@@ -48,7 +48,9 @@ func New(ctx context.Context, slog *slog.Logger, config *cfg.RagConfig) (*Manage
 
 	return &m, nil
 }
-
+func (m Manager) Name() string{
+	return m.config.Name
+}
 func (m Manager) BearerAuth() bearer.Auth {
 	return m.bearerAuth
 }

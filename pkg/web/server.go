@@ -2,6 +2,7 @@ package web
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
@@ -22,16 +23,19 @@ type Server struct {
 	mux     *http.ServeMux
 	oidcMux oidc.Mux
 
-	rag        *rag.Manager
+	rags       []rag.Manager
 	lastEmbedd map[string]time.Time
 	docCache   docChace
 }
 
 // New creates a new webserver
-func New(ctx context.Context, slog *slog.Logger, rag []rag.Manager) (*Server, error) {
+func New(ctx context.Context, slog *slog.Logger, rags []rag.Manager) (*Server, error) {
+	if len(rags) < 0 {
+		return nil, fmt.Errorf("no RAGs passed")
+	}
 	srv := &Server{
 		slog:       slog,
-		rag:        &rag[0],
+		rags:       rags,
 		lastEmbedd: make(map[string]time.Time),
 		docCache:   newDocCache(),
 	}
