@@ -1,14 +1,26 @@
 <p>
-<mat-form-field>
-    <mat-label>Intranet API Key</mat-label>
-    <input matInput [(ngModel)]="apiKey">
-</mat-form-field>
+    <mat-form-field>
+        <mat-label>Confluence API Key</mat-label>
+        <input matInput [(ngModel)]="confluenceApiKey">
+    </mat-form-field>
 </p>
 <p>
-<mat-form-field>
-    <mat-label>Intranet Speces</mat-label>
-    <input matInput [(ngModel)]="spacesStr">
-</mat-form-field>
+    <mat-form-field>
+        <mat-label>Intranet Speces</mat-label>
+        <input matInput [(ngModel)]="spacesStr">
+    </mat-form-field>
+</p>
+<p>
+    <mat-form-field>
+        <mat-label>Chat API Key</mat-label>
+        <input matInput readonly [(ngModel)]="apiKey">
+    </mat-form-field>
+    <button (click)="onGenerateKey()">
+        Generate
+    </button>
+    <button (click)="onCopyKey()">
+        Copy
+    </button>
 </p>
 
 <button (click)="onSaveClick()" matFab extended aria-label="Save Settings">

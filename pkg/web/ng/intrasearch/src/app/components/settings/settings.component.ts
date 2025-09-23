@@ -21,11 +21,19 @@ import { MatSelectModule } from '@angular/material/select';
   styleUrl: './settings.component.css',
 })
 export class SettingsComponent {
-  apiKey = '';
+  apiKey = 'nokey yet';
+  confluenceApiKey = '';
   spacesStr = '';
 
   onSaveClick() {
     console.log('API key ' + this.apiKey);
     console.log('Spaces ' + this.spacesStr);
+  }
+
+  onGenerateKey() {
+    console.log('Generating API key');
+  }
+  onCopyKey() {
+    console.log('Copy API key');
   }
 }
