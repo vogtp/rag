@@ -8,7 +8,7 @@ type stringBuilder struct {
 	strings.Builder
 }
 
-func (b *stringBuilder) WriteString(s string) (int, error) {
+func (b *stringBuilder) WriteString(s string)  {
 	//fmt.Print(s)
-	return b.Builder.WriteString(s)
+	b.Builder.WriteString(s)
 }
