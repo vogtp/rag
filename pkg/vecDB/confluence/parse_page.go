@@ -2,6 +2,7 @@ package confluence
 
 import (
 	"log/slog"
+	"net/url"
 	"regexp"
 	"strings"
 
@@ -24,6 +25,10 @@ func parsePage(slog *slog.Logger, p string) (string, []string) {
 	for v := range results {
 		lnk := results[v][1]
 		if !strings.HasSuffix(strings.ToLower(lnk), ".pdf") {
+			continue
+		}
+		if _, err =url.Parse(lnk); err != nil{
+			slog.Warn("Incorrect confluence link", "link",lnk, "err",err)
 			continue
 		}
 		pdfLnks = append(pdfLnks, lnk)
