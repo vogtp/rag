@@ -10,6 +10,7 @@ import (
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/ollama"
 	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/web/bearer"
 )
 
 var _ Model = (*OllamaModel)(nil)
@@ -31,6 +32,10 @@ func (m OllamaModel) String() string {
 
 func (m OllamaModel) GetLLMName() string {
 	return m.LLMName
+}
+
+func (m OllamaModel) BearerAuth() bearer.Auth {
+	return bearer.NoAuth()
 }
 
 func (m OllamaModel) ToOpenAI() openai.Model {

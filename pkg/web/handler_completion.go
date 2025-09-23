@@ -38,20 +38,25 @@ func (srv *Server) completionHandler(w http.ResponseWriter, r *http.Request) {
 
 func (srv *Server) chatCompletionHandler(w http.ResponseWriter, r *http.Request) {
 	var req openai.ChatCompletionRequest
-	defer func(t time.Time) {
-		srv.slog.Info("Chat completion request finished", "duration", time.Since(t).String(), "duration_ms", time.Since(t).Milliseconds(), "url", r.URL.String())
-	}(time.Now())
+	start := time.Now()
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	slog := slog.With("model", req.Model)
-	slog.Info("Completition Request")
+	slog.Debug("Completition Request")
 	ragModel, err := srv.rag.Model(req.Model)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
+	if !ragModel.BearerAuth().Authorise(w, r) {
+		slog.Warn("Not authorised", "host", r.Host, "remote", r.RemoteAddr, "URL", r.URL.String())
+		return
+	}
+	defer func(t time.Time) {
+		srv.slog.Info("Chat completion request finished", "duration", time.Since(t).String(), "duration_ms", time.Since(t).Milliseconds(), "url", r.URL.String())
+	}(start)
 	if req.Stream {
 		srv.handleCompletionStream(&req, ragModel, w, r)
 		return

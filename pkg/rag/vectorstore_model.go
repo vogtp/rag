@@ -18,6 +18,7 @@ import (
 	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/logger"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
+	"github.com/vogtp/rag/pkg/web/bearer"
 )
 
 var _ Model = (*VectorStoreModel)(nil)
@@ -26,7 +27,8 @@ type VectorStoreModel struct {
 	Name    string
 	LLMName string
 
-	OwnedBy string
+	OwnedBy    string
+	bearerAuth bearer.Auth
 
 	Collection  string
 	vectorStore vectorstores.VectorStore
@@ -43,6 +45,10 @@ func (m VectorStoreModel) String() string {
 
 func (m VectorStoreModel) GetLLMName() string {
 	return m.LLMName
+}
+
+func (m VectorStoreModel) BearerAuth() bearer.Auth {
+	return m.bearerAuth
 }
 
 func (m VectorStoreModel) ToOpenAI() openai.Model {

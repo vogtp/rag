@@ -73,6 +73,9 @@ const (
 
 	// PProf enable pprof
 	PProf = "pprof.file"
+
+	// FIXME 
+	ApiBearerToken = "web.api_token"
 )
 
 var (
@@ -112,4 +115,6 @@ func init() {
 	pflag.String(HTTPUserAgent, "go-rag", "sets the user agent of the http request")
 
 	pflag.String(PProf, "", "enable pprof")
+
+	pflag.String(ApiBearerToken, "", "bearer token for webAPI")
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
+	"github.com/vogtp/rag/pkg/web/bearer"
 )
 
 type Manager struct {
@@ -18,11 +19,14 @@ type Manager struct {
 
 	vecDB  *vecdb.VecDB
 	models []Model
+
+	bearerAuth bearer.Auth
 }
 
 func New(ctx context.Context, slog *slog.Logger) (*Manager, error) {
 	m := Manager{
-		slog: slog,
+		slog:       slog,
+		bearerAuth: bearer.TokenAuth(viper.GetString(cfg.ApiBearerToken)),
 		models: []Model{
 			OllamaModel{
 				Name:    viper.GetString(cfg.ModelDefault),
@@ -51,7 +55,7 @@ func (m *Manager) updateModelsFromChroma(ctx context.Context) error {
 
 	model := viper.GetString(cfg.ModelDefault)
 	for _, c := range collections {
-		m.models = append(m.models, VectorStoreModel{Name: c.Name, Collection: c.Name, LLMName: model})
+		m.models = append(m.models, VectorStoreModel{Name: c.Name, Collection: c.Name, LLMName: model, bearerAuth: m.bearerAuth})
 	}
 	m.slog.Info("Models raw ", "models", m.models)
 	slices.SortFunc(m.models, func(a, b Model) int { return strings.Compare(a.GetName(), b.GetName()) })
@@ -69,7 +73,7 @@ func (m *Manager) Models(ctx context.Context) []Model {
 }
 
 func (m Manager) Model(name string) (Model, error) {
-	m.slog.Info("Query model", "model", name)
+	m.slog.Debug("Query model", "model", name)
 	decoded, err := url.QueryUnescape(name)
 	if err != nil {
 		decoded = name
