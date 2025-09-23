@@ -1,10 +1,9 @@
-
 <button mat-icon-button [matMenuTriggerFor]="menu" class="toolbar-icon" aria-label="icon-button with menu icon">
     <mat-icon>settings</mat-icon>
 </button>
 <mat-menu #menu="matMenu">
-   
-        <button mat-menu-item >There will be some setting...</button>
-        <button mat-menu-item>... but it is not implemented yet.</button>
-   
+
+    <button mat-menu-item (click)="onSettingsClick()">Settings</button>
+    <!-- <button mat-menu-item (click)="onMenuItemClick('Option 2')">... but it is not implemented yet.</button> -->
+
 </mat-menu>
