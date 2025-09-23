@@ -18,6 +18,8 @@ bin/
 build/
 
 # Custom stuff
+.*
+*.log
 *.db
 ignore_*
 ragctl.yml
