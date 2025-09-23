@@ -46,6 +46,10 @@ func New(ctx context.Context, slog *slog.Logger) (*Manager, error) {
 	return &m, nil
 }
 
+func (m Manager) BearerAuth() bearer.Auth {
+	return m.bearerAuth
+}
+
 func (m *Manager) updateModelsFromChroma(ctx context.Context) error {
 
 	collections, err := m.vecDB.ListCollections(ctx)

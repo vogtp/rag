@@ -11,6 +11,11 @@ import (
 
 func (srv *Server) modelsHandler(w http.ResponseWriter, r *http.Request) {
 	var ret any
+
+	if !srv.rag.BearerAuth().Authorise(w, r) {
+		slog.Warn("Not authorised", "host", r.Host, "remote", r.RemoteAddr, "URL", r.URL.String())
+		return
+	}
 	if name := r.PathValue("model"); len(name) > 0 {
 		rm, err := srv.rag.Model(name)
 		if err != nil {
