@@ -17,6 +17,7 @@ import (
 
 func (srv *Server) completionHandler(w http.ResponseWriter, r *http.Request) {
 	var req openai.CompletionRequest
+	srv.slog.Info("completion request", "url", r.URL.String(), "remote", r.RemoteAddr)
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -37,14 +38,16 @@ func (srv *Server) completionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (srv *Server) chatCompletionHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	slog := srv.slog.With("url", r.URL.String(), "remote", r.RemoteAddr)
+	slog.Warn("chatCompletion request")
 	var req openai.ChatCompletionRequest
 	start := time.Now()
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	slog := slog.With("model", req.Model)
-	slog.Debug("Completition Request")
+	slog = slog.With("model", req.Model, "stream", req.Stream)
 	ragModel, err := srv.rag(r).Model(req.Model)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -61,7 +64,61 @@ func (srv *Server) chatCompletionHandler(w http.ResponseWriter, r *http.Request)
 		srv.handleCompletionStream(&req, ragModel, w, r)
 		return
 	}
-	//a.handleChatCompletion(&req, ragModel, w, r)
+	msgs := make([]llms.MessageContent, 0, len(req.Messages)*3)
+	//choices := make([]openai.ChatCompletionChoice, len(req.Messages))
+	for i, m := range req.Messages {
+		srv.slog.Info("Chat message", "role", m.Role, "content", m.Content, "idx", i)
+		role := rag.RoleOpenAI2langchain(m.Role)
+		msgs = append(msgs, llms.TextParts(role, m.Content))
+		// choices[i] = openai.ChatCompletionChoice{
+		// 	Index: i,
+		// 	Message: openai.ChatCompletionMessage{
+		// 		Role:         m.Role,
+		// 		Content:      m.Content,
+		// 		Refusal:      m.Refusal,
+		// 		MultiContent: m.MultiContent,
+		// 		Name:         m.Name,
+		// 		FunctionCall: m.FunctionCall,
+		// 		ToolCalls:    m.ToolCalls,
+		// 		ToolCallID:   m.ToolCallID,
+		// 	},
+		// }
+	}
+	content, err := ragModel.GenerateContent(ctx, msgs, 0.001, func(ctx context.Context, chunk []byte) error { return nil })
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	// choices = append(choices, openai.ChatCompletionChoice{
+	// 	Index: len(choices),
+	// 	Message: openai.ChatCompletionMessage{
+	// 		Role:    openai.ChatMessageRoleAssistant,
+	// 		Content: content,
+	// 	},
+	// 	FinishReason: openai.FinishReasonStop,
+	// })
+	id := prefixID("chatcmpl-")
+	resp := openai.ChatCompletionResponse{
+		ID:      id,
+		Object:  "chat.completion",
+		Created: time.Now().Unix(),
+		Model:   req.Model,
+		Choices: []openai.ChatCompletionChoice{{
+			Index: 0,
+			Message: openai.ChatCompletionMessage{
+				Role:    openai.ChatMessageRoleAssistant,
+				Content: content,
+			},
+			FinishReason: openai.FinishReasonStop,
+		}},
+	}
+
+	//slog.Debug("Answer", "content", content, "response", resp)
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (srv *Server) handleCompletionStream(req *openai.ChatCompletionRequest, ragModel rag.Model, w http.ResponseWriter, r *http.Request) {
@@ -71,18 +128,6 @@ func (srv *Server) handleCompletionStream(req *openai.ChatCompletionRequest, rag
 	for i, m := range req.Messages {
 		srv.slog.Info("Chat message", "role", m.Role, "content", m.Content, "idx", i)
 		role := rag.RoleOpenAI2langchain(m.Role)
-
-		// if len(ragModel.Collection) > 0 && role == llms.ChatMessageTypeHuman {
-		// 	docs, err := getDocs(ctx, ragModel.Collection, m.Content)
-		// 	if err == nil {
-		// 		for _, doc := range docs {
-		// 			msgs = append(msgs, llms.TextParts(llms.ChatMessageTypeSystem, doc.PageContent))
-		// 			a.slog.Info("Added doc", "doc_start", doc.PageContent[:60], "chat_sequence", i, "collection", ragModel.Collection)
-		// 		}
-		// 	} else {
-		// 		slog.Warn("Cannot query docs", "err", err)
-		// 	}
-		// }
 		msgs = append(msgs, llms.TextParts(role, m.Content))
 	}
 
