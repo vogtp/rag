@@ -30,7 +30,7 @@ type Server struct {
 
 // New creates a new webserver
 func New(ctx context.Context, slog *slog.Logger, rags []rag.Manager) (*Server, error) {
-	if len(rags) < 0 {
+	if len(rags) == 0 {
 		return nil, fmt.Errorf("no RAGs passed")
 	}
 	srv := &Server{
