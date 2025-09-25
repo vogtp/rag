@@ -5,7 +5,8 @@ SHELL := /bin/bash
 curdate=$(shell date --iso-8601='minutes')
 build_date = -ldflags "-X  github.com/vogtp/rag/pkg/cfg.BuildInfo=$(curdate)"
 
-GO_CMD=CGO_ENABLED=0 go
+# GO_CMD=CGO_ENABLED=0 go
+GO_CMD=go
 
 # Branch specific config
 BRANCH=$(shell git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
