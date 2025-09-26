@@ -6,8 +6,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/tmc/langchaingo/documentloaders"
-	"github.com/tmc/langchaingo/textsplitter"
+	"github.com/vogtp/langchaingo/documentloaders"
+	"github.com/vogtp/langchaingo/textsplitter"
 	"github.com/vogtp/rag/pkg/vecDB/pdf"
 )
 
@@ -66,7 +66,7 @@ func Test_pdf_docloader(t *testing.T) {
 	pl := documentloaders.NewPDF(f, fi.Size())
 
 	split := textsplitter.NewRecursiveCharacter()
-	
+
 	docs, err := pl.LoadAndSplit(context.Background(), split)
 	if err != nil {
 		t.Error(err)

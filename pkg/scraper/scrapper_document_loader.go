@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/tmc/langchaingo/documentloaders"
-	"github.com/tmc/langchaingo/schema"
-	"github.com/tmc/langchaingo/textsplitter"
+	"github.com/vogtp/langchaingo/documentloaders"
+	"github.com/vogtp/langchaingo/schema"
+	"github.com/vogtp/langchaingo/textsplitter"
 )
 
 var _ documentloaders.Loader = Scraper{}
@@ -22,7 +22,7 @@ func (s Scraper) Load(ctx context.Context) ([]schema.Document, error) {
 		docs = append(docs,
 			schema.Document{
 				PageContent: d.Document,
-				Metadata: d.MetaData,
+				Metadata:    d.MetaData,
 			},
 		)
 	}

@@ -10,8 +10,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/tmc/langchaingo/documentloaders"
-	"github.com/tmc/langchaingo/textsplitter"
+	"github.com/vogtp/langchaingo/documentloaders"
+	"github.com/vogtp/langchaingo/textsplitter"
 	"github.com/vogtp/rag/pkg/cfg"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 )

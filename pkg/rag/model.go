@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/sashabaranov/go-openai"
-	"github.com/tmc/langchaingo/llms"
+	"github.com/vogtp/langchaingo/llms"
 	"github.com/vogtp/rag/pkg/web/bearer"
 )
 

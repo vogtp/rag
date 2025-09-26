@@ -6,9 +6,9 @@ import (
 	"log/slog"
 
 	"github.com/sashabaranov/go-openai"
-	"github.com/tmc/langchaingo/chains"
-	"github.com/tmc/langchaingo/llms"
-	"github.com/tmc/langchaingo/llms/ollama"
+	"github.com/vogtp/langchaingo/chains"
+	"github.com/vogtp/langchaingo/llms"
+	"github.com/vogtp/langchaingo/llms/ollama"
 	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/web/bearer"
 )

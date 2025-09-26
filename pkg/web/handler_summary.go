@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/tmc/langchaingo/llms"
+	"github.com/vogtp/langchaingo/llms"
 )
 
 const (
@@ -23,7 +23,7 @@ const (
 )
 
 func (srv *Server) handleSummary(w http.ResponseWriter, r *http.Request) {
-	srv.slog.Info("Summary request", "url", r.URL.String(), "remote",r.RemoteAddr)
+	srv.slog.Info("Summary request", "url", r.URL.String(), "remote", r.RemoteAddr)
 	ctx := r.Context()
 	uuidStr := r.PathValue("uuid")
 	id, err := uuid.Parse(uuidStr)

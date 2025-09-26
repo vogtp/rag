@@ -2,7 +2,7 @@ package rag
 
 import (
 	"github.com/sashabaranov/go-openai"
-	"github.com/tmc/langchaingo/llms"
+	"github.com/vogtp/langchaingo/llms"
 )
 
 func RoleOpenAI2langchain(role string) llms.ChatMessageType {

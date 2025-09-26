@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/rag"
+	"github.com/vogtp/rag/pkg/usercfg"
 	"github.com/vogtp/rag/pkg/web/oidc"
 )
 
@@ -23,6 +24,8 @@ type Server struct {
 	mux     *http.ServeMux
 	oidcMux oidc.Mux
 
+	usercfg *usercfg.DB
+
 	rags       []rag.Manager
 	lastEmbedd map[string]time.Time
 	docCache   docChace
@@ -33,11 +36,16 @@ func New(ctx context.Context, slog *slog.Logger, rags []rag.Manager) (*Server, e
 	if len(rags) == 0 {
 		return nil, fmt.Errorf("no RAGs passed")
 	}
+	userCfg, err := usercfg.New(ctx, slog, usercfg.Dialect, usercfg.DBFileName)
+	if err != nil {
+		return nil, err
+	}
 	srv := &Server{
 		slog:       slog,
 		rags:       rags,
 		lastEmbedd: make(map[string]time.Time),
 		docCache:   newDocCache(),
+		usercfg:    userCfg,
 	}
 	srv.httpSrv = &http.Server{
 		ReadTimeout:       10 * time.Second,

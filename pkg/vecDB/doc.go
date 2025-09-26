@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/tmc/langchaingo/textsplitter"
+	"github.com/vogtp/langchaingo/textsplitter"
 )
 
 type EmbeddDocument struct {
@@ -23,7 +23,7 @@ type EmbeddDocument struct {
 }
 
 func (e EmbeddDocument) Split(slog *slog.Logger) []string {
-	splitter := textsplitter.NewMarkdownTextSplitter(textsplitter.WithChunkSize(1*1024))
+	splitter := textsplitter.NewMarkdownTextSplitter(textsplitter.WithChunkSize(1 * 1024))
 	s, err := splitter.SplitText(e.Document)
 	if err != nil {
 		// Markdown splitter never throws error

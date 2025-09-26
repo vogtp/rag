@@ -6,12 +6,12 @@ import (
 	"log/slog"
 
 	"github.com/amikos-tech/chroma-go/types"
-	"github.com/tmc/langchaingo/embeddings"
-	"github.com/tmc/langchaingo/llms"
-	"github.com/tmc/langchaingo/llms/ollama"
-	"github.com/tmc/langchaingo/schema"
-	"github.com/tmc/langchaingo/vectorstores"
-	"github.com/tmc/langchaingo/vectorstores/chroma"
+	"github.com/vogtp/langchaingo/embeddings"
+	"github.com/vogtp/langchaingo/llms"
+	"github.com/vogtp/langchaingo/llms/ollama"
+	"github.com/vogtp/langchaingo/schema"
+	"github.com/vogtp/langchaingo/vectorstores"
+	"github.com/vogtp/langchaingo/vectorstores/chroma"
 	"github.com/vogtp/rag/pkg/cfg"
 )
 

@@ -5,7 +5,10 @@ import (
 	"io/fs"
 	"net/http"
 
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/vogtp/go-angular"
+	"github.com/vogtp/rag/pkg/usercfg/db/ent/migrate"
 )
 
 func (srv *Server) routes() error {
@@ -23,6 +26,9 @@ func (srv *Server) routes() error {
 	srv.oidcMux.HandleFunc("/vecdb/", srv.vecDBlist)
 	srv.oidcMux.HandleFunc("/vecdb/{collection}", srv.vecDBsearch)
 	srv.oidcMux.HandleFunc("/summary/{uuid}", srv.handleSummary)
+
+	srv.oidcMux.Handle("/graphql/", handler.NewDefaultServer(api.NewSchema(srv.usercfg)))
+	srv.oidcMux.Handle("/graphiql/", playground.Handler("RAG", "/graphql/"))
 	// srv.mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 	// 	http.Redirect(w, r, "/search/", http.StatusTemporaryRedirect)
 	// })
