@@ -15,13 +15,17 @@ host=its-a-hack.its.unibas.ch
 user=vogtp
 
 .PHONY: run
-run: ng-build
+run: generate ng-build
 	$(GO_CMD) run . --log.source web start --log.json --log.level warn | jq -R 'fromjson? | .' 
 
 .PHONY: build
-build: ng-build
+build: generate ng-build
 	$(GO_CMD) build $(build_date) -tags prod -o ./build/ . 
 	mv ./build/rag ./build/ragctl
+
+.PHONY: generate
+generate:
+	$(GO_CMD) generate ./...
 
 .PHONY: ng-build
 ng-build:

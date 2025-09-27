@@ -1,0 +1,11 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type Confluence {
+  id: ID!
+  Name: String!
+  URL: String!
+  ConfluenceAPIKey: String!
+  Spaces: [Space!]
+}

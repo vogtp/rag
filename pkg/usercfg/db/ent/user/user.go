@@ -4,6 +4,7 @@ package user
 
 import (
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -13,14 +14,35 @@ const (
 	FieldID = "id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldOpenaiAPIkey holds the string denoting the openaiapikey field in the database.
+	FieldOpenaiAPIkey = "openai_ap_ikey"
+	// EdgeConfluence holds the string denoting the confluence edge name in mutations.
+	EdgeConfluence = "Confluence"
+	// EdgeCollections holds the string denoting the collections edge name in mutations.
+	EdgeCollections = "Collections"
 	// Table holds the table name of the user in the database.
 	Table = "users"
+	// ConfluenceTable is the table that holds the Confluence relation/edge.
+	ConfluenceTable = "confluences"
+	// ConfluenceInverseTable is the table name for the Confluence entity.
+	// It exists in this package in order to avoid circular dependency with the "confluence" package.
+	ConfluenceInverseTable = "confluences"
+	// ConfluenceColumn is the table column denoting the Confluence relation/edge.
+	ConfluenceColumn = "user_confluence"
+	// CollectionsTable is the table that holds the Collections relation/edge.
+	CollectionsTable = "collections"
+	// CollectionsInverseTable is the table name for the Collection entity.
+	// It exists in this package in order to avoid circular dependency with the "collection" package.
+	CollectionsInverseTable = "collections"
+	// CollectionsColumn is the table column denoting the Collections relation/edge.
+	CollectionsColumn = "user_collections"
 )
 
 // Columns holds all SQL columns for user fields.
 var Columns = []string{
 	FieldID,
 	FieldName,
+	FieldOpenaiAPIkey,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -41,7 +63,54 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// ByName orders the results by the name field.
+// ByName orders the results by the Name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByOpenaiAPIkey orders the results by the OpenaiAPIkey field.
+func ByOpenaiAPIkey(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOpenaiAPIkey, opts...).ToFunc()
+}
+
+// ByConfluenceCount orders the results by Confluence count.
+func ByConfluenceCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newConfluenceStep(), opts...)
+	}
+}
+
+// ByConfluence orders the results by Confluence terms.
+func ByConfluence(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newConfluenceStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByCollectionsCount orders the results by Collections count.
+func ByCollectionsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCollectionsStep(), opts...)
+	}
+}
+
+// ByCollections orders the results by Collections terms.
+func ByCollections(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCollectionsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newConfluenceStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ConfluenceInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ConfluenceTable, ConfluenceColumn),
+	)
+}
+func newCollectionsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CollectionsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CollectionsTable, CollectionsColumn),
+	)
 }

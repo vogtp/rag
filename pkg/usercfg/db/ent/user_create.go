@@ -10,6 +10,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/vogtp/rag/pkg/usercfg/db/ent/collection"
+	"github.com/vogtp/rag/pkg/usercfg/db/ent/confluence"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/user"
 )
 
@@ -21,10 +23,54 @@ type UserCreate struct {
 	conflict []sql.ConflictOption
 }
 
-// SetName sets the "name" field.
+// SetName sets the "Name" field.
 func (uc *UserCreate) SetName(s string) *UserCreate {
 	uc.mutation.SetName(s)
 	return uc
+}
+
+// SetOpenaiAPIkey sets the "OpenaiAPIkey" field.
+func (uc *UserCreate) SetOpenaiAPIkey(s string) *UserCreate {
+	uc.mutation.SetOpenaiAPIkey(s)
+	return uc
+}
+
+// SetNillableOpenaiAPIkey sets the "OpenaiAPIkey" field if the given value is not nil.
+func (uc *UserCreate) SetNillableOpenaiAPIkey(s *string) *UserCreate {
+	if s != nil {
+		uc.SetOpenaiAPIkey(*s)
+	}
+	return uc
+}
+
+// AddConfluenceIDs adds the "Confluence" edge to the Confluence entity by IDs.
+func (uc *UserCreate) AddConfluenceIDs(ids ...int) *UserCreate {
+	uc.mutation.AddConfluenceIDs(ids...)
+	return uc
+}
+
+// AddConfluence adds the "Confluence" edges to the Confluence entity.
+func (uc *UserCreate) AddConfluence(c ...*Confluence) *UserCreate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uc.AddConfluenceIDs(ids...)
+}
+
+// AddCollectionIDs adds the "Collections" edge to the Collection entity by IDs.
+func (uc *UserCreate) AddCollectionIDs(ids ...int) *UserCreate {
+	uc.mutation.AddCollectionIDs(ids...)
+	return uc
+}
+
+// AddCollections adds the "Collections" edges to the Collection entity.
+func (uc *UserCreate) AddCollections(c ...*Collection) *UserCreate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uc.AddCollectionIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -62,7 +108,7 @@ func (uc *UserCreate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "User.name"`)}
+		return &ValidationError{Name: "Name", err: errors.New(`ent: missing required field "User.Name"`)}
 	}
 	return nil
 }
@@ -94,6 +140,42 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Name(); ok {
 		_spec.SetField(user.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if value, ok := uc.mutation.OpenaiAPIkey(); ok {
+		_spec.SetField(user.FieldOpenaiAPIkey, field.TypeString, value)
+		_node.OpenaiAPIkey = value
+	}
+	if nodes := uc.mutation.ConfluenceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ConfluenceTable,
+			Columns: []string{user.ConfluenceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(confluence.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.CollectionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CollectionsTable,
+			Columns: []string{user.CollectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(collection.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -147,15 +229,33 @@ type (
 	}
 )
 
-// SetName sets the "name" field.
+// SetName sets the "Name" field.
 func (u *UserUpsert) SetName(v string) *UserUpsert {
 	u.Set(user.FieldName, v)
 	return u
 }
 
-// UpdateName sets the "name" field to the value that was provided on create.
+// UpdateName sets the "Name" field to the value that was provided on create.
 func (u *UserUpsert) UpdateName() *UserUpsert {
 	u.SetExcluded(user.FieldName)
+	return u
+}
+
+// SetOpenaiAPIkey sets the "OpenaiAPIkey" field.
+func (u *UserUpsert) SetOpenaiAPIkey(v string) *UserUpsert {
+	u.Set(user.FieldOpenaiAPIkey, v)
+	return u
+}
+
+// UpdateOpenaiAPIkey sets the "OpenaiAPIkey" field to the value that was provided on create.
+func (u *UserUpsert) UpdateOpenaiAPIkey() *UserUpsert {
+	u.SetExcluded(user.FieldOpenaiAPIkey)
+	return u
+}
+
+// ClearOpenaiAPIkey clears the value of the "OpenaiAPIkey" field.
+func (u *UserUpsert) ClearOpenaiAPIkey() *UserUpsert {
+	u.SetNull(user.FieldOpenaiAPIkey)
 	return u
 }
 
@@ -199,17 +299,38 @@ func (u *UserUpsertOne) Update(set func(*UserUpsert)) *UserUpsertOne {
 	return u
 }
 
-// SetName sets the "name" field.
+// SetName sets the "Name" field.
 func (u *UserUpsertOne) SetName(v string) *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.SetName(v)
 	})
 }
 
-// UpdateName sets the "name" field to the value that was provided on create.
+// UpdateName sets the "Name" field to the value that was provided on create.
 func (u *UserUpsertOne) UpdateName() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetOpenaiAPIkey sets the "OpenaiAPIkey" field.
+func (u *UserUpsertOne) SetOpenaiAPIkey(v string) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetOpenaiAPIkey(v)
+	})
+}
+
+// UpdateOpenaiAPIkey sets the "OpenaiAPIkey" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateOpenaiAPIkey() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateOpenaiAPIkey()
+	})
+}
+
+// ClearOpenaiAPIkey clears the value of the "OpenaiAPIkey" field.
+func (u *UserUpsertOne) ClearOpenaiAPIkey() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearOpenaiAPIkey()
 	})
 }
 
@@ -416,17 +537,38 @@ func (u *UserUpsertBulk) Update(set func(*UserUpsert)) *UserUpsertBulk {
 	return u
 }
 
-// SetName sets the "name" field.
+// SetName sets the "Name" field.
 func (u *UserUpsertBulk) SetName(v string) *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.SetName(v)
 	})
 }
 
-// UpdateName sets the "name" field to the value that was provided on create.
+// UpdateName sets the "Name" field to the value that was provided on create.
 func (u *UserUpsertBulk) UpdateName() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetOpenaiAPIkey sets the "OpenaiAPIkey" field.
+func (u *UserUpsertBulk) SetOpenaiAPIkey(v string) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetOpenaiAPIkey(v)
+	})
+}
+
+// UpdateOpenaiAPIkey sets the "OpenaiAPIkey" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateOpenaiAPIkey() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateOpenaiAPIkey()
+	})
+}
+
+// ClearOpenaiAPIkey clears the value of the "OpenaiAPIkey" field.
+func (u *UserUpsertBulk) ClearOpenaiAPIkey() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearOpenaiAPIkey()
 	})
 }
 

@@ -6,8 +6,249 @@ import (
 	"context"
 
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/vogtp/rag/pkg/usercfg/db/ent/collection"
+	"github.com/vogtp/rag/pkg/usercfg/db/ent/confluence"
+	"github.com/vogtp/rag/pkg/usercfg/db/ent/space"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/user"
 )
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (cq *CollectionQuery) CollectFields(ctx context.Context, satisfies ...string) (*CollectionQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return cq, nil
+	}
+	if err := cq.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return cq, nil
+}
+
+func (cq *CollectionQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	var (
+		unknownSeen    bool
+		fieldSeen      = make(map[string]struct{}, len(collection.Columns))
+		selectedFields = []string{collection.FieldID}
+	)
+	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
+		switch field.Name {
+
+		case "spaces":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&SpaceClient{config: cq.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, spaceImplementors)...); err != nil {
+				return err
+			}
+			cq.WithNamedSpaces(alias, func(wq *SpaceQuery) {
+				*wq = *query
+			})
+		case "name":
+			if _, ok := fieldSeen[collection.FieldName]; !ok {
+				selectedFields = append(selectedFields, collection.FieldName)
+				fieldSeen[collection.FieldName] = struct{}{}
+			}
+		case "apikey":
+			if _, ok := fieldSeen[collection.FieldAPIKey]; !ok {
+				selectedFields = append(selectedFields, collection.FieldAPIKey)
+				fieldSeen[collection.FieldAPIKey] = struct{}{}
+			}
+		case "id":
+		case "__typename":
+		default:
+			unknownSeen = true
+		}
+	}
+	if !unknownSeen {
+		cq.Select(selectedFields...)
+	}
+	return nil
+}
+
+type collectionPaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []CollectionPaginateOption
+}
+
+func newCollectionPaginateArgs(rv map[string]any) *collectionPaginateArgs {
+	args := &collectionPaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (cq *ConfluenceQuery) CollectFields(ctx context.Context, satisfies ...string) (*ConfluenceQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return cq, nil
+	}
+	if err := cq.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return cq, nil
+}
+
+func (cq *ConfluenceQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	var (
+		unknownSeen    bool
+		fieldSeen      = make(map[string]struct{}, len(confluence.Columns))
+		selectedFields = []string{confluence.FieldID}
+	)
+	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
+		switch field.Name {
+
+		case "spaces":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&SpaceClient{config: cq.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, spaceImplementors)...); err != nil {
+				return err
+			}
+			cq.WithNamedSpaces(alias, func(wq *SpaceQuery) {
+				*wq = *query
+			})
+		case "name":
+			if _, ok := fieldSeen[confluence.FieldName]; !ok {
+				selectedFields = append(selectedFields, confluence.FieldName)
+				fieldSeen[confluence.FieldName] = struct{}{}
+			}
+		case "url":
+			if _, ok := fieldSeen[confluence.FieldURL]; !ok {
+				selectedFields = append(selectedFields, confluence.FieldURL)
+				fieldSeen[confluence.FieldURL] = struct{}{}
+			}
+		case "confluenceapikey":
+			if _, ok := fieldSeen[confluence.FieldConfluenceAPIKey]; !ok {
+				selectedFields = append(selectedFields, confluence.FieldConfluenceAPIKey)
+				fieldSeen[confluence.FieldConfluenceAPIKey] = struct{}{}
+			}
+		case "id":
+		case "__typename":
+		default:
+			unknownSeen = true
+		}
+	}
+	if !unknownSeen {
+		cq.Select(selectedFields...)
+	}
+	return nil
+}
+
+type confluencePaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []ConfluencePaginateOption
+}
+
+func newConfluencePaginateArgs(rv map[string]any) *confluencePaginateArgs {
+	args := &confluencePaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (sq *SpaceQuery) CollectFields(ctx context.Context, satisfies ...string) (*SpaceQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return sq, nil
+	}
+	if err := sq.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return sq, nil
+}
+
+func (sq *SpaceQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	var (
+		unknownSeen    bool
+		fieldSeen      = make(map[string]struct{}, len(space.Columns))
+		selectedFields = []string{space.FieldID}
+	)
+	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
+		switch field.Name {
+		case "name":
+			if _, ok := fieldSeen[space.FieldName]; !ok {
+				selectedFields = append(selectedFields, space.FieldName)
+				fieldSeen[space.FieldName] = struct{}{}
+			}
+		case "spacekey":
+			if _, ok := fieldSeen[space.FieldSpaceKey]; !ok {
+				selectedFields = append(selectedFields, space.FieldSpaceKey)
+				fieldSeen[space.FieldSpaceKey] = struct{}{}
+			}
+		case "id":
+		case "__typename":
+		default:
+			unknownSeen = true
+		}
+	}
+	if !unknownSeen {
+		sq.Select(selectedFields...)
+	}
+	return nil
+}
+
+type spacePaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []SpacePaginateOption
+}
+
+func newSpacePaginateArgs(rv map[string]any) *spacePaginateArgs {
+	args := &spacePaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	return args
+}
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (uq *UserQuery) CollectFields(ctx context.Context, satisfies ...string) (*UserQuery, error) {
@@ -30,10 +271,41 @@ func (uq *UserQuery) collectField(ctx context.Context, oneNode bool, opCtx *grap
 	)
 	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
 		switch field.Name {
+
+		case "confluence":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&ConfluenceClient{config: uq.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, confluenceImplementors)...); err != nil {
+				return err
+			}
+			uq.WithNamedConfluence(alias, func(wq *ConfluenceQuery) {
+				*wq = *query
+			})
+
+		case "collections":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&CollectionClient{config: uq.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, collectionImplementors)...); err != nil {
+				return err
+			}
+			uq.WithNamedCollections(alias, func(wq *CollectionQuery) {
+				*wq = *query
+			})
 		case "name":
 			if _, ok := fieldSeen[user.FieldName]; !ok {
 				selectedFields = append(selectedFields, user.FieldName)
 				fieldSeen[user.FieldName] = struct{}{}
+			}
+		case "openaiapikey":
+			if _, ok := fieldSeen[user.FieldOpenaiAPIkey]; !ok {
+				selectedFields = append(selectedFields, user.FieldOpenaiAPIkey)
+				fieldSeen[user.FieldOpenaiAPIkey] = struct{}{}
 			}
 		case "id":
 		case "__typename":

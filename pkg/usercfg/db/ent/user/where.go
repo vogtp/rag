@@ -4,6 +4,7 @@ package user
 
 import (
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/predicate"
 )
 
@@ -52,74 +53,200 @@ func IDLTE(id int) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldID, id))
 }
 
-// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
+// Name applies equality check predicate on the "Name" field. It's identical to NameEQ.
 func Name(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldName, v))
 }
 
-// NameEQ applies the EQ predicate on the "name" field.
+// OpenaiAPIkey applies equality check predicate on the "OpenaiAPIkey" field. It's identical to OpenaiAPIkeyEQ.
+func OpenaiAPIkey(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldOpenaiAPIkey, v))
+}
+
+// NameEQ applies the EQ predicate on the "Name" field.
 func NameEQ(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldName, v))
 }
 
-// NameNEQ applies the NEQ predicate on the "name" field.
+// NameNEQ applies the NEQ predicate on the "Name" field.
 func NameNEQ(v string) predicate.User {
 	return predicate.User(sql.FieldNEQ(FieldName, v))
 }
 
-// NameIn applies the In predicate on the "name" field.
+// NameIn applies the In predicate on the "Name" field.
 func NameIn(vs ...string) predicate.User {
 	return predicate.User(sql.FieldIn(FieldName, vs...))
 }
 
-// NameNotIn applies the NotIn predicate on the "name" field.
+// NameNotIn applies the NotIn predicate on the "Name" field.
 func NameNotIn(vs ...string) predicate.User {
 	return predicate.User(sql.FieldNotIn(FieldName, vs...))
 }
 
-// NameGT applies the GT predicate on the "name" field.
+// NameGT applies the GT predicate on the "Name" field.
 func NameGT(v string) predicate.User {
 	return predicate.User(sql.FieldGT(FieldName, v))
 }
 
-// NameGTE applies the GTE predicate on the "name" field.
+// NameGTE applies the GTE predicate on the "Name" field.
 func NameGTE(v string) predicate.User {
 	return predicate.User(sql.FieldGTE(FieldName, v))
 }
 
-// NameLT applies the LT predicate on the "name" field.
+// NameLT applies the LT predicate on the "Name" field.
 func NameLT(v string) predicate.User {
 	return predicate.User(sql.FieldLT(FieldName, v))
 }
 
-// NameLTE applies the LTE predicate on the "name" field.
+// NameLTE applies the LTE predicate on the "Name" field.
 func NameLTE(v string) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldName, v))
 }
 
-// NameContains applies the Contains predicate on the "name" field.
+// NameContains applies the Contains predicate on the "Name" field.
 func NameContains(v string) predicate.User {
 	return predicate.User(sql.FieldContains(FieldName, v))
 }
 
-// NameHasPrefix applies the HasPrefix predicate on the "name" field.
+// NameHasPrefix applies the HasPrefix predicate on the "Name" field.
 func NameHasPrefix(v string) predicate.User {
 	return predicate.User(sql.FieldHasPrefix(FieldName, v))
 }
 
-// NameHasSuffix applies the HasSuffix predicate on the "name" field.
+// NameHasSuffix applies the HasSuffix predicate on the "Name" field.
 func NameHasSuffix(v string) predicate.User {
 	return predicate.User(sql.FieldHasSuffix(FieldName, v))
 }
 
-// NameEqualFold applies the EqualFold predicate on the "name" field.
+// NameEqualFold applies the EqualFold predicate on the "Name" field.
 func NameEqualFold(v string) predicate.User {
 	return predicate.User(sql.FieldEqualFold(FieldName, v))
 }
 
-// NameContainsFold applies the ContainsFold predicate on the "name" field.
+// NameContainsFold applies the ContainsFold predicate on the "Name" field.
 func NameContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldName, v))
+}
+
+// OpenaiAPIkeyEQ applies the EQ predicate on the "OpenaiAPIkey" field.
+func OpenaiAPIkeyEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldOpenaiAPIkey, v))
+}
+
+// OpenaiAPIkeyNEQ applies the NEQ predicate on the "OpenaiAPIkey" field.
+func OpenaiAPIkeyNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldOpenaiAPIkey, v))
+}
+
+// OpenaiAPIkeyIn applies the In predicate on the "OpenaiAPIkey" field.
+func OpenaiAPIkeyIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldOpenaiAPIkey, vs...))
+}
+
+// OpenaiAPIkeyNotIn applies the NotIn predicate on the "OpenaiAPIkey" field.
+func OpenaiAPIkeyNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldOpenaiAPIkey, vs...))
+}
+
+// OpenaiAPIkeyGT applies the GT predicate on the "OpenaiAPIkey" field.
+func OpenaiAPIkeyGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldOpenaiAPIkey, v))
+}
+
+// OpenaiAPIkeyGTE applies the GTE predicate on the "OpenaiAPIkey" field.
+func OpenaiAPIkeyGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldOpenaiAPIkey, v))
+}
+
+// OpenaiAPIkeyLT applies the LT predicate on the "OpenaiAPIkey" field.
+func OpenaiAPIkeyLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldOpenaiAPIkey, v))
+}
+
+// OpenaiAPIkeyLTE applies the LTE predicate on the "OpenaiAPIkey" field.
+func OpenaiAPIkeyLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldOpenaiAPIkey, v))
+}
+
+// OpenaiAPIkeyContains applies the Contains predicate on the "OpenaiAPIkey" field.
+func OpenaiAPIkeyContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldOpenaiAPIkey, v))
+}
+
+// OpenaiAPIkeyHasPrefix applies the HasPrefix predicate on the "OpenaiAPIkey" field.
+func OpenaiAPIkeyHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldOpenaiAPIkey, v))
+}
+
+// OpenaiAPIkeyHasSuffix applies the HasSuffix predicate on the "OpenaiAPIkey" field.
+func OpenaiAPIkeyHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldOpenaiAPIkey, v))
+}
+
+// OpenaiAPIkeyIsNil applies the IsNil predicate on the "OpenaiAPIkey" field.
+func OpenaiAPIkeyIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldOpenaiAPIkey))
+}
+
+// OpenaiAPIkeyNotNil applies the NotNil predicate on the "OpenaiAPIkey" field.
+func OpenaiAPIkeyNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldOpenaiAPIkey))
+}
+
+// OpenaiAPIkeyEqualFold applies the EqualFold predicate on the "OpenaiAPIkey" field.
+func OpenaiAPIkeyEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldOpenaiAPIkey, v))
+}
+
+// OpenaiAPIkeyContainsFold applies the ContainsFold predicate on the "OpenaiAPIkey" field.
+func OpenaiAPIkeyContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldOpenaiAPIkey, v))
+}
+
+// HasConfluence applies the HasEdge predicate on the "Confluence" edge.
+func HasConfluence() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ConfluenceTable, ConfluenceColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasConfluenceWith applies the HasEdge predicate on the "Confluence" edge with a given conditions (other predicates).
+func HasConfluenceWith(preds ...predicate.Confluence) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newConfluenceStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCollections applies the HasEdge predicate on the "Collections" edge.
+func HasCollections() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CollectionsTable, CollectionsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCollectionsWith applies the HasEdge predicate on the "Collections" edge with a given conditions (other predicates).
+func HasCollectionsWith(preds ...predicate.Collection) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newCollectionsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

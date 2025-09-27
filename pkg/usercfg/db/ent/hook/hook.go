@@ -9,6 +9,42 @@ import (
 	"github.com/vogtp/rag/pkg/usercfg/db/ent"
 )
 
+// The CollectionFunc type is an adapter to allow the use of ordinary
+// function as Collection mutator.
+type CollectionFunc func(context.Context, *ent.CollectionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CollectionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CollectionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CollectionMutation", m)
+}
+
+// The ConfluenceFunc type is an adapter to allow the use of ordinary
+// function as Confluence mutator.
+type ConfluenceFunc func(context.Context, *ent.ConfluenceMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ConfluenceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ConfluenceMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ConfluenceMutation", m)
+}
+
+// The SpaceFunc type is an adapter to allow the use of ordinary
+// function as Space mutator.
+type SpaceFunc func(context.Context, *ent.SpaceMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SpaceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SpaceMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SpaceMutation", m)
+}
+
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
 type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)
