@@ -15,8 +15,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/hashicorp/go-multierror"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/collection"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent/confluence"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent/space"
+	"github.com/vogtp/rag/pkg/usercfg/db/ent/sourcesystem"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/user"
 	"golang.org/x/sync/semaphore"
 )
@@ -31,15 +30,10 @@ var collectionImplementors = []string{"Collection", "Node"}
 // IsNode implements the Node interface check for GQLGen.
 func (*Collection) IsNode() {}
 
-var confluenceImplementors = []string{"Confluence", "Node"}
+var sourcesystemImplementors = []string{"SourceSystem", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
-func (*Confluence) IsNode() {}
-
-var spaceImplementors = []string{"Space", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*Space) IsNode() {}
+func (*SourceSystem) IsNode() {}
 
 var userImplementors = []string{"User", "Node"}
 
@@ -113,20 +107,11 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 			}
 		}
 		return query.Only(ctx)
-	case confluence.Table:
-		query := c.Confluence.Query().
-			Where(confluence.ID(id))
+	case sourcesystem.Table:
+		query := c.SourceSystem.Query().
+			Where(sourcesystem.ID(id))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, confluenceImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case space.Table:
-		query := c.Space.Query().
-			Where(space.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, spaceImplementors...); err != nil {
+			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, sourcesystemImplementors...); err != nil {
 				return nil, err
 			}
 		}
@@ -229,26 +214,10 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 				*noder = node
 			}
 		}
-	case confluence.Table:
-		query := c.Confluence.Query().
-			Where(confluence.IDIn(ids...))
-		query, err := query.CollectFields(ctx, confluenceImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case space.Table:
-		query := c.Space.Query().
-			Where(space.IDIn(ids...))
-		query, err := query.CollectFields(ctx, spaceImplementors...)
+	case sourcesystem.Table:
+		query := c.SourceSystem.Query().
+			Where(sourcesystem.IDIn(ids...))
+		query, err := query.CollectFields(ctx, sourcesystemImplementors...)
 		if err != nil {
 			return nil, err
 		}

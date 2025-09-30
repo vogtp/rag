@@ -9,6 +9,7 @@ import (
 	"github.com/vogtp/rag/pkg/logger"
 	"github.com/vogtp/rag/pkg/usercfg"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent"
+	"github.com/vogtp/rag/pkg/usercfg/db/ent/sourcesystem"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/user"
 )
 
@@ -31,18 +32,18 @@ var dbCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		users, err := db.User.Query().WithConfluence(func(cq *ent.ConfluenceQuery) { cq.WithSpaces() }).All(ctx)
+		users, err := db.All(ctx)
 		if err != nil {
 			return err
 		}
 		fmt.Println("User list:")
 		for _, u := range users {
 			//u.Edges.Confluence
-			c, err := u.Confluence(ctx)
+			c, err := u.Collections(ctx)
 			if err != nil {
 				fmt.Println(err)
 			}
-			u.QueryConfluence()
+			u.QueryCollections()
 			fmt.Printf(" %v\n", u)
 			fmt.Printf(" %v\n", c)
 			b, err := json.MarshalIndent(u, "", "  ")
@@ -72,15 +73,28 @@ var dbAddCmd = &cobra.Command{
 		if len(args) < 1 {
 			return cmd.Usage()
 		}
-		s, err := db.Space.Create().SetName("My space").SetSpaceKey("MS").Save(ctx)
+
+		srcConflPub, err := db.SourceSystem.Create().SetName("Intranet").SetURL("https://intranet-dev.unibas.ch/").SetParts("HR,KB").SetKey("xxxx").SetType(sourcesystem.TypeConfluence).Save(ctx)
 		if err != nil {
 			return err
 		}
-		c, err := db.Confluence.Create().SetName("Intranet").SetURL("https://intranet-dev.unibas.ch/").SetConfluenceAPIKey("xxxx").AddSpaces(s).Save(ctx)
+		srcHttplPub, err := db.SourceSystem.Create().SetName("Website").SetURL("https://its.unibas.ch/").SetParts("HR,KB").SetType(sourcesystem.TypeHTTP).Save(ctx)
 		if err != nil {
 			return err
 		}
-		u, err := db.User.Create().SetName(args[0]).AddConfluence(c).Save(ctx)
+		srcConflPriv, err := db.SourceSystem.Create().SetName("Intranet").SetURL("https://intranet-dev.unibas.ch/").SetParts("mySpace,KB").SetKey("xxxx").SetType(sourcesystem.TypeConfluence).Save(ctx)
+		if err != nil {
+			return err
+		}
+		colPub, err := db.Collection.Create().SetName("Public collection").AddSources(srcConflPub, srcHttplPub).SetAPIKey("myPublicOpenaiAPIkey").Save(ctx)
+		if err != nil {
+			return err
+		}
+		colPriv, err := db.Collection.Create().AddSources(srcConflPriv).SetName("Private collection").SetAPIKey("mySecretOpenaiAPIkey").Save(ctx)
+		if err != nil {
+			return err
+		}
+		u, err := db.User.Create().SetName(args[0]).AddCollections(colPub, colPriv).OnConflict().UpdateNewValues().ID(ctx)
 		if err != nil {
 			return err
 		}

@@ -21,28 +21,16 @@ func (f CollectionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CollectionMutation", m)
 }
 
-// The ConfluenceFunc type is an adapter to allow the use of ordinary
-// function as Confluence mutator.
-type ConfluenceFunc func(context.Context, *ent.ConfluenceMutation) (ent.Value, error)
+// The SourceSystemFunc type is an adapter to allow the use of ordinary
+// function as SourceSystem mutator.
+type SourceSystemFunc func(context.Context, *ent.SourceSystemMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f ConfluenceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.ConfluenceMutation); ok {
+func (f SourceSystemFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SourceSystemMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ConfluenceMutation", m)
-}
-
-// The SpaceFunc type is an adapter to allow the use of ordinary
-// function as Space mutator.
-type SpaceFunc func(context.Context, *ent.SpaceMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f SpaceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.SpaceMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SpaceMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SourceSystemMutation", m)
 }
 
 // The UserFunc type is an adapter to allow the use of ordinary

@@ -13,8 +13,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/errcode"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/collection"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent/confluence"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent/space"
+	"github.com/vogtp/rag/pkg/usercfg/db/ent/sourcesystem"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/user"
 )
 
@@ -347,20 +346,20 @@ func (c *Collection) ToEdge(order *CollectionOrder) *CollectionEdge {
 	}
 }
 
-// ConfluenceEdge is the edge representation of Confluence.
-type ConfluenceEdge struct {
-	Node   *Confluence `json:"node"`
-	Cursor Cursor      `json:"cursor"`
+// SourceSystemEdge is the edge representation of SourceSystem.
+type SourceSystemEdge struct {
+	Node   *SourceSystem `json:"node"`
+	Cursor Cursor        `json:"cursor"`
 }
 
-// ConfluenceConnection is the connection containing edges to Confluence.
-type ConfluenceConnection struct {
-	Edges      []*ConfluenceEdge `json:"edges"`
-	PageInfo   PageInfo          `json:"pageInfo"`
-	TotalCount int               `json:"totalCount"`
+// SourceSystemConnection is the connection containing edges to SourceSystem.
+type SourceSystemConnection struct {
+	Edges      []*SourceSystemEdge `json:"edges"`
+	PageInfo   PageInfo            `json:"pageInfo"`
+	TotalCount int                 `json:"totalCount"`
 }
 
-func (c *ConfluenceConnection) build(nodes []*Confluence, pager *confluencePager, after *Cursor, first *int, before *Cursor, last *int) {
+func (c *SourceSystemConnection) build(nodes []*SourceSystem, pager *sourcesystemPager, after *Cursor, first *int, before *Cursor, last *int) {
 	c.PageInfo.HasNextPage = before != nil
 	c.PageInfo.HasPreviousPage = after != nil
 	if first != nil && *first+1 == len(nodes) {
@@ -370,21 +369,21 @@ func (c *ConfluenceConnection) build(nodes []*Confluence, pager *confluencePager
 		c.PageInfo.HasPreviousPage = true
 		nodes = nodes[:len(nodes)-1]
 	}
-	var nodeAt func(int) *Confluence
+	var nodeAt func(int) *SourceSystem
 	if last != nil {
 		n := len(nodes) - 1
-		nodeAt = func(i int) *Confluence {
+		nodeAt = func(i int) *SourceSystem {
 			return nodes[n-i]
 		}
 	} else {
-		nodeAt = func(i int) *Confluence {
+		nodeAt = func(i int) *SourceSystem {
 			return nodes[i]
 		}
 	}
-	c.Edges = make([]*ConfluenceEdge, len(nodes))
+	c.Edges = make([]*SourceSystemEdge, len(nodes))
 	for i := range nodes {
 		node := nodeAt(i)
-		c.Edges[i] = &ConfluenceEdge{
+		c.Edges[i] = &SourceSystemEdge{
 			Node:   node,
 			Cursor: pager.toCursor(node),
 		}
@@ -398,87 +397,87 @@ func (c *ConfluenceConnection) build(nodes []*Confluence, pager *confluencePager
 	}
 }
 
-// ConfluencePaginateOption enables pagination customization.
-type ConfluencePaginateOption func(*confluencePager) error
+// SourceSystemPaginateOption enables pagination customization.
+type SourceSystemPaginateOption func(*sourcesystemPager) error
 
-// WithConfluenceOrder configures pagination ordering.
-func WithConfluenceOrder(order *ConfluenceOrder) ConfluencePaginateOption {
+// WithSourceSystemOrder configures pagination ordering.
+func WithSourceSystemOrder(order *SourceSystemOrder) SourceSystemPaginateOption {
 	if order == nil {
-		order = DefaultConfluenceOrder
+		order = DefaultSourceSystemOrder
 	}
 	o := *order
-	return func(pager *confluencePager) error {
+	return func(pager *sourcesystemPager) error {
 		if err := o.Direction.Validate(); err != nil {
 			return err
 		}
 		if o.Field == nil {
-			o.Field = DefaultConfluenceOrder.Field
+			o.Field = DefaultSourceSystemOrder.Field
 		}
 		pager.order = &o
 		return nil
 	}
 }
 
-// WithConfluenceFilter configures pagination filter.
-func WithConfluenceFilter(filter func(*ConfluenceQuery) (*ConfluenceQuery, error)) ConfluencePaginateOption {
-	return func(pager *confluencePager) error {
+// WithSourceSystemFilter configures pagination filter.
+func WithSourceSystemFilter(filter func(*SourceSystemQuery) (*SourceSystemQuery, error)) SourceSystemPaginateOption {
+	return func(pager *sourcesystemPager) error {
 		if filter == nil {
-			return errors.New("ConfluenceQuery filter cannot be nil")
+			return errors.New("SourceSystemQuery filter cannot be nil")
 		}
 		pager.filter = filter
 		return nil
 	}
 }
 
-type confluencePager struct {
+type sourcesystemPager struct {
 	reverse bool
-	order   *ConfluenceOrder
-	filter  func(*ConfluenceQuery) (*ConfluenceQuery, error)
+	order   *SourceSystemOrder
+	filter  func(*SourceSystemQuery) (*SourceSystemQuery, error)
 }
 
-func newConfluencePager(opts []ConfluencePaginateOption, reverse bool) (*confluencePager, error) {
-	pager := &confluencePager{reverse: reverse}
+func newSourceSystemPager(opts []SourceSystemPaginateOption, reverse bool) (*sourcesystemPager, error) {
+	pager := &sourcesystemPager{reverse: reverse}
 	for _, opt := range opts {
 		if err := opt(pager); err != nil {
 			return nil, err
 		}
 	}
 	if pager.order == nil {
-		pager.order = DefaultConfluenceOrder
+		pager.order = DefaultSourceSystemOrder
 	}
 	return pager, nil
 }
 
-func (p *confluencePager) applyFilter(query *ConfluenceQuery) (*ConfluenceQuery, error) {
+func (p *sourcesystemPager) applyFilter(query *SourceSystemQuery) (*SourceSystemQuery, error) {
 	if p.filter != nil {
 		return p.filter(query)
 	}
 	return query, nil
 }
 
-func (p *confluencePager) toCursor(c *Confluence) Cursor {
-	return p.order.Field.toCursor(c)
+func (p *sourcesystemPager) toCursor(ss *SourceSystem) Cursor {
+	return p.order.Field.toCursor(ss)
 }
 
-func (p *confluencePager) applyCursors(query *ConfluenceQuery, after, before *Cursor) (*ConfluenceQuery, error) {
+func (p *sourcesystemPager) applyCursors(query *SourceSystemQuery, after, before *Cursor) (*SourceSystemQuery, error) {
 	direction := p.order.Direction
 	if p.reverse {
 		direction = direction.Reverse()
 	}
-	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultConfluenceOrder.Field.column, p.order.Field.column, direction) {
+	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultSourceSystemOrder.Field.column, p.order.Field.column, direction) {
 		query = query.Where(predicate)
 	}
 	return query, nil
 }
 
-func (p *confluencePager) applyOrder(query *ConfluenceQuery) *ConfluenceQuery {
+func (p *sourcesystemPager) applyOrder(query *SourceSystemQuery) *SourceSystemQuery {
 	direction := p.order.Direction
 	if p.reverse {
 		direction = direction.Reverse()
 	}
 	query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
-	if p.order.Field != DefaultConfluenceOrder.Field {
-		query = query.Order(DefaultConfluenceOrder.Field.toTerm(direction.OrderTermOption()))
+	if p.order.Field != DefaultSourceSystemOrder.Field {
+		query = query.Order(DefaultSourceSystemOrder.Field.toTerm(direction.OrderTermOption()))
 	}
 	if len(query.ctx.Fields) > 0 {
 		query.ctx.AppendFieldOnce(p.order.Field.column)
@@ -486,7 +485,7 @@ func (p *confluencePager) applyOrder(query *ConfluenceQuery) *ConfluenceQuery {
 	return query
 }
 
-func (p *confluencePager) orderExpr(query *ConfluenceQuery) sql.Querier {
+func (p *sourcesystemPager) orderExpr(query *SourceSystemQuery) sql.Querier {
 	direction := p.order.Direction
 	if p.reverse {
 		direction = direction.Reverse()
@@ -496,33 +495,33 @@ func (p *confluencePager) orderExpr(query *ConfluenceQuery) sql.Querier {
 	}
 	return sql.ExprFunc(func(b *sql.Builder) {
 		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
-		if p.order.Field != DefaultConfluenceOrder.Field {
-			b.Comma().Ident(DefaultConfluenceOrder.Field.column).Pad().WriteString(string(direction))
+		if p.order.Field != DefaultSourceSystemOrder.Field {
+			b.Comma().Ident(DefaultSourceSystemOrder.Field.column).Pad().WriteString(string(direction))
 		}
 	})
 }
 
-// Paginate executes the query and returns a relay based cursor connection to Confluence.
-func (c *ConfluenceQuery) Paginate(
+// Paginate executes the query and returns a relay based cursor connection to SourceSystem.
+func (ss *SourceSystemQuery) Paginate(
 	ctx context.Context, after *Cursor, first *int,
-	before *Cursor, last *int, opts ...ConfluencePaginateOption,
-) (*ConfluenceConnection, error) {
+	before *Cursor, last *int, opts ...SourceSystemPaginateOption,
+) (*SourceSystemConnection, error) {
 	if err := validateFirstLast(first, last); err != nil {
 		return nil, err
 	}
-	pager, err := newConfluencePager(opts, last != nil)
+	pager, err := newSourceSystemPager(opts, last != nil)
 	if err != nil {
 		return nil, err
 	}
-	if c, err = pager.applyFilter(c); err != nil {
+	if ss, err = pager.applyFilter(ss); err != nil {
 		return nil, err
 	}
-	conn := &ConfluenceConnection{Edges: []*ConfluenceEdge{}}
+	conn := &SourceSystemConnection{Edges: []*SourceSystemEdge{}}
 	ignoredEdges := !hasCollectedField(ctx, edgesField)
 	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
 		hasPagination := after != nil || first != nil || before != nil || last != nil
 		if hasPagination || ignoredEdges {
-			c := c.Clone()
+			c := ss.Clone()
 			c.ctx.Fields = nil
 			if conn.TotalCount, err = c.Count(ctx); err != nil {
 				return nil, err
@@ -534,20 +533,20 @@ func (c *ConfluenceQuery) Paginate(
 	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
 		return conn, nil
 	}
-	if c, err = pager.applyCursors(c, after, before); err != nil {
+	if ss, err = pager.applyCursors(ss, after, before); err != nil {
 		return nil, err
 	}
 	limit := paginateLimit(first, last)
 	if limit != 0 {
-		c.Limit(limit)
+		ss.Limit(limit)
 	}
 	if field := collectedField(ctx, edgesField, nodeField); field != nil {
-		if err := c.collectField(ctx, limit == 1, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
+		if err := ss.collectField(ctx, limit == 1, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
 			return nil, err
 		}
 	}
-	c = pager.applyOrder(c)
-	nodes, err := c.All(ctx)
+	ss = pager.applyOrder(ss)
+	nodes, err := ss.All(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -555,293 +554,44 @@ func (c *ConfluenceQuery) Paginate(
 	return conn, nil
 }
 
-// ConfluenceOrderField defines the ordering field of Confluence.
-type ConfluenceOrderField struct {
-	// Value extracts the ordering value from the given Confluence.
-	Value    func(*Confluence) (ent.Value, error)
+// SourceSystemOrderField defines the ordering field of SourceSystem.
+type SourceSystemOrderField struct {
+	// Value extracts the ordering value from the given SourceSystem.
+	Value    func(*SourceSystem) (ent.Value, error)
 	column   string // field or computed.
-	toTerm   func(...sql.OrderTermOption) confluence.OrderOption
-	toCursor func(*Confluence) Cursor
+	toTerm   func(...sql.OrderTermOption) sourcesystem.OrderOption
+	toCursor func(*SourceSystem) Cursor
 }
 
-// ConfluenceOrder defines the ordering of Confluence.
-type ConfluenceOrder struct {
-	Direction OrderDirection        `json:"direction"`
-	Field     *ConfluenceOrderField `json:"field"`
+// SourceSystemOrder defines the ordering of SourceSystem.
+type SourceSystemOrder struct {
+	Direction OrderDirection          `json:"direction"`
+	Field     *SourceSystemOrderField `json:"field"`
 }
 
-// DefaultConfluenceOrder is the default ordering of Confluence.
-var DefaultConfluenceOrder = &ConfluenceOrder{
+// DefaultSourceSystemOrder is the default ordering of SourceSystem.
+var DefaultSourceSystemOrder = &SourceSystemOrder{
 	Direction: entgql.OrderDirectionAsc,
-	Field: &ConfluenceOrderField{
-		Value: func(c *Confluence) (ent.Value, error) {
-			return c.ID, nil
+	Field: &SourceSystemOrderField{
+		Value: func(ss *SourceSystem) (ent.Value, error) {
+			return ss.ID, nil
 		},
-		column: confluence.FieldID,
-		toTerm: confluence.ByID,
-		toCursor: func(c *Confluence) Cursor {
-			return Cursor{ID: c.ID}
+		column: sourcesystem.FieldID,
+		toTerm: sourcesystem.ByID,
+		toCursor: func(ss *SourceSystem) Cursor {
+			return Cursor{ID: ss.ID}
 		},
 	},
 }
 
-// ToEdge converts Confluence into ConfluenceEdge.
-func (c *Confluence) ToEdge(order *ConfluenceOrder) *ConfluenceEdge {
+// ToEdge converts SourceSystem into SourceSystemEdge.
+func (ss *SourceSystem) ToEdge(order *SourceSystemOrder) *SourceSystemEdge {
 	if order == nil {
-		order = DefaultConfluenceOrder
+		order = DefaultSourceSystemOrder
 	}
-	return &ConfluenceEdge{
-		Node:   c,
-		Cursor: order.Field.toCursor(c),
-	}
-}
-
-// SpaceEdge is the edge representation of Space.
-type SpaceEdge struct {
-	Node   *Space `json:"node"`
-	Cursor Cursor `json:"cursor"`
-}
-
-// SpaceConnection is the connection containing edges to Space.
-type SpaceConnection struct {
-	Edges      []*SpaceEdge `json:"edges"`
-	PageInfo   PageInfo     `json:"pageInfo"`
-	TotalCount int          `json:"totalCount"`
-}
-
-func (c *SpaceConnection) build(nodes []*Space, pager *spacePager, after *Cursor, first *int, before *Cursor, last *int) {
-	c.PageInfo.HasNextPage = before != nil
-	c.PageInfo.HasPreviousPage = after != nil
-	if first != nil && *first+1 == len(nodes) {
-		c.PageInfo.HasNextPage = true
-		nodes = nodes[:len(nodes)-1]
-	} else if last != nil && *last+1 == len(nodes) {
-		c.PageInfo.HasPreviousPage = true
-		nodes = nodes[:len(nodes)-1]
-	}
-	var nodeAt func(int) *Space
-	if last != nil {
-		n := len(nodes) - 1
-		nodeAt = func(i int) *Space {
-			return nodes[n-i]
-		}
-	} else {
-		nodeAt = func(i int) *Space {
-			return nodes[i]
-		}
-	}
-	c.Edges = make([]*SpaceEdge, len(nodes))
-	for i := range nodes {
-		node := nodeAt(i)
-		c.Edges[i] = &SpaceEdge{
-			Node:   node,
-			Cursor: pager.toCursor(node),
-		}
-	}
-	if l := len(c.Edges); l > 0 {
-		c.PageInfo.StartCursor = &c.Edges[0].Cursor
-		c.PageInfo.EndCursor = &c.Edges[l-1].Cursor
-	}
-	if c.TotalCount == 0 {
-		c.TotalCount = len(nodes)
-	}
-}
-
-// SpacePaginateOption enables pagination customization.
-type SpacePaginateOption func(*spacePager) error
-
-// WithSpaceOrder configures pagination ordering.
-func WithSpaceOrder(order *SpaceOrder) SpacePaginateOption {
-	if order == nil {
-		order = DefaultSpaceOrder
-	}
-	o := *order
-	return func(pager *spacePager) error {
-		if err := o.Direction.Validate(); err != nil {
-			return err
-		}
-		if o.Field == nil {
-			o.Field = DefaultSpaceOrder.Field
-		}
-		pager.order = &o
-		return nil
-	}
-}
-
-// WithSpaceFilter configures pagination filter.
-func WithSpaceFilter(filter func(*SpaceQuery) (*SpaceQuery, error)) SpacePaginateOption {
-	return func(pager *spacePager) error {
-		if filter == nil {
-			return errors.New("SpaceQuery filter cannot be nil")
-		}
-		pager.filter = filter
-		return nil
-	}
-}
-
-type spacePager struct {
-	reverse bool
-	order   *SpaceOrder
-	filter  func(*SpaceQuery) (*SpaceQuery, error)
-}
-
-func newSpacePager(opts []SpacePaginateOption, reverse bool) (*spacePager, error) {
-	pager := &spacePager{reverse: reverse}
-	for _, opt := range opts {
-		if err := opt(pager); err != nil {
-			return nil, err
-		}
-	}
-	if pager.order == nil {
-		pager.order = DefaultSpaceOrder
-	}
-	return pager, nil
-}
-
-func (p *spacePager) applyFilter(query *SpaceQuery) (*SpaceQuery, error) {
-	if p.filter != nil {
-		return p.filter(query)
-	}
-	return query, nil
-}
-
-func (p *spacePager) toCursor(s *Space) Cursor {
-	return p.order.Field.toCursor(s)
-}
-
-func (p *spacePager) applyCursors(query *SpaceQuery, after, before *Cursor) (*SpaceQuery, error) {
-	direction := p.order.Direction
-	if p.reverse {
-		direction = direction.Reverse()
-	}
-	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultSpaceOrder.Field.column, p.order.Field.column, direction) {
-		query = query.Where(predicate)
-	}
-	return query, nil
-}
-
-func (p *spacePager) applyOrder(query *SpaceQuery) *SpaceQuery {
-	direction := p.order.Direction
-	if p.reverse {
-		direction = direction.Reverse()
-	}
-	query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
-	if p.order.Field != DefaultSpaceOrder.Field {
-		query = query.Order(DefaultSpaceOrder.Field.toTerm(direction.OrderTermOption()))
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
-	}
-	return query
-}
-
-func (p *spacePager) orderExpr(query *SpaceQuery) sql.Querier {
-	direction := p.order.Direction
-	if p.reverse {
-		direction = direction.Reverse()
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(p.order.Field.column)
-	}
-	return sql.ExprFunc(func(b *sql.Builder) {
-		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
-		if p.order.Field != DefaultSpaceOrder.Field {
-			b.Comma().Ident(DefaultSpaceOrder.Field.column).Pad().WriteString(string(direction))
-		}
-	})
-}
-
-// Paginate executes the query and returns a relay based cursor connection to Space.
-func (s *SpaceQuery) Paginate(
-	ctx context.Context, after *Cursor, first *int,
-	before *Cursor, last *int, opts ...SpacePaginateOption,
-) (*SpaceConnection, error) {
-	if err := validateFirstLast(first, last); err != nil {
-		return nil, err
-	}
-	pager, err := newSpacePager(opts, last != nil)
-	if err != nil {
-		return nil, err
-	}
-	if s, err = pager.applyFilter(s); err != nil {
-		return nil, err
-	}
-	conn := &SpaceConnection{Edges: []*SpaceEdge{}}
-	ignoredEdges := !hasCollectedField(ctx, edgesField)
-	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
-		hasPagination := after != nil || first != nil || before != nil || last != nil
-		if hasPagination || ignoredEdges {
-			c := s.Clone()
-			c.ctx.Fields = nil
-			if conn.TotalCount, err = c.Count(ctx); err != nil {
-				return nil, err
-			}
-			conn.PageInfo.HasNextPage = first != nil && conn.TotalCount > 0
-			conn.PageInfo.HasPreviousPage = last != nil && conn.TotalCount > 0
-		}
-	}
-	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
-		return conn, nil
-	}
-	if s, err = pager.applyCursors(s, after, before); err != nil {
-		return nil, err
-	}
-	limit := paginateLimit(first, last)
-	if limit != 0 {
-		s.Limit(limit)
-	}
-	if field := collectedField(ctx, edgesField, nodeField); field != nil {
-		if err := s.collectField(ctx, limit == 1, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
-			return nil, err
-		}
-	}
-	s = pager.applyOrder(s)
-	nodes, err := s.All(ctx)
-	if err != nil {
-		return nil, err
-	}
-	conn.build(nodes, pager, after, first, before, last)
-	return conn, nil
-}
-
-// SpaceOrderField defines the ordering field of Space.
-type SpaceOrderField struct {
-	// Value extracts the ordering value from the given Space.
-	Value    func(*Space) (ent.Value, error)
-	column   string // field or computed.
-	toTerm   func(...sql.OrderTermOption) space.OrderOption
-	toCursor func(*Space) Cursor
-}
-
-// SpaceOrder defines the ordering of Space.
-type SpaceOrder struct {
-	Direction OrderDirection   `json:"direction"`
-	Field     *SpaceOrderField `json:"field"`
-}
-
-// DefaultSpaceOrder is the default ordering of Space.
-var DefaultSpaceOrder = &SpaceOrder{
-	Direction: entgql.OrderDirectionAsc,
-	Field: &SpaceOrderField{
-		Value: func(s *Space) (ent.Value, error) {
-			return s.ID, nil
-		},
-		column: space.FieldID,
-		toTerm: space.ByID,
-		toCursor: func(s *Space) Cursor {
-			return Cursor{ID: s.ID}
-		},
-	},
-}
-
-// ToEdge converts Space into SpaceEdge.
-func (s *Space) ToEdge(order *SpaceOrder) *SpaceEdge {
-	if order == nil {
-		order = DefaultSpaceOrder
-	}
-	return &SpaceEdge{
-		Node:   s,
-		Cursor: order.Field.toCursor(s),
+	return &SourceSystemEdge{
+		Node:   ss,
+		Cursor: order.Field.toCursor(ss),
 	}
 }
 

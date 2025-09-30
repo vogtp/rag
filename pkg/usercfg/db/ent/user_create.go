@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/collection"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent/confluence"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/user"
 )
 
@@ -41,21 +40,6 @@ func (uc *UserCreate) SetNillableOpenaiAPIkey(s *string) *UserCreate {
 		uc.SetOpenaiAPIkey(*s)
 	}
 	return uc
-}
-
-// AddConfluenceIDs adds the "Confluence" edge to the Confluence entity by IDs.
-func (uc *UserCreate) AddConfluenceIDs(ids ...int) *UserCreate {
-	uc.mutation.AddConfluenceIDs(ids...)
-	return uc
-}
-
-// AddConfluence adds the "Confluence" edges to the Confluence entity.
-func (uc *UserCreate) AddConfluence(c ...*Confluence) *UserCreate {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return uc.AddConfluenceIDs(ids...)
 }
 
 // AddCollectionIDs adds the "Collections" edge to the Collection entity by IDs.
@@ -144,22 +128,6 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.OpenaiAPIkey(); ok {
 		_spec.SetField(user.FieldOpenaiAPIkey, field.TypeString, value)
 		_node.OpenaiAPIkey = value
-	}
-	if nodes := uc.mutation.ConfluenceIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.ConfluenceTable,
-			Columns: []string{user.ConfluenceColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(confluence.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := uc.mutation.CollectionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

@@ -29,24 +29,24 @@ type Collection struct {
 
 // CollectionEdges holds the relations/edges for other nodes in the graph.
 type CollectionEdges struct {
-	// Spaces holds the value of the Spaces edge.
-	Spaces []*Space `json:"Spaces,omitempty"`
+	// Sources holds the value of the Sources edge.
+	Sources []*SourceSystem `json:"Sources,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 	// totalCount holds the count of the edges above.
 	totalCount [1]map[string]int
 
-	namedSpaces map[string][]*Space
+	namedSources map[string][]*SourceSystem
 }
 
-// SpacesOrErr returns the Spaces value or an error if the edge
+// SourcesOrErr returns the Sources value or an error if the edge
 // was not loaded in eager-loading.
-func (e CollectionEdges) SpacesOrErr() ([]*Space, error) {
+func (e CollectionEdges) SourcesOrErr() ([]*SourceSystem, error) {
 	if e.loadedTypes[0] {
-		return e.Spaces, nil
+		return e.Sources, nil
 	}
-	return nil, &NotLoadedError{edge: "Spaces"}
+	return nil, &NotLoadedError{edge: "Sources"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -113,9 +113,9 @@ func (c *Collection) Value(name string) (ent.Value, error) {
 	return c.selectValues.Get(name)
 }
 
-// QuerySpaces queries the "Spaces" edge of the Collection entity.
-func (c *Collection) QuerySpaces() *SpaceQuery {
-	return NewCollectionClient(c.config).QuerySpaces(c)
+// QuerySources queries the "Sources" edge of the Collection entity.
+func (c *Collection) QuerySources() *SourceSystemQuery {
+	return NewCollectionClient(c.config).QuerySources(c)
 }
 
 // Update returns a builder for updating this Collection.
@@ -150,27 +150,27 @@ func (c *Collection) String() string {
 	return builder.String()
 }
 
-// NamedSpaces returns the Spaces named value or an error if the edge was not
+// NamedSources returns the Sources named value or an error if the edge was not
 // loaded in eager-loading with this name.
-func (c *Collection) NamedSpaces(name string) ([]*Space, error) {
-	if c.Edges.namedSpaces == nil {
+func (c *Collection) NamedSources(name string) ([]*SourceSystem, error) {
+	if c.Edges.namedSources == nil {
 		return nil, &NotLoadedError{edge: name}
 	}
-	nodes, ok := c.Edges.namedSpaces[name]
+	nodes, ok := c.Edges.namedSources[name]
 	if !ok {
 		return nil, &NotLoadedError{edge: name}
 	}
 	return nodes, nil
 }
 
-func (c *Collection) appendNamedSpaces(name string, edges ...*Space) {
-	if c.Edges.namedSpaces == nil {
-		c.Edges.namedSpaces = make(map[string][]*Space)
+func (c *Collection) appendNamedSources(name string, edges ...*SourceSystem) {
+	if c.Edges.namedSources == nil {
+		c.Edges.namedSources = make(map[string][]*SourceSystem)
 	}
 	if len(edges) == 0 {
-		c.Edges.namedSpaces[name] = []*Space{}
+		c.Edges.namedSources[name] = []*SourceSystem{}
 	} else {
-		c.Edges.namedSpaces[name] = append(c.Edges.namedSpaces[name], edges...)
+		c.Edges.namedSources[name] = append(c.Edges.namedSources[name], edges...)
 	}
 }
 

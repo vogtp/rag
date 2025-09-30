@@ -1,8 +1,0 @@
-# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
-
-type Space {
-  id: ID!
-  SpaceKey: String!
-}

@@ -1,0 +1,19 @@
+<h3>{{collection?.Name}}</h3>
+<div>
+    <mat-form-field>
+        <mat-label>Collection Name</mat-label>
+        <input matInput [ngModel]="collection?.Name">
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>API Key (for chatbots)</mat-label>
+        <input matInput [ngModel]="collection?.APIKey">
+    </mat-form-field>
+</div>
+<h4>Source Systems:</h4>
+<div class="sources">
+    <div *ngFor="let src of collection?.edges?.Sources">
+        <app-source [source]="src" />
+    </div>
+</div>
+<hr>

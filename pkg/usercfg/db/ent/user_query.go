@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/collection"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent/confluence"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/predicate"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/user"
 )
@@ -25,11 +24,9 @@ type UserQuery struct {
 	order                []user.OrderOption
 	inters               []Interceptor
 	predicates           []predicate.User
-	withConfluence       *ConfluenceQuery
 	withCollections      *CollectionQuery
 	modifiers            []func(*sql.Selector)
 	loadTotal            []func(context.Context, []*User) error
-	withNamedConfluence  map[string]*ConfluenceQuery
 	withNamedCollections map[string]*CollectionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -65,28 +62,6 @@ func (uq *UserQuery) Unique(unique bool) *UserQuery {
 func (uq *UserQuery) Order(o ...user.OrderOption) *UserQuery {
 	uq.order = append(uq.order, o...)
 	return uq
-}
-
-// QueryConfluence chains the current query on the "Confluence" edge.
-func (uq *UserQuery) QueryConfluence() *ConfluenceQuery {
-	query := (&ConfluenceClient{config: uq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := uq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := uq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, selector),
-			sqlgraph.To(confluence.Table, confluence.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.ConfluenceTable, user.ConfluenceColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
 }
 
 // QueryCollections chains the current query on the "Collections" edge.
@@ -303,23 +278,11 @@ func (uq *UserQuery) Clone() *UserQuery {
 		order:           append([]user.OrderOption{}, uq.order...),
 		inters:          append([]Interceptor{}, uq.inters...),
 		predicates:      append([]predicate.User{}, uq.predicates...),
-		withConfluence:  uq.withConfluence.Clone(),
 		withCollections: uq.withCollections.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
 	}
-}
-
-// WithConfluence tells the query-builder to eager-load the nodes that are connected to
-// the "Confluence" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithConfluence(opts ...func(*ConfluenceQuery)) *UserQuery {
-	query := (&ConfluenceClient{config: uq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	uq.withConfluence = query
-	return uq
 }
 
 // WithCollections tells the query-builder to eager-load the nodes that are connected to
@@ -411,8 +374,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [2]bool{
-			uq.withConfluence != nil,
+		loadedTypes = [1]bool{
 			uq.withCollections != nil,
 		}
 	)
@@ -437,24 +399,10 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := uq.withConfluence; query != nil {
-		if err := uq.loadConfluence(ctx, query, nodes,
-			func(n *User) { n.Edges.Confluence = []*Confluence{} },
-			func(n *User, e *Confluence) { n.Edges.Confluence = append(n.Edges.Confluence, e) }); err != nil {
-			return nil, err
-		}
-	}
 	if query := uq.withCollections; query != nil {
 		if err := uq.loadCollections(ctx, query, nodes,
 			func(n *User) { n.Edges.Collections = []*Collection{} },
 			func(n *User, e *Collection) { n.Edges.Collections = append(n.Edges.Collections, e) }); err != nil {
-			return nil, err
-		}
-	}
-	for name, query := range uq.withNamedConfluence {
-		if err := uq.loadConfluence(ctx, query, nodes,
-			func(n *User) { n.appendNamedConfluence(name) },
-			func(n *User, e *Confluence) { n.appendNamedConfluence(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -473,37 +421,6 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	return nodes, nil
 }
 
-func (uq *UserQuery) loadConfluence(ctx context.Context, query *ConfluenceQuery, nodes []*User, init func(*User), assign func(*User, *Confluence)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int]*User)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	query.withFKs = true
-	query.Where(predicate.Confluence(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(user.ConfluenceColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.user_confluence
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "user_confluence" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "user_confluence" returned %v for node %v`, *fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
 func (uq *UserQuery) loadCollections(ctx context.Context, query *CollectionQuery, nodes []*User, init func(*User), assign func(*User, *Collection)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int]*User)
@@ -618,20 +535,6 @@ func (uq *UserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
-}
-
-// WithNamedConfluence tells the query-builder to eager-load the nodes that are connected to the "Confluence"
-// edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithNamedConfluence(name string, opts ...func(*ConfluenceQuery)) *UserQuery {
-	query := (&ConfluenceClient{config: uq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	if uq.withNamedConfluence == nil {
-		uq.withNamedConfluence = make(map[string]*ConfluenceQuery)
-	}
-	uq.withNamedConfluence[name] = query
-	return uq
 }
 
 // WithNamedCollections tells the query-builder to eager-load the nodes that are connected to the "Collections"

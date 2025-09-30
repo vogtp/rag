@@ -9,11 +9,8 @@ import (
 // Collection is the predicate function for collection builders.
 type Collection func(*sql.Selector)
 
-// Confluence is the predicate function for confluence builders.
-type Confluence func(*sql.Selector)
-
-// Space is the predicate function for space builders.
-type Space func(*sql.Selector)
+// SourceSystem is the predicate function for sourcesystem builders.
+type SourceSystem func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

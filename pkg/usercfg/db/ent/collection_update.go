@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/collection"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/predicate"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent/space"
+	"github.com/vogtp/rag/pkg/usercfg/db/ent/sourcesystem"
 )
 
 // CollectionUpdate is the builder for updating Collection entities.
@@ -56,19 +56,19 @@ func (cu *CollectionUpdate) SetNillableAPIKey(s *string) *CollectionUpdate {
 	return cu
 }
 
-// AddSpaceIDs adds the "Spaces" edge to the Space entity by IDs.
-func (cu *CollectionUpdate) AddSpaceIDs(ids ...int) *CollectionUpdate {
-	cu.mutation.AddSpaceIDs(ids...)
+// AddSourceIDs adds the "Sources" edge to the SourceSystem entity by IDs.
+func (cu *CollectionUpdate) AddSourceIDs(ids ...int) *CollectionUpdate {
+	cu.mutation.AddSourceIDs(ids...)
 	return cu
 }
 
-// AddSpaces adds the "Spaces" edges to the Space entity.
-func (cu *CollectionUpdate) AddSpaces(s ...*Space) *CollectionUpdate {
+// AddSources adds the "Sources" edges to the SourceSystem entity.
+func (cu *CollectionUpdate) AddSources(s ...*SourceSystem) *CollectionUpdate {
 	ids := make([]int, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
-	return cu.AddSpaceIDs(ids...)
+	return cu.AddSourceIDs(ids...)
 }
 
 // Mutation returns the CollectionMutation object of the builder.
@@ -76,25 +76,25 @@ func (cu *CollectionUpdate) Mutation() *CollectionMutation {
 	return cu.mutation
 }
 
-// ClearSpaces clears all "Spaces" edges to the Space entity.
-func (cu *CollectionUpdate) ClearSpaces() *CollectionUpdate {
-	cu.mutation.ClearSpaces()
+// ClearSources clears all "Sources" edges to the SourceSystem entity.
+func (cu *CollectionUpdate) ClearSources() *CollectionUpdate {
+	cu.mutation.ClearSources()
 	return cu
 }
 
-// RemoveSpaceIDs removes the "Spaces" edge to Space entities by IDs.
-func (cu *CollectionUpdate) RemoveSpaceIDs(ids ...int) *CollectionUpdate {
-	cu.mutation.RemoveSpaceIDs(ids...)
+// RemoveSourceIDs removes the "Sources" edge to SourceSystem entities by IDs.
+func (cu *CollectionUpdate) RemoveSourceIDs(ids ...int) *CollectionUpdate {
+	cu.mutation.RemoveSourceIDs(ids...)
 	return cu
 }
 
-// RemoveSpaces removes "Spaces" edges to Space entities.
-func (cu *CollectionUpdate) RemoveSpaces(s ...*Space) *CollectionUpdate {
+// RemoveSources removes "Sources" edges to SourceSystem entities.
+func (cu *CollectionUpdate) RemoveSources(s ...*SourceSystem) *CollectionUpdate {
 	ids := make([]int, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
-	return cu.RemoveSpaceIDs(ids...)
+	return cu.RemoveSourceIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -139,28 +139,28 @@ func (cu *CollectionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := cu.mutation.APIKey(); ok {
 		_spec.SetField(collection.FieldAPIKey, field.TypeString, value)
 	}
-	if cu.mutation.SpacesCleared() {
+	if cu.mutation.SourcesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   collection.SpacesTable,
-			Columns: []string{collection.SpacesColumn},
+			Table:   collection.SourcesTable,
+			Columns: []string{collection.SourcesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(space.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(sourcesystem.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cu.mutation.RemovedSpacesIDs(); len(nodes) > 0 && !cu.mutation.SpacesCleared() {
+	if nodes := cu.mutation.RemovedSourcesIDs(); len(nodes) > 0 && !cu.mutation.SourcesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   collection.SpacesTable,
-			Columns: []string{collection.SpacesColumn},
+			Table:   collection.SourcesTable,
+			Columns: []string{collection.SourcesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(space.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(sourcesystem.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -168,15 +168,15 @@ func (cu *CollectionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cu.mutation.SpacesIDs(); len(nodes) > 0 {
+	if nodes := cu.mutation.SourcesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   collection.SpacesTable,
-			Columns: []string{collection.SpacesColumn},
+			Table:   collection.SourcesTable,
+			Columns: []string{collection.SourcesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(space.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(sourcesystem.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -232,19 +232,19 @@ func (cuo *CollectionUpdateOne) SetNillableAPIKey(s *string) *CollectionUpdateOn
 	return cuo
 }
 
-// AddSpaceIDs adds the "Spaces" edge to the Space entity by IDs.
-func (cuo *CollectionUpdateOne) AddSpaceIDs(ids ...int) *CollectionUpdateOne {
-	cuo.mutation.AddSpaceIDs(ids...)
+// AddSourceIDs adds the "Sources" edge to the SourceSystem entity by IDs.
+func (cuo *CollectionUpdateOne) AddSourceIDs(ids ...int) *CollectionUpdateOne {
+	cuo.mutation.AddSourceIDs(ids...)
 	return cuo
 }
 
-// AddSpaces adds the "Spaces" edges to the Space entity.
-func (cuo *CollectionUpdateOne) AddSpaces(s ...*Space) *CollectionUpdateOne {
+// AddSources adds the "Sources" edges to the SourceSystem entity.
+func (cuo *CollectionUpdateOne) AddSources(s ...*SourceSystem) *CollectionUpdateOne {
 	ids := make([]int, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
-	return cuo.AddSpaceIDs(ids...)
+	return cuo.AddSourceIDs(ids...)
 }
 
 // Mutation returns the CollectionMutation object of the builder.
@@ -252,25 +252,25 @@ func (cuo *CollectionUpdateOne) Mutation() *CollectionMutation {
 	return cuo.mutation
 }
 
-// ClearSpaces clears all "Spaces" edges to the Space entity.
-func (cuo *CollectionUpdateOne) ClearSpaces() *CollectionUpdateOne {
-	cuo.mutation.ClearSpaces()
+// ClearSources clears all "Sources" edges to the SourceSystem entity.
+func (cuo *CollectionUpdateOne) ClearSources() *CollectionUpdateOne {
+	cuo.mutation.ClearSources()
 	return cuo
 }
 
-// RemoveSpaceIDs removes the "Spaces" edge to Space entities by IDs.
-func (cuo *CollectionUpdateOne) RemoveSpaceIDs(ids ...int) *CollectionUpdateOne {
-	cuo.mutation.RemoveSpaceIDs(ids...)
+// RemoveSourceIDs removes the "Sources" edge to SourceSystem entities by IDs.
+func (cuo *CollectionUpdateOne) RemoveSourceIDs(ids ...int) *CollectionUpdateOne {
+	cuo.mutation.RemoveSourceIDs(ids...)
 	return cuo
 }
 
-// RemoveSpaces removes "Spaces" edges to Space entities.
-func (cuo *CollectionUpdateOne) RemoveSpaces(s ...*Space) *CollectionUpdateOne {
+// RemoveSources removes "Sources" edges to SourceSystem entities.
+func (cuo *CollectionUpdateOne) RemoveSources(s ...*SourceSystem) *CollectionUpdateOne {
 	ids := make([]int, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
-	return cuo.RemoveSpaceIDs(ids...)
+	return cuo.RemoveSourceIDs(ids...)
 }
 
 // Where appends a list predicates to the CollectionUpdate builder.
@@ -345,28 +345,28 @@ func (cuo *CollectionUpdateOne) sqlSave(ctx context.Context) (_node *Collection,
 	if value, ok := cuo.mutation.APIKey(); ok {
 		_spec.SetField(collection.FieldAPIKey, field.TypeString, value)
 	}
-	if cuo.mutation.SpacesCleared() {
+	if cuo.mutation.SourcesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   collection.SpacesTable,
-			Columns: []string{collection.SpacesColumn},
+			Table:   collection.SourcesTable,
+			Columns: []string{collection.SourcesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(space.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(sourcesystem.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cuo.mutation.RemovedSpacesIDs(); len(nodes) > 0 && !cuo.mutation.SpacesCleared() {
+	if nodes := cuo.mutation.RemovedSourcesIDs(); len(nodes) > 0 && !cuo.mutation.SourcesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   collection.SpacesTable,
-			Columns: []string{collection.SpacesColumn},
+			Table:   collection.SourcesTable,
+			Columns: []string{collection.SourcesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(space.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(sourcesystem.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -374,15 +374,15 @@ func (cuo *CollectionUpdateOne) sqlSave(ctx context.Context) (_node *Collection,
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cuo.mutation.SpacesIDs(); len(nodes) > 0 {
+	if nodes := cuo.mutation.SourcesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   collection.SpacesTable,
-			Columns: []string{collection.SpacesColumn},
+			Table:   collection.SourcesTable,
+			Columns: []string{collection.SourcesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(space.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(sourcesystem.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

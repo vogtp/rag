@@ -1,15 +1,16 @@
 <p>
     <mat-form-field>
-        <mat-label>Confluence API Key</mat-label>
-        <input matInput [(ngModel)]="confluenceApiKey">
+        <mat-label>User</mat-label>
+        <input matInput readonly [ngModel]="userSettings?.Name">
     </mat-form-field>
 </p>
-<p>
-    <mat-form-field>
-        <mat-label>Intranet Speces</mat-label>
-        <input matInput [(ngModel)]="spacesStr">
-    </mat-form-field>
-</p>
+
+<div class="collections">
+    <div *ngFor="let col of userSettings?.edges?.Collections">
+        <app-collection [collection]="col" />
+    </div>
+</div>
+
 <p>
     <mat-form-field>
         <mat-label>Chat API Key</mat-label>

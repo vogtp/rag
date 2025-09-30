@@ -1,7 +1,7 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError, throwError } from 'rxjs';
-import { collectionURL, httpHeaders } from './common';
+import { Observable } from 'rxjs';
+import { collectionURL, httpHeaders, summaryURL } from './common';
 
 @Injectable({
   providedIn: 'root',
@@ -12,16 +12,15 @@ export class CollectionSearchService {
     query: string
   ): Observable<CollectionSearchResponse> {
     let url = collectionURL + collection + '?query=' + query;
-    return this.http
-      .get<CollectionSearchResponse>(url, { headers: httpHeaders });
+    return this.http.get<CollectionSearchResponse>(url, {
+      headers: httpHeaders,
+    });
   }
   summary(uuid: string): Observable<Document> {
-    let url = '/summary/' + uuid;
-    return this.http
-      .get<Document>(url, { headers: httpHeaders });
+    let url = summaryURL + uuid;
+    return this.http.get<Document>(url, { headers: httpHeaders });
   }
 
-  
   constructor(private http: HttpClient) {}
 }
 

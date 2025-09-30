@@ -4,14 +4,7 @@ type Collection implements Node {
   id: ID!
   name: String!
   apikey: String! @goField(name: "APIKey", forceResolver: false)
-  spaces: [Space!]
-}
-type Confluence implements Node {
-  id: ID!
-  name: String!
-  url: String!
-  confluenceapikey: String! @goField(name: "ConfluenceAPIKey", forceResolver: false)
-  spaces: [Space!]
+  sources: [SourceSystem!]
 }
 """
 Define a Relay Cursor type:
@@ -83,15 +76,24 @@ type Query {
     ids: [ID!]!
   ): [Node]!
 }
-type Space implements Node {
+type SourceSystem implements Node {
   id: ID!
   name: String!
-  spacekey: String! @goField(name: "SpaceKey", forceResolver: false)
+  type: SourceSystemType!
+  url: String!
+  key: String
+  parts: String
+}
+"""
+SourceSystemType is enum for the field Type
+"""
+enum SourceSystemType @goModel(model: "github.com/vogtp/rag/pkg/usercfg/db/ent/sourcesystem.Type") {
+  http
+  confluence
 }
 type User implements Node {
   id: ID!
   name: String!
   openaiapikey: String @goField(name: "OpenaiAPIkey", forceResolver: false)
-  confluence: [Confluence!]
   collections: [Collection!]
 }

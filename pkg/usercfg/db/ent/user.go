@@ -28,33 +28,21 @@ type User struct {
 
 // UserEdges holds the relations/edges for other nodes in the graph.
 type UserEdges struct {
-	// Confluence holds the value of the Confluence edge.
-	Confluence []*Confluence `json:"Confluence,omitempty"`
 	// Collections holds the value of the Collections edge.
 	Collections []*Collection `json:"Collections,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [1]bool
 	// totalCount holds the count of the edges above.
-	totalCount [2]map[string]int
+	totalCount [1]map[string]int
 
-	namedConfluence  map[string][]*Confluence
 	namedCollections map[string][]*Collection
-}
-
-// ConfluenceOrErr returns the Confluence value or an error if the edge
-// was not loaded in eager-loading.
-func (e UserEdges) ConfluenceOrErr() ([]*Confluence, error) {
-	if e.loadedTypes[0] {
-		return e.Confluence, nil
-	}
-	return nil, &NotLoadedError{edge: "Confluence"}
 }
 
 // CollectionsOrErr returns the Collections value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) CollectionsOrErr() ([]*Collection, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[0] {
 		return e.Collections, nil
 	}
 	return nil, &NotLoadedError{edge: "Collections"}
@@ -115,11 +103,6 @@ func (u *User) Value(name string) (ent.Value, error) {
 	return u.selectValues.Get(name)
 }
 
-// QueryConfluence queries the "Confluence" edge of the User entity.
-func (u *User) QueryConfluence() *ConfluenceQuery {
-	return NewUserClient(u.config).QueryConfluence(u)
-}
-
 // QueryCollections queries the "Collections" edge of the User entity.
 func (u *User) QueryCollections() *CollectionQuery {
 	return NewUserClient(u.config).QueryCollections(u)
@@ -155,30 +138,6 @@ func (u *User) String() string {
 	builder.WriteString(u.OpenaiAPIkey)
 	builder.WriteByte(')')
 	return builder.String()
-}
-
-// NamedConfluence returns the Confluence named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (u *User) NamedConfluence(name string) ([]*Confluence, error) {
-	if u.Edges.namedConfluence == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := u.Edges.namedConfluence[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (u *User) appendNamedConfluence(name string, edges ...*Confluence) {
-	if u.Edges.namedConfluence == nil {
-		u.Edges.namedConfluence = make(map[string][]*Confluence)
-	}
-	if len(edges) == 0 {
-		u.Edges.namedConfluence[name] = []*Confluence{}
-	} else {
-		u.Edges.namedConfluence[name] = append(u.Edges.namedConfluence[name], edges...)
-	}
 }
 
 // NamedCollections returns the Collections named value or an error if the edge was not

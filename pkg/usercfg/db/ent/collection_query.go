@@ -14,21 +14,21 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/collection"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/predicate"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent/space"
+	"github.com/vogtp/rag/pkg/usercfg/db/ent/sourcesystem"
 )
 
 // CollectionQuery is the builder for querying Collection entities.
 type CollectionQuery struct {
 	config
-	ctx             *QueryContext
-	order           []collection.OrderOption
-	inters          []Interceptor
-	predicates      []predicate.Collection
-	withSpaces      *SpaceQuery
-	withFKs         bool
-	modifiers       []func(*sql.Selector)
-	loadTotal       []func(context.Context, []*Collection) error
-	withNamedSpaces map[string]*SpaceQuery
+	ctx              *QueryContext
+	order            []collection.OrderOption
+	inters           []Interceptor
+	predicates       []predicate.Collection
+	withSources      *SourceSystemQuery
+	withFKs          bool
+	modifiers        []func(*sql.Selector)
+	loadTotal        []func(context.Context, []*Collection) error
+	withNamedSources map[string]*SourceSystemQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -65,9 +65,9 @@ func (cq *CollectionQuery) Order(o ...collection.OrderOption) *CollectionQuery {
 	return cq
 }
 
-// QuerySpaces chains the current query on the "Spaces" edge.
-func (cq *CollectionQuery) QuerySpaces() *SpaceQuery {
-	query := (&SpaceClient{config: cq.config}).Query()
+// QuerySources chains the current query on the "Sources" edge.
+func (cq *CollectionQuery) QuerySources() *SourceSystemQuery {
+	query := (&SourceSystemClient{config: cq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -78,8 +78,8 @@ func (cq *CollectionQuery) QuerySpaces() *SpaceQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(collection.Table, collection.FieldID, selector),
-			sqlgraph.To(space.Table, space.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, collection.SpacesTable, collection.SpacesColumn),
+			sqlgraph.To(sourcesystem.Table, sourcesystem.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, collection.SourcesTable, collection.SourcesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -274,26 +274,26 @@ func (cq *CollectionQuery) Clone() *CollectionQuery {
 		return nil
 	}
 	return &CollectionQuery{
-		config:     cq.config,
-		ctx:        cq.ctx.Clone(),
-		order:      append([]collection.OrderOption{}, cq.order...),
-		inters:     append([]Interceptor{}, cq.inters...),
-		predicates: append([]predicate.Collection{}, cq.predicates...),
-		withSpaces: cq.withSpaces.Clone(),
+		config:      cq.config,
+		ctx:         cq.ctx.Clone(),
+		order:       append([]collection.OrderOption{}, cq.order...),
+		inters:      append([]Interceptor{}, cq.inters...),
+		predicates:  append([]predicate.Collection{}, cq.predicates...),
+		withSources: cq.withSources.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
 	}
 }
 
-// WithSpaces tells the query-builder to eager-load the nodes that are connected to
-// the "Spaces" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *CollectionQuery) WithSpaces(opts ...func(*SpaceQuery)) *CollectionQuery {
-	query := (&SpaceClient{config: cq.config}).Query()
+// WithSources tells the query-builder to eager-load the nodes that are connected to
+// the "Sources" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CollectionQuery) WithSources(opts ...func(*SourceSystemQuery)) *CollectionQuery {
+	query := (&SourceSystemClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	cq.withSpaces = query
+	cq.withSources = query
 	return cq
 }
 
@@ -377,7 +377,7 @@ func (cq *CollectionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*C
 		withFKs     = cq.withFKs
 		_spec       = cq.querySpec()
 		loadedTypes = [1]bool{
-			cq.withSpaces != nil,
+			cq.withSources != nil,
 		}
 	)
 	if withFKs {
@@ -404,17 +404,17 @@ func (cq *CollectionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*C
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := cq.withSpaces; query != nil {
-		if err := cq.loadSpaces(ctx, query, nodes,
-			func(n *Collection) { n.Edges.Spaces = []*Space{} },
-			func(n *Collection, e *Space) { n.Edges.Spaces = append(n.Edges.Spaces, e) }); err != nil {
+	if query := cq.withSources; query != nil {
+		if err := cq.loadSources(ctx, query, nodes,
+			func(n *Collection) { n.Edges.Sources = []*SourceSystem{} },
+			func(n *Collection, e *SourceSystem) { n.Edges.Sources = append(n.Edges.Sources, e) }); err != nil {
 			return nil, err
 		}
 	}
-	for name, query := range cq.withNamedSpaces {
-		if err := cq.loadSpaces(ctx, query, nodes,
-			func(n *Collection) { n.appendNamedSpaces(name) },
-			func(n *Collection, e *Space) { n.appendNamedSpaces(name, e) }); err != nil {
+	for name, query := range cq.withNamedSources {
+		if err := cq.loadSources(ctx, query, nodes,
+			func(n *Collection) { n.appendNamedSources(name) },
+			func(n *Collection, e *SourceSystem) { n.appendNamedSources(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -426,7 +426,7 @@ func (cq *CollectionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*C
 	return nodes, nil
 }
 
-func (cq *CollectionQuery) loadSpaces(ctx context.Context, query *SpaceQuery, nodes []*Collection, init func(*Collection), assign func(*Collection, *Space)) error {
+func (cq *CollectionQuery) loadSources(ctx context.Context, query *SourceSystemQuery, nodes []*Collection, init func(*Collection), assign func(*Collection, *SourceSystem)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int]*Collection)
 	for i := range nodes {
@@ -437,21 +437,21 @@ func (cq *CollectionQuery) loadSpaces(ctx context.Context, query *SpaceQuery, no
 		}
 	}
 	query.withFKs = true
-	query.Where(predicate.Space(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(collection.SpacesColumn), fks...))
+	query.Where(predicate.SourceSystem(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(collection.SourcesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.collection_spaces
+		fk := n.collection_sources
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "collection_spaces" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "collection_sources" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "collection_spaces" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "collection_sources" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -542,17 +542,17 @@ func (cq *CollectionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
-// WithNamedSpaces tells the query-builder to eager-load the nodes that are connected to the "Spaces"
+// WithNamedSources tells the query-builder to eager-load the nodes that are connected to the "Sources"
 // edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (cq *CollectionQuery) WithNamedSpaces(name string, opts ...func(*SpaceQuery)) *CollectionQuery {
-	query := (&SpaceClient{config: cq.config}).Query()
+func (cq *CollectionQuery) WithNamedSources(name string, opts ...func(*SourceSystemQuery)) *CollectionQuery {
+	query := (&SourceSystemClient{config: cq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	if cq.withNamedSpaces == nil {
-		cq.withNamedSpaces = make(map[string]*SpaceQuery)
+	if cq.withNamedSources == nil {
+		cq.withNamedSources = make(map[string]*SourceSystemQuery)
 	}
-	cq.withNamedSpaces[name] = query
+	cq.withNamedSources[name] = query
 	return cq
 }
 

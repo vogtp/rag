@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/collection"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent/confluence"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/predicate"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/user"
 )
@@ -63,21 +62,6 @@ func (uu *UserUpdate) ClearOpenaiAPIkey() *UserUpdate {
 	return uu
 }
 
-// AddConfluenceIDs adds the "Confluence" edge to the Confluence entity by IDs.
-func (uu *UserUpdate) AddConfluenceIDs(ids ...int) *UserUpdate {
-	uu.mutation.AddConfluenceIDs(ids...)
-	return uu
-}
-
-// AddConfluence adds the "Confluence" edges to the Confluence entity.
-func (uu *UserUpdate) AddConfluence(c ...*Confluence) *UserUpdate {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return uu.AddConfluenceIDs(ids...)
-}
-
 // AddCollectionIDs adds the "Collections" edge to the Collection entity by IDs.
 func (uu *UserUpdate) AddCollectionIDs(ids ...int) *UserUpdate {
 	uu.mutation.AddCollectionIDs(ids...)
@@ -96,27 +80,6 @@ func (uu *UserUpdate) AddCollections(c ...*Collection) *UserUpdate {
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
-}
-
-// ClearConfluence clears all "Confluence" edges to the Confluence entity.
-func (uu *UserUpdate) ClearConfluence() *UserUpdate {
-	uu.mutation.ClearConfluence()
-	return uu
-}
-
-// RemoveConfluenceIDs removes the "Confluence" edge to Confluence entities by IDs.
-func (uu *UserUpdate) RemoveConfluenceIDs(ids ...int) *UserUpdate {
-	uu.mutation.RemoveConfluenceIDs(ids...)
-	return uu
-}
-
-// RemoveConfluence removes "Confluence" edges to Confluence entities.
-func (uu *UserUpdate) RemoveConfluence(c ...*Confluence) *UserUpdate {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return uu.RemoveConfluenceIDs(ids...)
 }
 
 // ClearCollections clears all "Collections" edges to the Collection entity.
@@ -184,51 +147,6 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.OpenaiAPIkeyCleared() {
 		_spec.ClearField(user.FieldOpenaiAPIkey, field.TypeString)
-	}
-	if uu.mutation.ConfluenceCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.ConfluenceTable,
-			Columns: []string{user.ConfluenceColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(confluence.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := uu.mutation.RemovedConfluenceIDs(); len(nodes) > 0 && !uu.mutation.ConfluenceCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.ConfluenceTable,
-			Columns: []string{user.ConfluenceColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(confluence.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := uu.mutation.ConfluenceIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.ConfluenceTable,
-			Columns: []string{user.ConfluenceColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(confluence.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if uu.mutation.CollectionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -329,21 +247,6 @@ func (uuo *UserUpdateOne) ClearOpenaiAPIkey() *UserUpdateOne {
 	return uuo
 }
 
-// AddConfluenceIDs adds the "Confluence" edge to the Confluence entity by IDs.
-func (uuo *UserUpdateOne) AddConfluenceIDs(ids ...int) *UserUpdateOne {
-	uuo.mutation.AddConfluenceIDs(ids...)
-	return uuo
-}
-
-// AddConfluence adds the "Confluence" edges to the Confluence entity.
-func (uuo *UserUpdateOne) AddConfluence(c ...*Confluence) *UserUpdateOne {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return uuo.AddConfluenceIDs(ids...)
-}
-
 // AddCollectionIDs adds the "Collections" edge to the Collection entity by IDs.
 func (uuo *UserUpdateOne) AddCollectionIDs(ids ...int) *UserUpdateOne {
 	uuo.mutation.AddCollectionIDs(ids...)
@@ -362,27 +265,6 @@ func (uuo *UserUpdateOne) AddCollections(c ...*Collection) *UserUpdateOne {
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
-}
-
-// ClearConfluence clears all "Confluence" edges to the Confluence entity.
-func (uuo *UserUpdateOne) ClearConfluence() *UserUpdateOne {
-	uuo.mutation.ClearConfluence()
-	return uuo
-}
-
-// RemoveConfluenceIDs removes the "Confluence" edge to Confluence entities by IDs.
-func (uuo *UserUpdateOne) RemoveConfluenceIDs(ids ...int) *UserUpdateOne {
-	uuo.mutation.RemoveConfluenceIDs(ids...)
-	return uuo
-}
-
-// RemoveConfluence removes "Confluence" edges to Confluence entities.
-func (uuo *UserUpdateOne) RemoveConfluence(c ...*Confluence) *UserUpdateOne {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return uuo.RemoveConfluenceIDs(ids...)
 }
 
 // ClearCollections clears all "Collections" edges to the Collection entity.
@@ -480,51 +362,6 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.OpenaiAPIkeyCleared() {
 		_spec.ClearField(user.FieldOpenaiAPIkey, field.TypeString)
-	}
-	if uuo.mutation.ConfluenceCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.ConfluenceTable,
-			Columns: []string{user.ConfluenceColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(confluence.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := uuo.mutation.RemovedConfluenceIDs(); len(nodes) > 0 && !uuo.mutation.ConfluenceCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.ConfluenceTable,
-			Columns: []string{user.ConfluenceColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(confluence.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := uuo.mutation.ConfluenceIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.ConfluenceTable,
-			Columns: []string{user.ConfluenceColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(confluence.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if uuo.mutation.CollectionsCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -13,8 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/collection"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent/confluence"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent/space"
+	"github.com/vogtp/rag/pkg/usercfg/db/ent/sourcesystem"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/user"
 )
 
@@ -76,10 +75,9 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			collection.Table: collection.ValidColumn,
-			confluence.Table: confluence.ValidColumn,
-			space.Table:      space.ValidColumn,
-			user.Table:       user.ValidColumn,
+			collection.Table:   collection.ValidColumn,
+			sourcesystem.Table: sourcesystem.ValidColumn,
+			user.Table:         user.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

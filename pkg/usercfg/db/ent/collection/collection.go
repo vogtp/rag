@@ -16,17 +16,17 @@ const (
 	FieldName = "name"
 	// FieldAPIKey holds the string denoting the apikey field in the database.
 	FieldAPIKey = "api_key"
-	// EdgeSpaces holds the string denoting the spaces edge name in mutations.
-	EdgeSpaces = "Spaces"
+	// EdgeSources holds the string denoting the sources edge name in mutations.
+	EdgeSources = "Sources"
 	// Table holds the table name of the collection in the database.
 	Table = "collections"
-	// SpacesTable is the table that holds the Spaces relation/edge.
-	SpacesTable = "spaces"
-	// SpacesInverseTable is the table name for the Space entity.
-	// It exists in this package in order to avoid circular dependency with the "space" package.
-	SpacesInverseTable = "spaces"
-	// SpacesColumn is the table column denoting the Spaces relation/edge.
-	SpacesColumn = "collection_spaces"
+	// SourcesTable is the table that holds the Sources relation/edge.
+	SourcesTable = "source_systems"
+	// SourcesInverseTable is the table name for the SourceSystem entity.
+	// It exists in this package in order to avoid circular dependency with the "sourcesystem" package.
+	SourcesInverseTable = "source_systems"
+	// SourcesColumn is the table column denoting the Sources relation/edge.
+	SourcesColumn = "collection_sources"
 )
 
 // Columns holds all SQL columns for collection fields.
@@ -75,23 +75,23 @@ func ByAPIKey(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAPIKey, opts...).ToFunc()
 }
 
-// BySpacesCount orders the results by Spaces count.
-func BySpacesCount(opts ...sql.OrderTermOption) OrderOption {
+// BySourcesCount orders the results by Sources count.
+func BySourcesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newSpacesStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newSourcesStep(), opts...)
 	}
 }
 
-// BySpaces orders the results by Spaces terms.
-func BySpaces(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// BySources orders the results by Sources terms.
+func BySources(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newSpacesStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newSourcesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
-func newSpacesStep() *sqlgraph.Step {
+func newSourcesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(SpacesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, SpacesTable, SpacesColumn),
+		sqlgraph.To(SourcesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SourcesTable, SourcesColumn),
 	)
 }

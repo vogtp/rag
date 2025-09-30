@@ -11,9 +11,8 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/collection"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent/confluence"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/predicate"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent/space"
+	"github.com/vogtp/rag/pkg/usercfg/db/ent/sourcesystem"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/user"
 )
 
@@ -26,27 +25,26 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeCollection = "Collection"
-	TypeConfluence = "Confluence"
-	TypeSpace      = "Space"
-	TypeUser       = "User"
+	TypeCollection   = "Collection"
+	TypeSourceSystem = "SourceSystem"
+	TypeUser         = "User"
 )
 
 // CollectionMutation represents an operation that mutates the Collection nodes in the graph.
 type CollectionMutation struct {
 	config
-	op             Op
-	typ            string
-	id             *int
-	_Name          *string
-	_APIKey        *string
-	clearedFields  map[string]struct{}
-	_Spaces        map[int]struct{}
-	removed_Spaces map[int]struct{}
-	cleared_Spaces bool
-	done           bool
-	oldValue       func(context.Context) (*Collection, error)
-	predicates     []predicate.Collection
+	op              Op
+	typ             string
+	id              *int
+	_Name           *string
+	_APIKey         *string
+	clearedFields   map[string]struct{}
+	_Sources        map[int]struct{}
+	removed_Sources map[int]struct{}
+	cleared_Sources bool
+	done            bool
+	oldValue        func(context.Context) (*Collection, error)
+	predicates      []predicate.Collection
 }
 
 var _ ent.Mutation = (*CollectionMutation)(nil)
@@ -219,58 +217,58 @@ func (m *CollectionMutation) ResetAPIKey() {
 	m._APIKey = nil
 }
 
-// AddSpaceIDs adds the "Spaces" edge to the Space entity by ids.
-func (m *CollectionMutation) AddSpaceIDs(ids ...int) {
-	if m._Spaces == nil {
-		m._Spaces = make(map[int]struct{})
+// AddSourceIDs adds the "Sources" edge to the SourceSystem entity by ids.
+func (m *CollectionMutation) AddSourceIDs(ids ...int) {
+	if m._Sources == nil {
+		m._Sources = make(map[int]struct{})
 	}
 	for i := range ids {
-		m._Spaces[ids[i]] = struct{}{}
+		m._Sources[ids[i]] = struct{}{}
 	}
 }
 
-// ClearSpaces clears the "Spaces" edge to the Space entity.
-func (m *CollectionMutation) ClearSpaces() {
-	m.cleared_Spaces = true
+// ClearSources clears the "Sources" edge to the SourceSystem entity.
+func (m *CollectionMutation) ClearSources() {
+	m.cleared_Sources = true
 }
 
-// SpacesCleared reports if the "Spaces" edge to the Space entity was cleared.
-func (m *CollectionMutation) SpacesCleared() bool {
-	return m.cleared_Spaces
+// SourcesCleared reports if the "Sources" edge to the SourceSystem entity was cleared.
+func (m *CollectionMutation) SourcesCleared() bool {
+	return m.cleared_Sources
 }
 
-// RemoveSpaceIDs removes the "Spaces" edge to the Space entity by IDs.
-func (m *CollectionMutation) RemoveSpaceIDs(ids ...int) {
-	if m.removed_Spaces == nil {
-		m.removed_Spaces = make(map[int]struct{})
+// RemoveSourceIDs removes the "Sources" edge to the SourceSystem entity by IDs.
+func (m *CollectionMutation) RemoveSourceIDs(ids ...int) {
+	if m.removed_Sources == nil {
+		m.removed_Sources = make(map[int]struct{})
 	}
 	for i := range ids {
-		delete(m._Spaces, ids[i])
-		m.removed_Spaces[ids[i]] = struct{}{}
+		delete(m._Sources, ids[i])
+		m.removed_Sources[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedSpaces returns the removed IDs of the "Spaces" edge to the Space entity.
-func (m *CollectionMutation) RemovedSpacesIDs() (ids []int) {
-	for id := range m.removed_Spaces {
+// RemovedSources returns the removed IDs of the "Sources" edge to the SourceSystem entity.
+func (m *CollectionMutation) RemovedSourcesIDs() (ids []int) {
+	for id := range m.removed_Sources {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// SpacesIDs returns the "Spaces" edge IDs in the mutation.
-func (m *CollectionMutation) SpacesIDs() (ids []int) {
-	for id := range m._Spaces {
+// SourcesIDs returns the "Sources" edge IDs in the mutation.
+func (m *CollectionMutation) SourcesIDs() (ids []int) {
+	for id := range m._Sources {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetSpaces resets all changes to the "Spaces" edge.
-func (m *CollectionMutation) ResetSpaces() {
-	m._Spaces = nil
-	m.cleared_Spaces = false
-	m.removed_Spaces = nil
+// ResetSources resets all changes to the "Sources" edge.
+func (m *CollectionMutation) ResetSources() {
+	m._Sources = nil
+	m.cleared_Sources = false
+	m.removed_Sources = nil
 }
 
 // Where appends a list predicates to the CollectionMutation builder.
@@ -424,8 +422,8 @@ func (m *CollectionMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CollectionMutation) AddedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m._Spaces != nil {
-		edges = append(edges, collection.EdgeSpaces)
+	if m._Sources != nil {
+		edges = append(edges, collection.EdgeSources)
 	}
 	return edges
 }
@@ -434,9 +432,9 @@ func (m *CollectionMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *CollectionMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case collection.EdgeSpaces:
-		ids := make([]ent.Value, 0, len(m._Spaces))
-		for id := range m._Spaces {
+	case collection.EdgeSources:
+		ids := make([]ent.Value, 0, len(m._Sources))
+		for id := range m._Sources {
 			ids = append(ids, id)
 		}
 		return ids
@@ -447,8 +445,8 @@ func (m *CollectionMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CollectionMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.removed_Spaces != nil {
-		edges = append(edges, collection.EdgeSpaces)
+	if m.removed_Sources != nil {
+		edges = append(edges, collection.EdgeSources)
 	}
 	return edges
 }
@@ -457,9 +455,9 @@ func (m *CollectionMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *CollectionMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case collection.EdgeSpaces:
-		ids := make([]ent.Value, 0, len(m.removed_Spaces))
-		for id := range m.removed_Spaces {
+	case collection.EdgeSources:
+		ids := make([]ent.Value, 0, len(m.removed_Sources))
+		for id := range m.removed_Sources {
 			ids = append(ids, id)
 		}
 		return ids
@@ -470,8 +468,8 @@ func (m *CollectionMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CollectionMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.cleared_Spaces {
-		edges = append(edges, collection.EdgeSpaces)
+	if m.cleared_Sources {
+		edges = append(edges, collection.EdgeSources)
 	}
 	return edges
 }
@@ -480,8 +478,8 @@ func (m *CollectionMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *CollectionMutation) EdgeCleared(name string) bool {
 	switch name {
-	case collection.EdgeSpaces:
-		return m.cleared_Spaces
+	case collection.EdgeSources:
+		return m.cleared_Sources
 	}
 	return false
 }
@@ -498,42 +496,41 @@ func (m *CollectionMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *CollectionMutation) ResetEdge(name string) error {
 	switch name {
-	case collection.EdgeSpaces:
-		m.ResetSpaces()
+	case collection.EdgeSources:
+		m.ResetSources()
 		return nil
 	}
 	return fmt.Errorf("unknown Collection edge %s", name)
 }
 
-// ConfluenceMutation represents an operation that mutates the Confluence nodes in the graph.
-type ConfluenceMutation struct {
+// SourceSystemMutation represents an operation that mutates the SourceSystem nodes in the graph.
+type SourceSystemMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *int
-	_Name             *string
-	_URL              *string
-	_ConfluenceAPIKey *string
-	clearedFields     map[string]struct{}
-	_Spaces           map[int]struct{}
-	removed_Spaces    map[int]struct{}
-	cleared_Spaces    bool
-	done              bool
-	oldValue          func(context.Context) (*Confluence, error)
-	predicates        []predicate.Confluence
+	op            Op
+	typ           string
+	id            *int
+	_Name         *string
+	_Type         *sourcesystem.Type
+	_URL          *string
+	key           *string
+	parts         *string
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*SourceSystem, error)
+	predicates    []predicate.SourceSystem
 }
 
-var _ ent.Mutation = (*ConfluenceMutation)(nil)
+var _ ent.Mutation = (*SourceSystemMutation)(nil)
 
-// confluenceOption allows management of the mutation configuration using functional options.
-type confluenceOption func(*ConfluenceMutation)
+// sourcesystemOption allows management of the mutation configuration using functional options.
+type sourcesystemOption func(*SourceSystemMutation)
 
-// newConfluenceMutation creates new mutation for the Confluence entity.
-func newConfluenceMutation(c config, op Op, opts ...confluenceOption) *ConfluenceMutation {
-	m := &ConfluenceMutation{
+// newSourceSystemMutation creates new mutation for the SourceSystem entity.
+func newSourceSystemMutation(c config, op Op, opts ...sourcesystemOption) *SourceSystemMutation {
+	m := &SourceSystemMutation{
 		config:        c,
 		op:            op,
-		typ:           TypeConfluence,
+		typ:           TypeSourceSystem,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -542,20 +539,20 @@ func newConfluenceMutation(c config, op Op, opts ...confluenceOption) *Confluenc
 	return m
 }
 
-// withConfluenceID sets the ID field of the mutation.
-func withConfluenceID(id int) confluenceOption {
-	return func(m *ConfluenceMutation) {
+// withSourceSystemID sets the ID field of the mutation.
+func withSourceSystemID(id int) sourcesystemOption {
+	return func(m *SourceSystemMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *Confluence
+			value *SourceSystem
 		)
-		m.oldValue = func(ctx context.Context) (*Confluence, error) {
+		m.oldValue = func(ctx context.Context) (*SourceSystem, error) {
 			once.Do(func() {
 				if m.done {
 					err = errors.New("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().Confluence.Get(ctx, id)
+					value, err = m.Client().SourceSystem.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -564,10 +561,10 @@ func withConfluenceID(id int) confluenceOption {
 	}
 }
 
-// withConfluence sets the old Confluence of the mutation.
-func withConfluence(node *Confluence) confluenceOption {
-	return func(m *ConfluenceMutation) {
-		m.oldValue = func(context.Context) (*Confluence, error) {
+// withSourceSystem sets the old SourceSystem of the mutation.
+func withSourceSystem(node *SourceSystem) sourcesystemOption {
+	return func(m *SourceSystemMutation) {
+		m.oldValue = func(context.Context) (*SourceSystem, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -576,7 +573,7 @@ func withConfluence(node *Confluence) confluenceOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m ConfluenceMutation) Client() *Client {
+func (m SourceSystemMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -584,7 +581,7 @@ func (m ConfluenceMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m ConfluenceMutation) Tx() (*Tx, error) {
+func (m SourceSystemMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, errors.New("ent: mutation is not running in a transaction")
 	}
@@ -595,7 +592,7 @@ func (m ConfluenceMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *ConfluenceMutation) ID() (id int, exists bool) {
+func (m *SourceSystemMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -606,7 +603,7 @@ func (m *ConfluenceMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *ConfluenceMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *SourceSystemMutation) IDs(ctx context.Context) ([]int, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
@@ -615,19 +612,19 @@ func (m *ConfluenceMutation) IDs(ctx context.Context) ([]int, error) {
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().Confluence.Query().Where(m.predicates...).IDs(ctx)
+		return m.Client().SourceSystem.Query().Where(m.predicates...).IDs(ctx)
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
 }
 
 // SetName sets the "Name" field.
-func (m *ConfluenceMutation) SetName(s string) {
+func (m *SourceSystemMutation) SetName(s string) {
 	m._Name = &s
 }
 
 // Name returns the value of the "Name" field in the mutation.
-func (m *ConfluenceMutation) Name() (r string, exists bool) {
+func (m *SourceSystemMutation) Name() (r string, exists bool) {
 	v := m._Name
 	if v == nil {
 		return
@@ -635,10 +632,10 @@ func (m *ConfluenceMutation) Name() (r string, exists bool) {
 	return *v, true
 }
 
-// OldName returns the old "Name" field's value of the Confluence entity.
-// If the Confluence object wasn't provided to the builder, the object is fetched from the database.
+// OldName returns the old "Name" field's value of the SourceSystem entity.
+// If the SourceSystem object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ConfluenceMutation) OldName(ctx context.Context) (v string, err error) {
+func (m *SourceSystemMutation) OldName(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldName is only allowed on UpdateOne operations")
 	}
@@ -653,17 +650,53 @@ func (m *ConfluenceMutation) OldName(ctx context.Context) (v string, err error) 
 }
 
 // ResetName resets all changes to the "Name" field.
-func (m *ConfluenceMutation) ResetName() {
+func (m *SourceSystemMutation) ResetName() {
 	m._Name = nil
 }
 
+// SetType sets the "Type" field.
+func (m *SourceSystemMutation) SetType(s sourcesystem.Type) {
+	m._Type = &s
+}
+
+// GetType returns the value of the "Type" field in the mutation.
+func (m *SourceSystemMutation) GetType() (r sourcesystem.Type, exists bool) {
+	v := m._Type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldType returns the old "Type" field's value of the SourceSystem entity.
+// If the SourceSystem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SourceSystemMutation) OldType(ctx context.Context) (v sourcesystem.Type, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
+	}
+	return oldValue.Type, nil
+}
+
+// ResetType resets all changes to the "Type" field.
+func (m *SourceSystemMutation) ResetType() {
+	m._Type = nil
+}
+
 // SetURL sets the "URL" field.
-func (m *ConfluenceMutation) SetURL(s string) {
+func (m *SourceSystemMutation) SetURL(s string) {
 	m._URL = &s
 }
 
 // URL returns the value of the "URL" field in the mutation.
-func (m *ConfluenceMutation) URL() (r string, exists bool) {
+func (m *SourceSystemMutation) URL() (r string, exists bool) {
 	v := m._URL
 	if v == nil {
 		return
@@ -671,10 +704,10 @@ func (m *ConfluenceMutation) URL() (r string, exists bool) {
 	return *v, true
 }
 
-// OldURL returns the old "URL" field's value of the Confluence entity.
-// If the Confluence object wasn't provided to the builder, the object is fetched from the database.
+// OldURL returns the old "URL" field's value of the SourceSystem entity.
+// If the SourceSystem object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ConfluenceMutation) OldURL(ctx context.Context) (v string, err error) {
+func (m *SourceSystemMutation) OldURL(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldURL is only allowed on UpdateOne operations")
 	}
@@ -689,109 +722,117 @@ func (m *ConfluenceMutation) OldURL(ctx context.Context) (v string, err error) {
 }
 
 // ResetURL resets all changes to the "URL" field.
-func (m *ConfluenceMutation) ResetURL() {
+func (m *SourceSystemMutation) ResetURL() {
 	m._URL = nil
 }
 
-// SetConfluenceAPIKey sets the "ConfluenceAPIKey" field.
-func (m *ConfluenceMutation) SetConfluenceAPIKey(s string) {
-	m._ConfluenceAPIKey = &s
+// SetKey sets the "key" field.
+func (m *SourceSystemMutation) SetKey(s string) {
+	m.key = &s
 }
 
-// ConfluenceAPIKey returns the value of the "ConfluenceAPIKey" field in the mutation.
-func (m *ConfluenceMutation) ConfluenceAPIKey() (r string, exists bool) {
-	v := m._ConfluenceAPIKey
+// Key returns the value of the "key" field in the mutation.
+func (m *SourceSystemMutation) Key() (r string, exists bool) {
+	v := m.key
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldConfluenceAPIKey returns the old "ConfluenceAPIKey" field's value of the Confluence entity.
-// If the Confluence object wasn't provided to the builder, the object is fetched from the database.
+// OldKey returns the old "key" field's value of the SourceSystem entity.
+// If the SourceSystem object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ConfluenceMutation) OldConfluenceAPIKey(ctx context.Context) (v string, err error) {
+func (m *SourceSystemMutation) OldKey(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldConfluenceAPIKey is only allowed on UpdateOne operations")
+		return v, errors.New("OldKey is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldConfluenceAPIKey requires an ID field in the mutation")
+		return v, errors.New("OldKey requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldConfluenceAPIKey: %w", err)
+		return v, fmt.Errorf("querying old value for OldKey: %w", err)
 	}
-	return oldValue.ConfluenceAPIKey, nil
+	return oldValue.Key, nil
 }
 
-// ResetConfluenceAPIKey resets all changes to the "ConfluenceAPIKey" field.
-func (m *ConfluenceMutation) ResetConfluenceAPIKey() {
-	m._ConfluenceAPIKey = nil
+// ClearKey clears the value of the "key" field.
+func (m *SourceSystemMutation) ClearKey() {
+	m.key = nil
+	m.clearedFields[sourcesystem.FieldKey] = struct{}{}
 }
 
-// AddSpaceIDs adds the "Spaces" edge to the Space entity by ids.
-func (m *ConfluenceMutation) AddSpaceIDs(ids ...int) {
-	if m._Spaces == nil {
-		m._Spaces = make(map[int]struct{})
+// KeyCleared returns if the "key" field was cleared in this mutation.
+func (m *SourceSystemMutation) KeyCleared() bool {
+	_, ok := m.clearedFields[sourcesystem.FieldKey]
+	return ok
+}
+
+// ResetKey resets all changes to the "key" field.
+func (m *SourceSystemMutation) ResetKey() {
+	m.key = nil
+	delete(m.clearedFields, sourcesystem.FieldKey)
+}
+
+// SetParts sets the "parts" field.
+func (m *SourceSystemMutation) SetParts(s string) {
+	m.parts = &s
+}
+
+// Parts returns the value of the "parts" field in the mutation.
+func (m *SourceSystemMutation) Parts() (r string, exists bool) {
+	v := m.parts
+	if v == nil {
+		return
 	}
-	for i := range ids {
-		m._Spaces[ids[i]] = struct{}{}
+	return *v, true
+}
+
+// OldParts returns the old "parts" field's value of the SourceSystem entity.
+// If the SourceSystem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SourceSystemMutation) OldParts(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldParts is only allowed on UpdateOne operations")
 	}
-}
-
-// ClearSpaces clears the "Spaces" edge to the Space entity.
-func (m *ConfluenceMutation) ClearSpaces() {
-	m.cleared_Spaces = true
-}
-
-// SpacesCleared reports if the "Spaces" edge to the Space entity was cleared.
-func (m *ConfluenceMutation) SpacesCleared() bool {
-	return m.cleared_Spaces
-}
-
-// RemoveSpaceIDs removes the "Spaces" edge to the Space entity by IDs.
-func (m *ConfluenceMutation) RemoveSpaceIDs(ids ...int) {
-	if m.removed_Spaces == nil {
-		m.removed_Spaces = make(map[int]struct{})
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldParts requires an ID field in the mutation")
 	}
-	for i := range ids {
-		delete(m._Spaces, ids[i])
-		m.removed_Spaces[ids[i]] = struct{}{}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParts: %w", err)
 	}
+	return oldValue.Parts, nil
 }
 
-// RemovedSpaces returns the removed IDs of the "Spaces" edge to the Space entity.
-func (m *ConfluenceMutation) RemovedSpacesIDs() (ids []int) {
-	for id := range m.removed_Spaces {
-		ids = append(ids, id)
-	}
-	return
+// ClearParts clears the value of the "parts" field.
+func (m *SourceSystemMutation) ClearParts() {
+	m.parts = nil
+	m.clearedFields[sourcesystem.FieldParts] = struct{}{}
 }
 
-// SpacesIDs returns the "Spaces" edge IDs in the mutation.
-func (m *ConfluenceMutation) SpacesIDs() (ids []int) {
-	for id := range m._Spaces {
-		ids = append(ids, id)
-	}
-	return
+// PartsCleared returns if the "parts" field was cleared in this mutation.
+func (m *SourceSystemMutation) PartsCleared() bool {
+	_, ok := m.clearedFields[sourcesystem.FieldParts]
+	return ok
 }
 
-// ResetSpaces resets all changes to the "Spaces" edge.
-func (m *ConfluenceMutation) ResetSpaces() {
-	m._Spaces = nil
-	m.cleared_Spaces = false
-	m.removed_Spaces = nil
+// ResetParts resets all changes to the "parts" field.
+func (m *SourceSystemMutation) ResetParts() {
+	m.parts = nil
+	delete(m.clearedFields, sourcesystem.FieldParts)
 }
 
-// Where appends a list predicates to the ConfluenceMutation builder.
-func (m *ConfluenceMutation) Where(ps ...predicate.Confluence) {
+// Where appends a list predicates to the SourceSystemMutation builder.
+func (m *SourceSystemMutation) Where(ps ...predicate.SourceSystem) {
 	m.predicates = append(m.predicates, ps...)
 }
 
-// WhereP appends storage-level predicates to the ConfluenceMutation builder. Using this method,
+// WhereP appends storage-level predicates to the SourceSystemMutation builder. Using this method,
 // users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *ConfluenceMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.Confluence, len(ps))
+func (m *SourceSystemMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.SourceSystem, len(ps))
 	for i := range ps {
 		p[i] = ps[i]
 	}
@@ -799,33 +840,39 @@ func (m *ConfluenceMutation) WhereP(ps ...func(*sql.Selector)) {
 }
 
 // Op returns the operation name.
-func (m *ConfluenceMutation) Op() Op {
+func (m *SourceSystemMutation) Op() Op {
 	return m.op
 }
 
 // SetOp allows setting the mutation operation.
-func (m *ConfluenceMutation) SetOp(op Op) {
+func (m *SourceSystemMutation) SetOp(op Op) {
 	m.op = op
 }
 
-// Type returns the node type of this mutation (Confluence).
-func (m *ConfluenceMutation) Type() string {
+// Type returns the node type of this mutation (SourceSystem).
+func (m *SourceSystemMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *ConfluenceMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+func (m *SourceSystemMutation) Fields() []string {
+	fields := make([]string, 0, 5)
 	if m._Name != nil {
-		fields = append(fields, confluence.FieldName)
+		fields = append(fields, sourcesystem.FieldName)
+	}
+	if m._Type != nil {
+		fields = append(fields, sourcesystem.FieldType)
 	}
 	if m._URL != nil {
-		fields = append(fields, confluence.FieldURL)
+		fields = append(fields, sourcesystem.FieldURL)
 	}
-	if m._ConfluenceAPIKey != nil {
-		fields = append(fields, confluence.FieldConfluenceAPIKey)
+	if m.key != nil {
+		fields = append(fields, sourcesystem.FieldKey)
+	}
+	if m.parts != nil {
+		fields = append(fields, sourcesystem.FieldParts)
 	}
 	return fields
 }
@@ -833,14 +880,18 @@ func (m *ConfluenceMutation) Fields() []string {
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *ConfluenceMutation) Field(name string) (ent.Value, bool) {
+func (m *SourceSystemMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case confluence.FieldName:
+	case sourcesystem.FieldName:
 		return m.Name()
-	case confluence.FieldURL:
+	case sourcesystem.FieldType:
+		return m.GetType()
+	case sourcesystem.FieldURL:
 		return m.URL()
-	case confluence.FieldConfluenceAPIKey:
-		return m.ConfluenceAPIKey()
+	case sourcesystem.FieldKey:
+		return m.Key()
+	case sourcesystem.FieldParts:
+		return m.Parts()
 	}
 	return nil, false
 }
@@ -848,568 +899,191 @@ func (m *ConfluenceMutation) Field(name string) (ent.Value, bool) {
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *ConfluenceMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+func (m *SourceSystemMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case confluence.FieldName:
+	case sourcesystem.FieldName:
 		return m.OldName(ctx)
-	case confluence.FieldURL:
+	case sourcesystem.FieldType:
+		return m.OldType(ctx)
+	case sourcesystem.FieldURL:
 		return m.OldURL(ctx)
-	case confluence.FieldConfluenceAPIKey:
-		return m.OldConfluenceAPIKey(ctx)
+	case sourcesystem.FieldKey:
+		return m.OldKey(ctx)
+	case sourcesystem.FieldParts:
+		return m.OldParts(ctx)
 	}
-	return nil, fmt.Errorf("unknown Confluence field %s", name)
+	return nil, fmt.Errorf("unknown SourceSystem field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *ConfluenceMutation) SetField(name string, value ent.Value) error {
+func (m *SourceSystemMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case confluence.FieldName:
+	case sourcesystem.FieldName:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
 		return nil
-	case confluence.FieldURL:
+	case sourcesystem.FieldType:
+		v, ok := value.(sourcesystem.Type)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
+		return nil
+	case sourcesystem.FieldURL:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetURL(v)
 		return nil
-	case confluence.FieldConfluenceAPIKey:
+	case sourcesystem.FieldKey:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetConfluenceAPIKey(v)
+		m.SetKey(v)
+		return nil
+	case sourcesystem.FieldParts:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParts(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Confluence field %s", name)
+	return fmt.Errorf("unknown SourceSystem field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *ConfluenceMutation) AddedFields() []string {
+func (m *SourceSystemMutation) AddedFields() []string {
 	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *ConfluenceMutation) AddedField(name string) (ent.Value, bool) {
+func (m *SourceSystemMutation) AddedField(name string) (ent.Value, bool) {
 	return nil, false
 }
 
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *ConfluenceMutation) AddField(name string, value ent.Value) error {
+func (m *SourceSystemMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	}
-	return fmt.Errorf("unknown Confluence numeric field %s", name)
+	return fmt.Errorf("unknown SourceSystem numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *ConfluenceMutation) ClearedFields() []string {
-	return nil
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *ConfluenceMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *ConfluenceMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown Confluence nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *ConfluenceMutation) ResetField(name string) error {
-	switch name {
-	case confluence.FieldName:
-		m.ResetName()
-		return nil
-	case confluence.FieldURL:
-		m.ResetURL()
-		return nil
-	case confluence.FieldConfluenceAPIKey:
-		m.ResetConfluenceAPIKey()
-		return nil
+func (m *SourceSystemMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(sourcesystem.FieldKey) {
+		fields = append(fields, sourcesystem.FieldKey)
 	}
-	return fmt.Errorf("unknown Confluence field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *ConfluenceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m._Spaces != nil {
-		edges = append(edges, confluence.EdgeSpaces)
-	}
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *ConfluenceMutation) AddedIDs(name string) []ent.Value {
-	switch name {
-	case confluence.EdgeSpaces:
-		ids := make([]ent.Value, 0, len(m._Spaces))
-		for id := range m._Spaces {
-			ids = append(ids, id)
-		}
-		return ids
-	}
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *ConfluenceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.removed_Spaces != nil {
-		edges = append(edges, confluence.EdgeSpaces)
-	}
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *ConfluenceMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	case confluence.EdgeSpaces:
-		ids := make([]ent.Value, 0, len(m.removed_Spaces))
-		for id := range m.removed_Spaces {
-			ids = append(ids, id)
-		}
-		return ids
-	}
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *ConfluenceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.cleared_Spaces {
-		edges = append(edges, confluence.EdgeSpaces)
-	}
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *ConfluenceMutation) EdgeCleared(name string) bool {
-	switch name {
-	case confluence.EdgeSpaces:
-		return m.cleared_Spaces
-	}
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *ConfluenceMutation) ClearEdge(name string) error {
-	switch name {
-	}
-	return fmt.Errorf("unknown Confluence unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *ConfluenceMutation) ResetEdge(name string) error {
-	switch name {
-	case confluence.EdgeSpaces:
-		m.ResetSpaces()
-		return nil
-	}
-	return fmt.Errorf("unknown Confluence edge %s", name)
-}
-
-// SpaceMutation represents an operation that mutates the Space nodes in the graph.
-type SpaceMutation struct {
-	config
-	op            Op
-	typ           string
-	id            *int
-	_Name         *string
-	_SpaceKey     *string
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Space, error)
-	predicates    []predicate.Space
-}
-
-var _ ent.Mutation = (*SpaceMutation)(nil)
-
-// spaceOption allows management of the mutation configuration using functional options.
-type spaceOption func(*SpaceMutation)
-
-// newSpaceMutation creates new mutation for the Space entity.
-func newSpaceMutation(c config, op Op, opts ...spaceOption) *SpaceMutation {
-	m := &SpaceMutation{
-		config:        c,
-		op:            op,
-		typ:           TypeSpace,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withSpaceID sets the ID field of the mutation.
-func withSpaceID(id int) spaceOption {
-	return func(m *SpaceMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *Space
-		)
-		m.oldValue = func(ctx context.Context) (*Space, error) {
-			once.Do(func() {
-				if m.done {
-					err = errors.New("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().Space.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withSpace sets the old Space of the mutation.
-func withSpace(node *Space) spaceOption {
-	return func(m *SpaceMutation) {
-		m.oldValue = func(context.Context) (*Space, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m SpaceMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m SpaceMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, errors.New("ent: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *SpaceMutation) ID() (id int, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// IDs queries the database and returns the entity ids that match the mutation's predicate.
-// That means, if the mutation is applied within a transaction with an isolation level such
-// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
-// or updated by the mutation.
-func (m *SpaceMutation) IDs(ctx context.Context) ([]int, error) {
-	switch {
-	case m.op.Is(OpUpdateOne | OpDeleteOne):
-		id, exists := m.ID()
-		if exists {
-			return []int{id}, nil
-		}
-		fallthrough
-	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().Space.Query().Where(m.predicates...).IDs(ctx)
-	default:
-		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
-	}
-}
-
-// SetName sets the "Name" field.
-func (m *SpaceMutation) SetName(s string) {
-	m._Name = &s
-}
-
-// Name returns the value of the "Name" field in the mutation.
-func (m *SpaceMutation) Name() (r string, exists bool) {
-	v := m._Name
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldName returns the old "Name" field's value of the Space entity.
-// If the Space object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SpaceMutation) OldName(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldName is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldName requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldName: %w", err)
-	}
-	return oldValue.Name, nil
-}
-
-// ResetName resets all changes to the "Name" field.
-func (m *SpaceMutation) ResetName() {
-	m._Name = nil
-}
-
-// SetSpaceKey sets the "SpaceKey" field.
-func (m *SpaceMutation) SetSpaceKey(s string) {
-	m._SpaceKey = &s
-}
-
-// SpaceKey returns the value of the "SpaceKey" field in the mutation.
-func (m *SpaceMutation) SpaceKey() (r string, exists bool) {
-	v := m._SpaceKey
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSpaceKey returns the old "SpaceKey" field's value of the Space entity.
-// If the Space object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SpaceMutation) OldSpaceKey(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSpaceKey is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSpaceKey requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSpaceKey: %w", err)
-	}
-	return oldValue.SpaceKey, nil
-}
-
-// ResetSpaceKey resets all changes to the "SpaceKey" field.
-func (m *SpaceMutation) ResetSpaceKey() {
-	m._SpaceKey = nil
-}
-
-// Where appends a list predicates to the SpaceMutation builder.
-func (m *SpaceMutation) Where(ps ...predicate.Space) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// WhereP appends storage-level predicates to the SpaceMutation builder. Using this method,
-// users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *SpaceMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.Space, len(ps))
-	for i := range ps {
-		p[i] = ps[i]
-	}
-	m.Where(p...)
-}
-
-// Op returns the operation name.
-func (m *SpaceMutation) Op() Op {
-	return m.op
-}
-
-// SetOp allows setting the mutation operation.
-func (m *SpaceMutation) SetOp(op Op) {
-	m.op = op
-}
-
-// Type returns the node type of this mutation (Space).
-func (m *SpaceMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *SpaceMutation) Fields() []string {
-	fields := make([]string, 0, 2)
-	if m._Name != nil {
-		fields = append(fields, space.FieldName)
-	}
-	if m._SpaceKey != nil {
-		fields = append(fields, space.FieldSpaceKey)
+	if m.FieldCleared(sourcesystem.FieldParts) {
+		fields = append(fields, sourcesystem.FieldParts)
 	}
 	return fields
 }
 
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *SpaceMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case space.FieldName:
-		return m.Name()
-	case space.FieldSpaceKey:
-		return m.SpaceKey()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *SpaceMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case space.FieldName:
-		return m.OldName(ctx)
-	case space.FieldSpaceKey:
-		return m.OldSpaceKey(ctx)
-	}
-	return nil, fmt.Errorf("unknown Space field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *SpaceMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case space.FieldName:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetName(v)
-		return nil
-	case space.FieldSpaceKey:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSpaceKey(v)
-		return nil
-	}
-	return fmt.Errorf("unknown Space field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *SpaceMutation) AddedFields() []string {
-	return nil
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *SpaceMutation) AddedField(name string) (ent.Value, bool) {
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *SpaceMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	}
-	return fmt.Errorf("unknown Space numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *SpaceMutation) ClearedFields() []string {
-	return nil
-}
-
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *SpaceMutation) FieldCleared(name string) bool {
+func (m *SourceSystemMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *SpaceMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown Space nullable field %s", name)
+func (m *SourceSystemMutation) ClearField(name string) error {
+	switch name {
+	case sourcesystem.FieldKey:
+		m.ClearKey()
+		return nil
+	case sourcesystem.FieldParts:
+		m.ClearParts()
+		return nil
+	}
+	return fmt.Errorf("unknown SourceSystem nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *SpaceMutation) ResetField(name string) error {
+func (m *SourceSystemMutation) ResetField(name string) error {
 	switch name {
-	case space.FieldName:
+	case sourcesystem.FieldName:
 		m.ResetName()
 		return nil
-	case space.FieldSpaceKey:
-		m.ResetSpaceKey()
+	case sourcesystem.FieldType:
+		m.ResetType()
+		return nil
+	case sourcesystem.FieldURL:
+		m.ResetURL()
+		return nil
+	case sourcesystem.FieldKey:
+		m.ResetKey()
+		return nil
+	case sourcesystem.FieldParts:
+		m.ResetParts()
 		return nil
 	}
-	return fmt.Errorf("unknown Space field %s", name)
+	return fmt.Errorf("unknown SourceSystem field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *SpaceMutation) AddedEdges() []string {
+func (m *SourceSystemMutation) AddedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *SpaceMutation) AddedIDs(name string) []ent.Value {
+func (m *SourceSystemMutation) AddedIDs(name string) []ent.Value {
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *SpaceMutation) RemovedEdges() []string {
+func (m *SourceSystemMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *SpaceMutation) RemovedIDs(name string) []ent.Value {
+func (m *SourceSystemMutation) RemovedIDs(name string) []ent.Value {
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *SpaceMutation) ClearedEdges() []string {
+func (m *SourceSystemMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *SpaceMutation) EdgeCleared(name string) bool {
+func (m *SourceSystemMutation) EdgeCleared(name string) bool {
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *SpaceMutation) ClearEdge(name string) error {
-	return fmt.Errorf("unknown Space unique edge %s", name)
+func (m *SourceSystemMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown SourceSystem unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *SpaceMutation) ResetEdge(name string) error {
-	return fmt.Errorf("unknown Space edge %s", name)
+func (m *SourceSystemMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown SourceSystem edge %s", name)
 }
 
 // UserMutation represents an operation that mutates the User nodes in the graph.
@@ -1421,9 +1095,6 @@ type UserMutation struct {
 	_Name               *string
 	_OpenaiAPIkey       *string
 	clearedFields       map[string]struct{}
-	_Confluence         map[int]struct{}
-	removed_Confluence  map[int]struct{}
-	cleared_Confluence  bool
 	_Collections        map[int]struct{}
 	removed_Collections map[int]struct{}
 	cleared_Collections bool
@@ -1613,60 +1284,6 @@ func (m *UserMutation) OpenaiAPIkeyCleared() bool {
 func (m *UserMutation) ResetOpenaiAPIkey() {
 	m._OpenaiAPIkey = nil
 	delete(m.clearedFields, user.FieldOpenaiAPIkey)
-}
-
-// AddConfluenceIDs adds the "Confluence" edge to the Confluence entity by ids.
-func (m *UserMutation) AddConfluenceIDs(ids ...int) {
-	if m._Confluence == nil {
-		m._Confluence = make(map[int]struct{})
-	}
-	for i := range ids {
-		m._Confluence[ids[i]] = struct{}{}
-	}
-}
-
-// ClearConfluence clears the "Confluence" edge to the Confluence entity.
-func (m *UserMutation) ClearConfluence() {
-	m.cleared_Confluence = true
-}
-
-// ConfluenceCleared reports if the "Confluence" edge to the Confluence entity was cleared.
-func (m *UserMutation) ConfluenceCleared() bool {
-	return m.cleared_Confluence
-}
-
-// RemoveConfluenceIDs removes the "Confluence" edge to the Confluence entity by IDs.
-func (m *UserMutation) RemoveConfluenceIDs(ids ...int) {
-	if m.removed_Confluence == nil {
-		m.removed_Confluence = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m._Confluence, ids[i])
-		m.removed_Confluence[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedConfluence returns the removed IDs of the "Confluence" edge to the Confluence entity.
-func (m *UserMutation) RemovedConfluenceIDs() (ids []int) {
-	for id := range m.removed_Confluence {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ConfluenceIDs returns the "Confluence" edge IDs in the mutation.
-func (m *UserMutation) ConfluenceIDs() (ids []int) {
-	for id := range m._Confluence {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetConfluence resets all changes to the "Confluence" edge.
-func (m *UserMutation) ResetConfluence() {
-	m._Confluence = nil
-	m.cleared_Confluence = false
-	m.removed_Confluence = nil
 }
 
 // AddCollectionIDs adds the "Collections" edge to the Collection entity by ids.
@@ -1882,10 +1499,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m._Confluence != nil {
-		edges = append(edges, user.EdgeConfluence)
-	}
+	edges := make([]string, 0, 1)
 	if m._Collections != nil {
 		edges = append(edges, user.EdgeCollections)
 	}
@@ -1896,12 +1510,6 @@ func (m *UserMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *UserMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case user.EdgeConfluence:
-		ids := make([]ent.Value, 0, len(m._Confluence))
-		for id := range m._Confluence {
-			ids = append(ids, id)
-		}
-		return ids
 	case user.EdgeCollections:
 		ids := make([]ent.Value, 0, len(m._Collections))
 		for id := range m._Collections {
@@ -1914,10 +1522,7 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.removed_Confluence != nil {
-		edges = append(edges, user.EdgeConfluence)
-	}
+	edges := make([]string, 0, 1)
 	if m.removed_Collections != nil {
 		edges = append(edges, user.EdgeCollections)
 	}
@@ -1928,12 +1533,6 @@ func (m *UserMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case user.EdgeConfluence:
-		ids := make([]ent.Value, 0, len(m.removed_Confluence))
-		for id := range m.removed_Confluence {
-			ids = append(ids, id)
-		}
-		return ids
 	case user.EdgeCollections:
 		ids := make([]ent.Value, 0, len(m.removed_Collections))
 		for id := range m.removed_Collections {
@@ -1946,10 +1545,7 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.cleared_Confluence {
-		edges = append(edges, user.EdgeConfluence)
-	}
+	edges := make([]string, 0, 1)
 	if m.cleared_Collections {
 		edges = append(edges, user.EdgeCollections)
 	}
@@ -1960,8 +1556,6 @@ func (m *UserMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *UserMutation) EdgeCleared(name string) bool {
 	switch name {
-	case user.EdgeConfluence:
-		return m.cleared_Confluence
 	case user.EdgeCollections:
 		return m.cleared_Collections
 	}
@@ -1980,9 +1574,6 @@ func (m *UserMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *UserMutation) ResetEdge(name string) error {
 	switch name {
-	case user.EdgeConfluence:
-		m.ResetConfluence()
-		return nil
 	case user.EdgeCollections:
 		m.ResetCollections()
 		return nil

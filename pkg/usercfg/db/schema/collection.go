@@ -19,13 +19,6 @@ func (Collection) Fields() []ent.Field {
 
 func (Collection) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("Spaces", Space.Type),
-		// edge.To("friends", User.Type),
+		edge.To("Sources", SourceSystem.Type),
 	}
 }
-
-// func (Collection) Indexes() []ent.Index {
-// 	return []ent.Index{
-// 		index.Fields("Name").Unique(),
-// 	}
-// }

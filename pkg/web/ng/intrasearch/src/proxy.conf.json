@@ -1,10 +1,14 @@
 {
-   "/vecdb": {
-     "target": "http://localhost:4444",
-     "secure": false
-   },
-   "/summary": {
-     "target": "http://localhost:4444",
-     "secure": false
-   }
- }
+  "/vecdb": {
+    "target": "http://localhost:4444",
+    "secure": false
+  },
+  "/user": {
+    "target": "http://localhost:4444",
+    "secure": false
+  },
+  "/summary": {
+    "target": "http://localhost:4444",
+    "secure": false
+  }
+}

@@ -18,43 +18,31 @@ func (cuo *CollectionUpdateOne) SetCollection(input *Collection) *CollectionUpda
 	return cuo
 }
 
-func (cc *ConfluenceCreate) SetConfluence(input *Confluence) *ConfluenceCreate {
-	cc.SetName(input.Name)
-	cc.SetURL(input.URL)
-	cc.SetConfluenceAPIKey(input.ConfluenceAPIKey)
-	return cc
+func (ssc *SourceSystemCreate) SetSourceSystem(input *SourceSystem) *SourceSystemCreate {
+	ssc.SetName(input.Name)
+	ssc.SetType(input.Type)
+	ssc.SetURL(input.URL)
+	ssc.SetKey(input.Key)
+	ssc.SetParts(input.Parts)
+	return ssc
 }
 
-func (cu *ConfluenceUpdate) SetConfluence(input *Confluence) *ConfluenceUpdate {
-	cu.SetName(input.Name)
-	cu.SetURL(input.URL)
-	cu.SetConfluenceAPIKey(input.ConfluenceAPIKey)
-	return cu
+func (ssu *SourceSystemUpdate) SetSourceSystem(input *SourceSystem) *SourceSystemUpdate {
+	ssu.SetName(input.Name)
+	ssu.SetType(input.Type)
+	ssu.SetURL(input.URL)
+	ssu.SetKey(input.Key)
+	ssu.SetParts(input.Parts)
+	return ssu
 }
 
-func (cuo *ConfluenceUpdateOne) SetConfluence(input *Confluence) *ConfluenceUpdateOne {
-	cuo.SetName(input.Name)
-	cuo.SetURL(input.URL)
-	cuo.SetConfluenceAPIKey(input.ConfluenceAPIKey)
-	return cuo
-}
-
-func (sc *SpaceCreate) SetSpace(input *Space) *SpaceCreate {
-	sc.SetName(input.Name)
-	sc.SetSpaceKey(input.SpaceKey)
-	return sc
-}
-
-func (su *SpaceUpdate) SetSpace(input *Space) *SpaceUpdate {
-	su.SetName(input.Name)
-	su.SetSpaceKey(input.SpaceKey)
-	return su
-}
-
-func (suo *SpaceUpdateOne) SetSpace(input *Space) *SpaceUpdateOne {
-	suo.SetName(input.Name)
-	suo.SetSpaceKey(input.SpaceKey)
-	return suo
+func (ssuo *SourceSystemUpdateOne) SetSourceSystem(input *SourceSystem) *SourceSystemUpdateOne {
+	ssuo.SetName(input.Name)
+	ssuo.SetType(input.Type)
+	ssuo.SetURL(input.URL)
+	ssuo.SetKey(input.Key)
+	ssuo.SetParts(input.Parts)
+	return ssuo
 }
 
 func (uc *UserCreate) SetUser(input *User) *UserCreate {

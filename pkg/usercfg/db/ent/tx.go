@@ -14,10 +14,8 @@ type Tx struct {
 	config
 	// Collection is the client for interacting with the Collection builders.
 	Collection *CollectionClient
-	// Confluence is the client for interacting with the Confluence builders.
-	Confluence *ConfluenceClient
-	// Space is the client for interacting with the Space builders.
-	Space *SpaceClient
+	// SourceSystem is the client for interacting with the SourceSystem builders.
+	SourceSystem *SourceSystemClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -152,8 +150,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Collection = NewCollectionClient(tx.config)
-	tx.Confluence = NewConfluenceClient(tx.config)
-	tx.Space = NewSpaceClient(tx.config)
+	tx.SourceSystem = NewSourceSystemClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 

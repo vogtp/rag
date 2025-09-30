@@ -1,0 +1,22 @@
+<h5>{{source?.Name}} ({{source?.Type}})</h5>
+<mat-form-field>
+    <mat-label>Name</mat-label>
+    <input matInput [ngModel]="source?.Name">
+</mat-form-field>
+
+<mat-form-field>
+    <mat-label>Type</mat-label>
+    <input matInput [ngModel]="source?.Type">
+</mat-form-field>
+<mat-form-field>
+    <mat-label>URL</mat-label>
+    <input matInput [ngModel]="source?.URL">
+</mat-form-field>
+<mat-form-field>
+    <mat-label>Access Key (optional)</mat-label>
+    <input matInput [ngModel]="source?.key">
+</mat-form-field>
+<mat-form-field>
+    <mat-label>Parts</mat-label>
+    <input matInput [ngModel]="source?.parts">
+</mat-form-field>

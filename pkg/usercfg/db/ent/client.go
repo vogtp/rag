@@ -16,8 +16,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/collection"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent/confluence"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent/space"
+	"github.com/vogtp/rag/pkg/usercfg/db/ent/sourcesystem"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/user"
 )
 
@@ -28,10 +27,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Collection is the client for interacting with the Collection builders.
 	Collection *CollectionClient
-	// Confluence is the client for interacting with the Confluence builders.
-	Confluence *ConfluenceClient
-	// Space is the client for interacting with the Space builders.
-	Space *SpaceClient
+	// SourceSystem is the client for interacting with the SourceSystem builders.
+	SourceSystem *SourceSystemClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// additional fields for node api
@@ -48,8 +45,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Collection = NewCollectionClient(c.config)
-	c.Confluence = NewConfluenceClient(c.config)
-	c.Space = NewSpaceClient(c.config)
+	c.SourceSystem = NewSourceSystemClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -141,12 +137,11 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:        ctx,
-		config:     cfg,
-		Collection: NewCollectionClient(cfg),
-		Confluence: NewConfluenceClient(cfg),
-		Space:      NewSpaceClient(cfg),
-		User:       NewUserClient(cfg),
+		ctx:          ctx,
+		config:       cfg,
+		Collection:   NewCollectionClient(cfg),
+		SourceSystem: NewSourceSystemClient(cfg),
+		User:         NewUserClient(cfg),
 	}, nil
 }
 
@@ -164,12 +159,11 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:        ctx,
-		config:     cfg,
-		Collection: NewCollectionClient(cfg),
-		Confluence: NewConfluenceClient(cfg),
-		Space:      NewSpaceClient(cfg),
-		User:       NewUserClient(cfg),
+		ctx:          ctx,
+		config:       cfg,
+		Collection:   NewCollectionClient(cfg),
+		SourceSystem: NewSourceSystemClient(cfg),
+		User:         NewUserClient(cfg),
 	}, nil
 }
 
@@ -199,8 +193,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Collection.Use(hooks...)
-	c.Confluence.Use(hooks...)
-	c.Space.Use(hooks...)
+	c.SourceSystem.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
@@ -208,8 +201,7 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Collection.Intercept(interceptors...)
-	c.Confluence.Intercept(interceptors...)
-	c.Space.Intercept(interceptors...)
+	c.SourceSystem.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
 }
 
@@ -218,10 +210,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *CollectionMutation:
 		return c.Collection.mutate(ctx, m)
-	case *ConfluenceMutation:
-		return c.Confluence.mutate(ctx, m)
-	case *SpaceMutation:
-		return c.Space.mutate(ctx, m)
+	case *SourceSystemMutation:
+		return c.SourceSystem.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	default:
@@ -337,15 +327,15 @@ func (c *CollectionClient) GetX(ctx context.Context, id int) *Collection {
 	return obj
 }
 
-// QuerySpaces queries the Spaces edge of a Collection.
-func (c *CollectionClient) QuerySpaces(co *Collection) *SpaceQuery {
-	query := (&SpaceClient{config: c.config}).Query()
+// QuerySources queries the Sources edge of a Collection.
+func (c *CollectionClient) QuerySources(co *Collection) *SourceSystemQuery {
+	query := (&SourceSystemClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(collection.Table, collection.FieldID, id),
-			sqlgraph.To(space.Table, space.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, collection.SpacesTable, collection.SpacesColumn),
+			sqlgraph.To(sourcesystem.Table, sourcesystem.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, collection.SourcesTable, collection.SourcesColumn),
 		)
 		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
 		return fromV, nil
@@ -378,256 +368,107 @@ func (c *CollectionClient) mutate(ctx context.Context, m *CollectionMutation) (V
 	}
 }
 
-// ConfluenceClient is a client for the Confluence schema.
-type ConfluenceClient struct {
+// SourceSystemClient is a client for the SourceSystem schema.
+type SourceSystemClient struct {
 	config
 }
 
-// NewConfluenceClient returns a client for the Confluence from the given config.
-func NewConfluenceClient(c config) *ConfluenceClient {
-	return &ConfluenceClient{config: c}
+// NewSourceSystemClient returns a client for the SourceSystem from the given config.
+func NewSourceSystemClient(c config) *SourceSystemClient {
+	return &SourceSystemClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `confluence.Hooks(f(g(h())))`.
-func (c *ConfluenceClient) Use(hooks ...Hook) {
-	c.hooks.Confluence = append(c.hooks.Confluence, hooks...)
+// A call to `Use(f, g, h)` equals to `sourcesystem.Hooks(f(g(h())))`.
+func (c *SourceSystemClient) Use(hooks ...Hook) {
+	c.hooks.SourceSystem = append(c.hooks.SourceSystem, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `confluence.Intercept(f(g(h())))`.
-func (c *ConfluenceClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Confluence = append(c.inters.Confluence, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `sourcesystem.Intercept(f(g(h())))`.
+func (c *SourceSystemClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SourceSystem = append(c.inters.SourceSystem, interceptors...)
 }
 
-// Create returns a builder for creating a Confluence entity.
-func (c *ConfluenceClient) Create() *ConfluenceCreate {
-	mutation := newConfluenceMutation(c.config, OpCreate)
-	return &ConfluenceCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a SourceSystem entity.
+func (c *SourceSystemClient) Create() *SourceSystemCreate {
+	mutation := newSourceSystemMutation(c.config, OpCreate)
+	return &SourceSystemCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of Confluence entities.
-func (c *ConfluenceClient) CreateBulk(builders ...*ConfluenceCreate) *ConfluenceCreateBulk {
-	return &ConfluenceCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of SourceSystem entities.
+func (c *SourceSystemClient) CreateBulk(builders ...*SourceSystemCreate) *SourceSystemCreateBulk {
+	return &SourceSystemCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *ConfluenceClient) MapCreateBulk(slice any, setFunc func(*ConfluenceCreate, int)) *ConfluenceCreateBulk {
+func (c *SourceSystemClient) MapCreateBulk(slice any, setFunc func(*SourceSystemCreate, int)) *SourceSystemCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &ConfluenceCreateBulk{err: fmt.Errorf("calling to ConfluenceClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &SourceSystemCreateBulk{err: fmt.Errorf("calling to SourceSystemClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*ConfluenceCreate, rv.Len())
+	builders := make([]*SourceSystemCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &ConfluenceCreateBulk{config: c.config, builders: builders}
+	return &SourceSystemCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for Confluence.
-func (c *ConfluenceClient) Update() *ConfluenceUpdate {
-	mutation := newConfluenceMutation(c.config, OpUpdate)
-	return &ConfluenceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for SourceSystem.
+func (c *SourceSystemClient) Update() *SourceSystemUpdate {
+	mutation := newSourceSystemMutation(c.config, OpUpdate)
+	return &SourceSystemUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *ConfluenceClient) UpdateOne(co *Confluence) *ConfluenceUpdateOne {
-	mutation := newConfluenceMutation(c.config, OpUpdateOne, withConfluence(co))
-	return &ConfluenceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *SourceSystemClient) UpdateOne(ss *SourceSystem) *SourceSystemUpdateOne {
+	mutation := newSourceSystemMutation(c.config, OpUpdateOne, withSourceSystem(ss))
+	return &SourceSystemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *ConfluenceClient) UpdateOneID(id int) *ConfluenceUpdateOne {
-	mutation := newConfluenceMutation(c.config, OpUpdateOne, withConfluenceID(id))
-	return &ConfluenceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *SourceSystemClient) UpdateOneID(id int) *SourceSystemUpdateOne {
+	mutation := newSourceSystemMutation(c.config, OpUpdateOne, withSourceSystemID(id))
+	return &SourceSystemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for Confluence.
-func (c *ConfluenceClient) Delete() *ConfluenceDelete {
-	mutation := newConfluenceMutation(c.config, OpDelete)
-	return &ConfluenceDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for SourceSystem.
+func (c *SourceSystemClient) Delete() *SourceSystemDelete {
+	mutation := newSourceSystemMutation(c.config, OpDelete)
+	return &SourceSystemDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *ConfluenceClient) DeleteOne(co *Confluence) *ConfluenceDeleteOne {
-	return c.DeleteOneID(co.ID)
+func (c *SourceSystemClient) DeleteOne(ss *SourceSystem) *SourceSystemDeleteOne {
+	return c.DeleteOneID(ss.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *ConfluenceClient) DeleteOneID(id int) *ConfluenceDeleteOne {
-	builder := c.Delete().Where(confluence.ID(id))
+func (c *SourceSystemClient) DeleteOneID(id int) *SourceSystemDeleteOne {
+	builder := c.Delete().Where(sourcesystem.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &ConfluenceDeleteOne{builder}
+	return &SourceSystemDeleteOne{builder}
 }
 
-// Query returns a query builder for Confluence.
-func (c *ConfluenceClient) Query() *ConfluenceQuery {
-	return &ConfluenceQuery{
+// Query returns a query builder for SourceSystem.
+func (c *SourceSystemClient) Query() *SourceSystemQuery {
+	return &SourceSystemQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeConfluence},
+		ctx:    &QueryContext{Type: TypeSourceSystem},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a Confluence entity by its id.
-func (c *ConfluenceClient) Get(ctx context.Context, id int) (*Confluence, error) {
-	return c.Query().Where(confluence.ID(id)).Only(ctx)
+// Get returns a SourceSystem entity by its id.
+func (c *SourceSystemClient) Get(ctx context.Context, id int) (*SourceSystem, error) {
+	return c.Query().Where(sourcesystem.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *ConfluenceClient) GetX(ctx context.Context, id int) *Confluence {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QuerySpaces queries the Spaces edge of a Confluence.
-func (c *ConfluenceClient) QuerySpaces(co *Confluence) *SpaceQuery {
-	query := (&SpaceClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := co.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(confluence.Table, confluence.FieldID, id),
-			sqlgraph.To(space.Table, space.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, confluence.SpacesTable, confluence.SpacesColumn),
-		)
-		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *ConfluenceClient) Hooks() []Hook {
-	return c.hooks.Confluence
-}
-
-// Interceptors returns the client interceptors.
-func (c *ConfluenceClient) Interceptors() []Interceptor {
-	return c.inters.Confluence
-}
-
-func (c *ConfluenceClient) mutate(ctx context.Context, m *ConfluenceMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&ConfluenceCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&ConfluenceUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&ConfluenceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&ConfluenceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown Confluence mutation op: %q", m.Op())
-	}
-}
-
-// SpaceClient is a client for the Space schema.
-type SpaceClient struct {
-	config
-}
-
-// NewSpaceClient returns a client for the Space from the given config.
-func NewSpaceClient(c config) *SpaceClient {
-	return &SpaceClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `space.Hooks(f(g(h())))`.
-func (c *SpaceClient) Use(hooks ...Hook) {
-	c.hooks.Space = append(c.hooks.Space, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `space.Intercept(f(g(h())))`.
-func (c *SpaceClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Space = append(c.inters.Space, interceptors...)
-}
-
-// Create returns a builder for creating a Space entity.
-func (c *SpaceClient) Create() *SpaceCreate {
-	mutation := newSpaceMutation(c.config, OpCreate)
-	return &SpaceCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Space entities.
-func (c *SpaceClient) CreateBulk(builders ...*SpaceCreate) *SpaceCreateBulk {
-	return &SpaceCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *SpaceClient) MapCreateBulk(slice any, setFunc func(*SpaceCreate, int)) *SpaceCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &SpaceCreateBulk{err: fmt.Errorf("calling to SpaceClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*SpaceCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &SpaceCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Space.
-func (c *SpaceClient) Update() *SpaceUpdate {
-	mutation := newSpaceMutation(c.config, OpUpdate)
-	return &SpaceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *SpaceClient) UpdateOne(s *Space) *SpaceUpdateOne {
-	mutation := newSpaceMutation(c.config, OpUpdateOne, withSpace(s))
-	return &SpaceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *SpaceClient) UpdateOneID(id int) *SpaceUpdateOne {
-	mutation := newSpaceMutation(c.config, OpUpdateOne, withSpaceID(id))
-	return &SpaceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Space.
-func (c *SpaceClient) Delete() *SpaceDelete {
-	mutation := newSpaceMutation(c.config, OpDelete)
-	return &SpaceDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *SpaceClient) DeleteOne(s *Space) *SpaceDeleteOne {
-	return c.DeleteOneID(s.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *SpaceClient) DeleteOneID(id int) *SpaceDeleteOne {
-	builder := c.Delete().Where(space.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &SpaceDeleteOne{builder}
-}
-
-// Query returns a query builder for Space.
-func (c *SpaceClient) Query() *SpaceQuery {
-	return &SpaceQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeSpace},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a Space entity by its id.
-func (c *SpaceClient) Get(ctx context.Context, id int) (*Space, error) {
-	return c.Query().Where(space.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *SpaceClient) GetX(ctx context.Context, id int) *Space {
+func (c *SourceSystemClient) GetX(ctx context.Context, id int) *SourceSystem {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -636,27 +477,27 @@ func (c *SpaceClient) GetX(ctx context.Context, id int) *Space {
 }
 
 // Hooks returns the client hooks.
-func (c *SpaceClient) Hooks() []Hook {
-	return c.hooks.Space
+func (c *SourceSystemClient) Hooks() []Hook {
+	return c.hooks.SourceSystem
 }
 
 // Interceptors returns the client interceptors.
-func (c *SpaceClient) Interceptors() []Interceptor {
-	return c.inters.Space
+func (c *SourceSystemClient) Interceptors() []Interceptor {
+	return c.inters.SourceSystem
 }
 
-func (c *SpaceClient) mutate(ctx context.Context, m *SpaceMutation) (Value, error) {
+func (c *SourceSystemClient) mutate(ctx context.Context, m *SourceSystemMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&SpaceCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&SourceSystemCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&SpaceUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&SourceSystemUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&SpaceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&SourceSystemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&SpaceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&SourceSystemDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown Space mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown SourceSystem mutation op: %q", m.Op())
 	}
 }
 
@@ -768,22 +609,6 @@ func (c *UserClient) GetX(ctx context.Context, id int) *User {
 	return obj
 }
 
-// QueryConfluence queries the Confluence edge of a User.
-func (c *UserClient) QueryConfluence(u *User) *ConfluenceQuery {
-	query := (&ConfluenceClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := u.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(confluence.Table, confluence.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.ConfluenceTable, user.ConfluenceColumn),
-		)
-		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryCollections queries the Collections edge of a User.
 func (c *UserClient) QueryCollections(u *User) *CollectionQuery {
 	query := (&CollectionClient{config: c.config}).Query()
@@ -828,9 +653,9 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Collection, Confluence, Space, User []ent.Hook
+		Collection, SourceSystem, User []ent.Hook
 	}
 	inters struct {
-		Collection, Confluence, Space, User []ent.Interceptor
+		Collection, SourceSystem, User []ent.Interceptor
 	}
 )

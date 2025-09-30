@@ -29,52 +29,26 @@ var (
 			},
 		},
 	}
-	// ConfluencesColumns holds the columns for the "confluences" table.
-	ConfluencesColumns = []*schema.Column{
+	// SourceSystemsColumns holds the columns for the "source_systems" table.
+	SourceSystemsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"http", "confluence"}},
 		{Name: "url", Type: field.TypeString},
-		{Name: "confluence_api_key", Type: field.TypeString},
-		{Name: "user_confluence", Type: field.TypeInt, Nullable: true},
+		{Name: "key", Type: field.TypeString, Nullable: true},
+		{Name: "parts", Type: field.TypeString, Nullable: true},
+		{Name: "collection_sources", Type: field.TypeInt, Nullable: true},
 	}
-	// ConfluencesTable holds the schema information for the "confluences" table.
-	ConfluencesTable = &schema.Table{
-		Name:       "confluences",
-		Columns:    ConfluencesColumns,
-		PrimaryKey: []*schema.Column{ConfluencesColumns[0]},
+	// SourceSystemsTable holds the schema information for the "source_systems" table.
+	SourceSystemsTable = &schema.Table{
+		Name:       "source_systems",
+		Columns:    SourceSystemsColumns,
+		PrimaryKey: []*schema.Column{SourceSystemsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "confluences_users_Confluence",
-				Columns:    []*schema.Column{ConfluencesColumns[4]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
-	}
-	// SpacesColumns holds the columns for the "spaces" table.
-	SpacesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "name", Type: field.TypeString},
-		{Name: "space_key", Type: field.TypeString},
-		{Name: "collection_spaces", Type: field.TypeInt, Nullable: true},
-		{Name: "confluence_spaces", Type: field.TypeInt, Nullable: true},
-	}
-	// SpacesTable holds the schema information for the "spaces" table.
-	SpacesTable = &schema.Table{
-		Name:       "spaces",
-		Columns:    SpacesColumns,
-		PrimaryKey: []*schema.Column{SpacesColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "spaces_collections_Spaces",
-				Columns:    []*schema.Column{SpacesColumns[3]},
+				Symbol:     "source_systems_collections_Sources",
+				Columns:    []*schema.Column{SourceSystemsColumns[6]},
 				RefColumns: []*schema.Column{CollectionsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "spaces_confluences_Spaces",
-				Columns:    []*schema.Column{SpacesColumns[4]},
-				RefColumns: []*schema.Column{ConfluencesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -101,15 +75,12 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		CollectionsTable,
-		ConfluencesTable,
-		SpacesTable,
+		SourceSystemsTable,
 		UsersTable,
 	}
 )
 
 func init() {
 	CollectionsTable.ForeignKeys[0].RefTable = UsersTable
-	ConfluencesTable.ForeignKeys[0].RefTable = UsersTable
-	SpacesTable.ForeignKeys[0].RefTable = CollectionsTable
-	SpacesTable.ForeignKeys[1].RefTable = ConfluencesTable
+	SourceSystemsTable.ForeignKeys[0].RefTable = CollectionsTable
 }

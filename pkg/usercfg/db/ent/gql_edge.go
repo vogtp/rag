@@ -8,38 +8,14 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 )
 
-func (c *Collection) Spaces(ctx context.Context) (result []*Space, err error) {
+func (c *Collection) Sources(ctx context.Context) (result []*SourceSystem, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = c.NamedSpaces(graphql.GetFieldContext(ctx).Field.Alias)
+		result, err = c.NamedSources(graphql.GetFieldContext(ctx).Field.Alias)
 	} else {
-		result, err = c.Edges.SpacesOrErr()
+		result, err = c.Edges.SourcesOrErr()
 	}
 	if IsNotLoaded(err) {
-		result, err = c.QuerySpaces().All(ctx)
-	}
-	return result, err
-}
-
-func (c *Confluence) Spaces(ctx context.Context) (result []*Space, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = c.NamedSpaces(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = c.Edges.SpacesOrErr()
-	}
-	if IsNotLoaded(err) {
-		result, err = c.QuerySpaces().All(ctx)
-	}
-	return result, err
-}
-
-func (u *User) Confluence(ctx context.Context) (result []*Confluence, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = u.NamedConfluence(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = u.Edges.ConfluenceOrErr()
-	}
-	if IsNotLoaded(err) {
-		result, err = u.QueryConfluence().All(ctx)
+		result, err = c.QuerySources().All(ctx)
 	}
 	return result, err
 }

@@ -20,15 +20,12 @@ func (User) Fields() []ent.Field {
 
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("Confluence", Confluence.Type),
 		edge.To("Collections", Collection.Type),
-		// edge.To("friends", User.Type),
 	}
 }
 
 func (User) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("Name").Unique(),
-		//	index.Fields("OpenaiAPIkey"),
 	}
 }

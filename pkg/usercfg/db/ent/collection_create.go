@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/collection"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent/space"
+	"github.com/vogtp/rag/pkg/usercfg/db/ent/sourcesystem"
 )
 
 // CollectionCreate is the builder for creating a Collection entity.
@@ -34,19 +34,19 @@ func (cc *CollectionCreate) SetAPIKey(s string) *CollectionCreate {
 	return cc
 }
 
-// AddSpaceIDs adds the "Spaces" edge to the Space entity by IDs.
-func (cc *CollectionCreate) AddSpaceIDs(ids ...int) *CollectionCreate {
-	cc.mutation.AddSpaceIDs(ids...)
+// AddSourceIDs adds the "Sources" edge to the SourceSystem entity by IDs.
+func (cc *CollectionCreate) AddSourceIDs(ids ...int) *CollectionCreate {
+	cc.mutation.AddSourceIDs(ids...)
 	return cc
 }
 
-// AddSpaces adds the "Spaces" edges to the Space entity.
-func (cc *CollectionCreate) AddSpaces(s ...*Space) *CollectionCreate {
+// AddSources adds the "Sources" edges to the SourceSystem entity.
+func (cc *CollectionCreate) AddSources(s ...*SourceSystem) *CollectionCreate {
 	ids := make([]int, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
-	return cc.AddSpaceIDs(ids...)
+	return cc.AddSourceIDs(ids...)
 }
 
 // Mutation returns the CollectionMutation object of the builder.
@@ -124,15 +124,15 @@ func (cc *CollectionCreate) createSpec() (*Collection, *sqlgraph.CreateSpec) {
 		_spec.SetField(collection.FieldAPIKey, field.TypeString, value)
 		_node.APIKey = value
 	}
-	if nodes := cc.mutation.SpacesIDs(); len(nodes) > 0 {
+	if nodes := cc.mutation.SourcesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   collection.SpacesTable,
-			Columns: []string{collection.SpacesColumn},
+			Table:   collection.SourcesTable,
+			Columns: []string{collection.SourcesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(space.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(sourcesystem.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

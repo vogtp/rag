@@ -203,29 +203,6 @@ func OpenaiAPIkeyContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldOpenaiAPIkey, v))
 }
 
-// HasConfluence applies the HasEdge predicate on the "Confluence" edge.
-func HasConfluence() predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ConfluenceTable, ConfluenceColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasConfluenceWith applies the HasEdge predicate on the "Confluence" edge with a given conditions (other predicates).
-func HasConfluenceWith(preds ...predicate.Confluence) predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		step := newConfluenceStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasCollections applies the HasEdge predicate on the "Collections" edge.
 func HasCollections() predicate.User {
 	return predicate.User(func(s *sql.Selector) {

@@ -193,21 +193,21 @@ func APIKeyContainsFold(v string) predicate.Collection {
 	return predicate.Collection(sql.FieldContainsFold(FieldAPIKey, v))
 }
 
-// HasSpaces applies the HasEdge predicate on the "Spaces" edge.
-func HasSpaces() predicate.Collection {
+// HasSources applies the HasEdge predicate on the "Sources" edge.
+func HasSources() predicate.Collection {
 	return predicate.Collection(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, SpacesTable, SpacesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, SourcesTable, SourcesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasSpacesWith applies the HasEdge predicate on the "Spaces" edge with a given conditions (other predicates).
-func HasSpacesWith(preds ...predicate.Space) predicate.Collection {
+// HasSourcesWith applies the HasEdge predicate on the "Sources" edge with a given conditions (other predicates).
+func HasSourcesWith(preds ...predicate.SourceSystem) predicate.Collection {
 	return predicate.Collection(func(s *sql.Selector) {
-		step := newSpacesStep()
+		step := newSourcesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
