@@ -60,21 +60,23 @@ func New(ctx context.Context, slog *slog.Logger, rags []rag.Manager) (*Server, e
 	srv.mux = http.NewServeMux()
 	srv.oidcMux = srv.mux
 
-	// oidcCfg := oidc.Config{
-	// 	ClientID:     viper.GetString(cfg.OIDCClientID),
-	// 	ClientSecret: viper.GetString(cfg.OIDCClientSecret),
-	// 	Issuer:       viper.GetString(cfg.OIDCIssuer),
-	// 	RedirectURI:  viper.GetString(cfg.OIDCRedirectURI),
-	// }
-	// om, err := oidc.NewMux(ctx, srv.slog, srv.mux, addr, oidcCfg)
-	// if err != nil {
-	// 	srv.slog.Warn("Cannot register OIDC", "err", err)
-	// 	if oidcCfg.Valid() {
-	// 		return nil, fmt.Errorf("cannot create oidc mux: %w", err)
-	// 	}
-	// 	om = srv.mux
-	// }
-	// srv.oidcMux = om
+	oidcCfg := oidc.Config{
+		ClientID:     viper.GetString(cfg.OIDCClientID),
+		ClientSecret: viper.GetString(cfg.OIDCClientSecret),
+		Issuer:       viper.GetString(cfg.OIDCIssuer),
+		RedirectURI:  viper.GetString(cfg.OIDCRedirectURI),
+	}
+	if oidcCfg.Valid() {
+		om, err := oidc.NewMux(ctx, srv.slog, srv.mux, addr, oidcCfg)
+		if err != nil {
+			srv.slog.Warn("Cannot register OIDC", "err", err)
+			if oidcCfg.Valid() {
+				return nil, fmt.Errorf("cannot create oidc mux: %w", err)
+			}
+			om = srv.mux
+		}
+		srv.oidcMux = om
+	}
 	return srv, nil
 }
 
