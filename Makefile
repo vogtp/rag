@@ -27,6 +27,10 @@ build: generate ng-build
 generate:
 	$(GO_CMD) generate ./...
 
+.PHONY: ng-serve
+ng-serve:
+	cd pkg/web/ng/intrasearch/dist/intrasearch/browser/ ; ng serve
+
 .PHONY: ng-build
 ng-build:
 	cd pkg/web/ng/intrasearch/dist/intrasearch/browser/ ; ng build --base-href=/ui/
