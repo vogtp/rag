@@ -16,6 +16,7 @@ vendor/
 bin/
 .vscode/
 build/
+*.sqlite
 
 # Custom stuff
 .*.json
