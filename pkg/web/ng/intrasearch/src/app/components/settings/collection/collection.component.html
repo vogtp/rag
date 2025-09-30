@@ -1,19 +1,29 @@
-<h3>{{collection?.Name}}</h3>
-<div>
-    <mat-form-field>
-        <mat-label>Collection Name</mat-label>
-        <input matInput [ngModel]="collection?.Name">
-    </mat-form-field>
+<mat-card class="example-card" appearance="outlined">
+    <mat-card-header>
+        <mat-card-title>{{collection?.Name}}</mat-card-title>
+        <!-- <mat-card-subtitle></mat-card-subtitle> -->
+    </mat-card-header>
 
-    <mat-form-field>
-        <mat-label>API Key (for chatbots)</mat-label>
-        <input matInput [ngModel]="collection?.APIKey">
-    </mat-form-field>
-</div>
-<h4>Source Systems:</h4>
-<div class="sources">
-    <div *ngFor="let src of collection?.edges?.Sources">
-        <app-source [source]="src" />
-    </div>
-</div>
-<hr>
+    <mat-card-content>
+        <mat-form-field>
+            <mat-label>Collection Name</mat-label>
+            <input matInput [ngModel]="collection?.Name">
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>API Key (for chatbots)</mat-label>
+            <input matInput [ngModel]="collection?.APIKey">
+        </mat-form-field>
+        <h4>Source Systems:</h4>
+        <mat-tab-group>
+            <div *ngFor="let src of collection?.edges?.Sources">
+                <mat-tab label="{{ src.Name }}"> <app-source [source]="src" /> </mat-tab>
+            </div>
+        </mat-tab-group>
+
+    </mat-card-content>
+    <mat-card-actions>
+        <button matButton="tonal">Delete Collection</button>
+        <button matButton="tonal">Add New Source</button>
+    </mat-card-actions>
+</mat-card>

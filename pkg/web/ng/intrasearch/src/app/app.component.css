@@ -1,6 +1,19 @@
-.container {
-    width: 100%;
+body {
+    font-family: Roboto, 'Helvetica Neue', sans-serif;
+    margin: 0;
+    padding: 30px;
+    height: 95%;
+    background: var(--mat-sys-surface);
+    color: var(--mat-sys-on-surface);
+}
+
+html {
     height: 100%;
+}
+
+.container {
+    width: 98%;
+    height: 95%;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;

@@ -5,17 +5,13 @@
     </mat-form-field>
 </p>
 
-<div class="collections">
+<mat-tab-group>
     <div *ngFor="let col of userSettings?.edges?.Collections">
-        <app-collection [collection]="col" />
+        <mat-tab label="{{ col.Name }}"> <app-collection [collection]="col" /> </mat-tab>
     </div>
-</div>
-
+</mat-tab-group>
+<!-- 
 <p>
-    <mat-form-field>
-        <mat-label>Chat API Key</mat-label>
-        <input matInput readonly [(ngModel)]="apiKey">
-    </mat-form-field>
     <button (click)="onGenerateKey()">
         Generate
     </button>
@@ -27,4 +23,4 @@
 <button (click)="onSaveClick()" matFab extended aria-label="Save Settings">
     <mat-icon>save</mat-icon>
     Save Settings
-</button>
+</button> -->

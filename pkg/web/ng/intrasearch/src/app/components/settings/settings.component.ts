@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { SettingsService, UserSettings } from '../../services/settings.service';
 import { CollectionComponent } from './collection/collection.component';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-settings',
@@ -26,6 +27,7 @@ import { CollectionComponent } from './collection/collection.component';
     ReactiveFormsModule,
     CollectionComponent,
     NgFor,
+    MatTabsModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './settings.component.html',
