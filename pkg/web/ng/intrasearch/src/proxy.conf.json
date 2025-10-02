@@ -10,5 +10,9 @@
   "/summary": {
     "target": "http://localhost:4444",
     "secure": false
+  },
+  "/login": {
+    "target": "http://localhost:4444",
+    "secure": false
   }
 }

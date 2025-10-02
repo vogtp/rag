@@ -47,14 +47,12 @@ export class SettingsComponent {
   loadSettings() {
     this.settingsService.getUserSetting().subscribe(
       (data) => {
-        console.log(data);
-        // this.userSettings.set(data);
         this.userSettings = data;
         this.collections.set(data.edges.Collections)
         this.cdRef.detectChanges();
       },
       (err) => {
-        alert(`get user data: ${err}`);
+        console.log("err");
         console.log(err);
       }
     );
