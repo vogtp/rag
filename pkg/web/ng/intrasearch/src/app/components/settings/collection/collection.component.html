@@ -1,25 +1,49 @@
-<mat-card class="example-card" appearance="outlined">
+<mat-card>
     <mat-card-header>
-        <mat-card-title>{{collection?.Name}}</mat-card-title>
+        <mat-card-title>{{collection!.Name}}</mat-card-title>
         <!-- <mat-card-subtitle></mat-card-subtitle> -->
     </mat-card-header>
 
     <mat-card-content>
         <mat-form-field>
             <mat-label>Collection Name</mat-label>
-            <input matInput [ngModel]="collection?.Name">
+            <input matInput [ngModel]="collection!.Name">
         </mat-form-field>
 
         <mat-form-field>
             <mat-label>API Key (for chatbots)</mat-label>
-            <input matInput [ngModel]="collection?.APIKey">
+            <input matInput [ngModel]="collection!.APIKey">
         </mat-form-field>
-        <h4>Source Systems:</h4>
-        <mat-tab-group>
-            <div *ngFor="let src of collection?.edges?.Sources">
-                <mat-tab label="{{ src.Name }}"> <app-source [source]="src" /> </mat-tab>
-            </div>
-        </mat-tab-group>
+        <mat-card appearance="outlined">
+            <mat-card-header>
+                <mat-card-subtitle>Source Systems</mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content>
+                <!-- <mat-tree #tree [dataSource]="collection?.edges?.Sources" [childrenAccessor]="childrenAccessor">
+                    <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+                        <button matIconButton disabled></button>
+                        {{node.name}}
+                    </mat-tree-node>
+                    <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding matTreeNodeToggle
+                        [cdkTreeNodeTypeaheadLabel]="node.name">
+                        <button matIconButton matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
+                            <mat-icon class="mat-icon-rtl-mirror">
+                                {{tree.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                            </mat-icon>
+                        </button>
+                        {{node.name}}
+                    </mat-tree-node>
+                </mat-tree> -->
+
+
+                <mat-tab-group>
+                    <div *ngFor="let src of collection!.edges!.Sources">
+                        <mat-tab label="{{ src.Name }}"> <app-source [source]="src" /> </mat-tab>
+                    </div>
+                </mat-tab-group>
+            </mat-card-content>
+        </mat-card>
 
     </mat-card-content>
     <mat-card-actions>

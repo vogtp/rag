@@ -1,25 +1,28 @@
 <p>
     <mat-form-field>
         <mat-label>User</mat-label>
-        <input matInput readonly [ngModel]="userSettings?.Name">
+        <input matInput readonly [(ngModel)]="userSettings!.Name">
     </mat-form-field>
 </p>
 
-<mat-tab-group>
-    <div *ngFor="let col of userSettings?.edges?.Collections">
-        <mat-tab label="{{ col.Name }}"> <app-collection [collection]="col" /> </mat-tab>
-    </div>
-</mat-tab-group>
-<!-- 
+
 <p>
-    <button (click)="onGenerateKey()">
-        Generate
+    <button (click)="debug()">
+        Debug
     </button>
     <button (click)="onCopyKey()">
         Copy
     </button>
 </p>
 
+<mat-tab-group>
+    <div *ngFor="let col of userSettings!.edges!.Collections">
+        <mat-tab label="{{ col.Name }}"> <app-collection [collection]="col" /> </mat-tab>
+    </div>
+</mat-tab-group>
+
+
+<!-- 
 <button (click)="onSaveClick()" matFab extended aria-label="Save Settings">
     <mat-icon>save</mat-icon>
     Save Settings

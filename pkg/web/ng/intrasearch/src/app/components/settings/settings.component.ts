@@ -10,9 +10,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTabsModule } from '@angular/material/tabs';
 import { SettingsService, UserSettings } from '../../services/settings.service';
 import { CollectionComponent } from './collection/collection.component';
-import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-settings',
@@ -34,12 +34,8 @@ import { MatTabsModule } from '@angular/material/tabs';
   styleUrl: './settings.component.css',
 })
 export class SettingsComponent {
-  apiKey = 'no key yet';
-  confluenceURL = '';
-  confluenceApiKey = '';
-  spacesStr = '';
-
   userSettings: UserSettings | undefined;
+  //userSettings = model<UserSettings>();
 
   constructor(
     private settingsService: SettingsService,
@@ -47,12 +43,18 @@ export class SettingsComponent {
   ) {}
 
   loadSettings() {
-    this.settingsService.getUserSetting().subscribe((data) => {
-      console.log(data);
-      this.userSettings = data;
-      this.confluenceURL = data.edges.Collections[0].edges.Sources[0].URL;
-      this.cdRef.detectChanges();
-    });
+    this.settingsService.getUserSetting().subscribe(
+      (data) => {
+        console.log(data);
+        // this.userSettings.set(data);
+        this.userSettings = data;
+        this.cdRef.detectChanges();
+      },
+      (err) => {
+        alert(`get user data: ${err}`);
+        console.log(err);
+      }
+    );
   }
 
   ngOnInit() {
@@ -60,12 +62,11 @@ export class SettingsComponent {
   }
 
   onSaveClick() {
-    console.log('API key ' + this.apiKey);
-    console.log('Spaces ' + this.spacesStr);
+    console.log('Spaces ');
   }
 
-  onGenerateKey() {
-    console.log('Generating API key');
+  debug() {
+    console.log(this.userSettings);
   }
   onCopyKey() {
     console.log('Copy API key');

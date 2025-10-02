@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CollectionComponent } from './collection.component';
+import {MatListModule} from '@angular/material/list';
 
 describe('CollectionComponent', () => {
   let component: CollectionComponent;
