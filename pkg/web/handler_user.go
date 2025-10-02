@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
+	"github.com/vogtp/rag/pkg/usercfg/db/ent"
 	"github.com/vogtp/rag/pkg/web/oidc"
 )
 
@@ -13,8 +15,45 @@ type Sessioner interface {
 }
 
 func (srv *Server) handleUser(w http.ResponseWriter, r *http.Request) {
-	srv.slog.Info("Summary request", "url", r.URL.String(), "remote", r.RemoteAddr)
+	srv.slog.Info("User config request", "url", r.URL.String(), "remote", r.RemoteAddr, "method", r.Method)
+	switch r.Method {
+	case http.MethodGet:
+		srv.loadUser(w, r)
+		return
+	case http.MethodPut:
+		srv.saveUser(w, r)
+		return
+	default:
+		http.Error(w, fmt.Sprintf("Unsupported Method %s", r.Method), http.StatusMethodNotAllowed)
+		return
+	}
+}
 
+func (srv *Server) saveUser(w http.ResponseWriter, r *http.Request) {
+	userName, err := srv.getUserName(w, r)
+	if len(userName) < 1 {
+		http.Error(w, fmt.Sprintf("User not found: %v", err), http.StatusUnauthorized)
+		return
+
+	}
+	usr := &ent.User{}
+	if err:=json.NewDecoder(r.Body).Decode(usr); err!=nil{
+		http.Error(w,fmt.Sprintf("decode user settings: %v",err),http.StatusInternalServerError)
+	}
+	srv.slog.Debug("Saved user settings","data",usr)
+	if !strings.EqualFold(userName, usr.Name) {
+		http.Error(w, fmt.Sprintf("User setting %q does not match oidc user %q", usr.Name, userName), http.StatusNotAcceptable)
+		return
+	}
+
+	if err := srv.usercfg.SaveUser(r.Context(), usr);err != nil {
+		srv.slog.Warn("Cannot save user setting", "usersetting", usr, "err",err)
+		http.Error(w, fmt.Sprintf("cannot save user setting: %v", err), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (srv *Server) loadUser(w http.ResponseWriter, r *http.Request) {
 	userName, err := srv.getUserName(w, r)
 	if len(userName) < 1 {
 		http.Error(w, fmt.Sprintf("User not found: %v", err), http.StatusUnauthorized)
@@ -24,7 +63,7 @@ func (srv *Server) handleUser(w http.ResponseWriter, r *http.Request) {
 
 	user, err := srv.usercfg.ByName(r.Context(), userName)
 	if err != nil {
-		srv.slog.Warn("Creating user config", "userName", userName)
+		srv.slog.Info("Creating user config", "userName", userName)
 		user, err = srv.usercfg.CreateUser(r.Context(), userName)
 	}
 	if err != nil {
@@ -41,9 +80,9 @@ func (srv *Server) handleUser(w http.ResponseWriter, r *http.Request) {
 func (srv *Server) getUserName(w http.ResponseWriter, r *http.Request) (string, error) {
 	sessioner, ok := srv.oidcMux.(Sessioner)
 	if !ok {
-		return "", fmt.Errorf("no session found")
-		// srv.slog.Error("USING HARDCODED USER")
-		// return  "vogtp", nil // FIXME Debug only
+		// return "", fmt.Errorf("no session found")
+		srv.slog.Error("USING HARDCODED USER")
+		return "vogtp", nil // FIXME Debug only
 	}
 	sess, err := sessioner.GetSession(w, r)
 	if err != nil {

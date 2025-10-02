@@ -33,6 +33,7 @@ func New(ctx context.Context, slog *slog.Logger, driverName string, dataSourceNa
 		return nil, fmt.Errorf("creating schema resources: %v", err)
 	}
 	dbClient := &DB{
+		slog:   slog,
 		Client: entClient,
 	}
 
