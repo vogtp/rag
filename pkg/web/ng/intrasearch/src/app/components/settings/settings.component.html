@@ -15,15 +15,24 @@
     </button>
 </p>
 
+
+
 <mat-tab-group>
-    <div *ngFor="let col of userSettings!.edges!.Collections">
-        <mat-tab label="{{ col.Name }}"> <app-collection [collection]="col" /> </mat-tab>
+
+    <!-- 
+    *ngFor="let movement of allowedMovements; let i = index" [(value)]="allowedMovements[i]"
+    <div *ngFor="let col of userSettings!.edges!.Collections"> 
+        -->
+    <div *ngFor="let cols of collections()!; let i = index">
+        <!-- <div *ngFor="let col of collections()!"> -->
+        <mat-tab label="{{collections()![i]!.Name }}">
+            <app-collection [(collection)]="collections()![i]!" /> </mat-tab>
     </div>
 </mat-tab-group>
 
 
 <!-- 
-<button (click)="onSaveClick()" matFab extended aria-label="Save Settings">
-    <mat-icon>save</mat-icon>
-    Save Settings
-</button> -->
+<button (click)=" onSaveClick()" matFab extended aria-label="Save Settings">
+            <mat-icon>save</mat-icon>
+            Save Settings
+            </button> -->

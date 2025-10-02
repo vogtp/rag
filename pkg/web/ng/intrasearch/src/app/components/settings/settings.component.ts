@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  model,
 } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,7 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
-import { SettingsService, UserSettings } from '../../services/settings.service';
+import { Collection, SettingsService, UserSettings } from '../../services/settings.service';
 import { CollectionComponent } from './collection/collection.component';
 
 @Component({
@@ -35,6 +36,7 @@ import { CollectionComponent } from './collection/collection.component';
 })
 export class SettingsComponent {
   userSettings: UserSettings | undefined;
+  collections = model<Collection[]>()
   //userSettings = model<UserSettings>();
 
   constructor(
@@ -48,6 +50,7 @@ export class SettingsComponent {
         console.log(data);
         // this.userSettings.set(data);
         this.userSettings = data;
+        this.collections.set(data.edges.Collections)
         this.cdRef.detectChanges();
       },
       (err) => {

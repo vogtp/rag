@@ -1,18 +1,18 @@
 <mat-card>
     <mat-card-header>
-        <mat-card-title>{{collection!.Name}}</mat-card-title>
+        <mat-card-title>{{collection()!.Name}}</mat-card-title>
         <!-- <mat-card-subtitle></mat-card-subtitle> -->
     </mat-card-header>
 
     <mat-card-content>
         <mat-form-field>
             <mat-label>Collection Name</mat-label>
-            <input matInput [ngModel]="collection!.Name">
+            <input matInput [(ngModel)]="collection()!.Name">
         </mat-form-field>
 
         <mat-form-field>
             <mat-label>API Key (for chatbots)</mat-label>
-            <input matInput [ngModel]="collection!.APIKey">
+            <input matInput [(ngModel)]="collection()!.APIKey">
         </mat-form-field>
         <mat-card appearance="outlined">
             <mat-card-header>
@@ -38,7 +38,7 @@
 
 
                 <mat-tab-group>
-                    <div *ngFor="let src of collection!.edges!.Sources">
+                    <div *ngFor="let src of collection()!.edges!.Sources">
                         <mat-tab label="{{ src.Name }}"> <app-source [source]="src" /> </mat-tab>
                     </div>
                 </mat-tab-group>
