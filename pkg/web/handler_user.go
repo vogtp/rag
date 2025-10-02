@@ -41,18 +41,17 @@ func (srv *Server) handleUser(w http.ResponseWriter, r *http.Request) {
 func (srv *Server) getUserName(w http.ResponseWriter, r *http.Request) (string, error) {
 	sessioner, ok := srv.oidcMux.(Sessioner)
 	if !ok {
-		// http.Error(w, "Session not found", http.StatusUnauthorized)
-		// return
-		srv.slog.Error("USING HARDCODED USER")
-		return  "vogtp", nil // FIXME Debug only
+		return "", fmt.Errorf("no session found")
+		// srv.slog.Error("USING HARDCODED USER")
+		// return  "vogtp", nil // FIXME Debug only
 	}
 	sess, err := sessioner.GetSession(w, r)
 	if err != nil {
-		return "",err
+		return "", err
 	}
 	userName := sess.UserName
 	if len(userName) < 1 {
-		return "",err
+		return "", err
 
 	}
 	srv.slog.Info("found user session", "session", sess, "userName", userName)
