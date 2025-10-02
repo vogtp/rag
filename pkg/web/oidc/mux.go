@@ -29,7 +29,7 @@ func NewMux(ctx context.Context, slog *slog.Logger, serveMux *http.ServeMux, add
 	}
 	om.scopes = cfg.Scopes
 	if len(om.scopes) < 1 {
-		om.scopes = []string{"openid", "profile", "email"}
+		om.scopes = []string{"openid", "profile"}
 	}
 	om.responseMode = cfg.ResponseMode
 	if len(om.responseMode) < 1 {
