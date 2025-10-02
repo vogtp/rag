@@ -12,7 +12,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
-import { Collection, SettingsService, UserSettings } from '../../services/settings.service';
+import {
+  Collection,
+  SettingsService,
+  UserSettings,
+} from '../../services/settings.service';
 import { CollectionComponent } from './collection/collection.component';
 
 @Component({
@@ -36,7 +40,7 @@ import { CollectionComponent } from './collection/collection.component';
 })
 export class SettingsComponent {
   userSettings: UserSettings | undefined;
-  collections = model<Collection[]>()
+  collections = model<Collection[]>();
   //userSettings = model<UserSettings>();
 
   constructor(
@@ -45,17 +49,29 @@ export class SettingsComponent {
   ) {}
 
   loadSettings() {
-    this.settingsService.getUserSetting().subscribe(
-      (data) => {
+    this.settingsService.getUserSetting().subscribe({
+      next: (data) => {
         this.userSettings = data;
-        this.collections.set(data.edges.Collections)
+        this.collections.set(data.edges.Collections);
         this.cdRef.detectChanges();
       },
-      (err) => {
-        console.log("err");
+      error: (err) => {
+        console.log('err');
         console.log(err);
-      }
-    );
+      },
+      complete: () => console.info('request usersettings complete'),
+    });
+    // this.settingsService.getUserSetting().subscribe(
+    //   (data) => {
+    //     this.userSettings = data;
+    //     this.collections.set(data.edges.Collections);
+    //     this.cdRef.detectChanges();
+    //   },
+    //   (err) => {
+    //     console.log('err');
+    //     console.log(err);
+    //   }
+    // );
   }
 
   ngOnInit() {
@@ -63,13 +79,10 @@ export class SettingsComponent {
   }
 
   onSaveClick() {
-    console.log('Spaces ');
+    this.settingsService.saveUserSetting(this.userSettings!);
   }
 
   debug() {
     console.log(this.userSettings);
-  }
-  onCopyKey() {
-    console.log('Copy API key');
   }
 }

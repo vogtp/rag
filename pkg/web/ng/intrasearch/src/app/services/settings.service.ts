@@ -9,14 +9,19 @@ import { httpHeaders, userSettingsURL } from './common';
 export class SettingsService {
   getUserSetting(): Observable<UserSettings> {
     let url = userSettingsURL;
-    return this.http.get<UserSettings>(url, {
-      headers: httpHeaders,
+    return this.http.get<UserSettings>(url, { headers: httpHeaders });
+  }
+
+  saveUserSetting(us: UserSettings) {
+    let url = userSettingsURL;
+    // url = 'http://localhost:4444' + userSettingsURL;
+    console.log('Sending usersettings save put: ' + url);
+    this.http.put(url, us, { headers: httpHeaders }).subscribe({
+      next: (v) => console.log(v),
+      error: (e) => console.error(e),
+      complete: () => console.info('complete'),
     });
   }
-  // summary(uuid: string): Observable<Document> {
-  //   let url = summaryUrl + uuid;
-  //   return this.http.get<Document>(url, { headers: httpHeaders });
-  // }
 
   constructor(private http: HttpClient) {}
 }
