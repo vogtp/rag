@@ -38,8 +38,10 @@
 
 
                 <mat-tab-group>
-                    <div *ngFor="let src of collection()!.edges!.Sources">
-                        <mat-tab label="{{ src.Name }}"> <app-source [source]="src" /> </mat-tab>
+                    <div *ngFor="let src of collection()!.edges!.Sources; let i = index">
+                    <mat-tab label="{{ collection()!.edges!.Sources![i].Name }}"> 
+                        <app-source [(source)]="collection()!.edges!.Sources![i]" /> 
+                    </mat-tab>
                     </div>
                 </mat-tab-group>
             </mat-card-content>

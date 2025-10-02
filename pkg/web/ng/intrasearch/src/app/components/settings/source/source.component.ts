@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, model } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -25,5 +25,5 @@ import { Source } from '../../../services/settings.service';
   styleUrl: './source.component.css',
 })
 export class SourceComponent {
-  @Input() source: Source | undefined;
+  source = model<Source>();
 }
