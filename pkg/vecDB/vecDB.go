@@ -21,16 +21,14 @@ type VecDB struct {
 	embedFunc       types.EmbeddingFunction
 	ollamaAddr      string
 	embeddingsModel string
-	config          *cfg.RagConfig
+	// config          *cfg.RagConfig
 }
 
 // New creates a vectorDB
-func New(ctx context.Context, slog *slog.Logger, config *cfg.RagConfig, opts ...Option) (*VecDB, error) {
+func New(ctx context.Context, slog *slog.Logger, config cfg.RagConfig, opts ...Option) (*VecDB, error) {
 	v := &VecDB{
-		slog:       slog,
-		chromaAddr: cfg.ChromaUrl(),
-		config:     config,
-		//embeddingsModel: "nomic-embed-text",
+		slog:            slog,
+		chromaAddr:      cfg.ChromaUrl(),
 		embeddingsModel: config.Model.Embedding,
 	}
 	for _, o := range opts {
@@ -102,8 +100,11 @@ func (v *VecDB) DeleteCollection(ctx context.Context, collectionName string) err
 }
 
 // ListCollections lists all colletions
-func (v *VecDB) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
-	prefix := v.config.Vecdb.CollectionName
+func (v *VecDB) ListCollections(ctx context.Context, cfg *cfg.RagConfig) ([]*chroma.Collection, error) {
+	prefix := ""
+	if cfg != nil {
+		prefix = cfg.Vecdb.CollectionName
+	}
 	cols, err := v.chroma.ListCollections(ctx)
 	if err != nil {
 		return nil, err

@@ -36,12 +36,14 @@ var vecDbEmbbedPathCmd = &cobra.Command{
 			slog.Info(fmt.Sprintf("Updating collection %s took %s", collectionName, time.Since(t)))
 		}(start)
 		ctx := cmd.Context()
-		client, err := vecdb.New(ctx, slog.Default(), cfg.DefaultRagCfg(), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
+		dcfg := cfg.DefaultRagCfg()
+		dcfg.Vecdb.CollectionName = collectionName
+		client, err := vecdb.New(ctx, slog.Default(), dcfg, vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
 		if err != nil {
 			return fmt.Errorf("Failed to create vector DB: %w", err)
 		}
 
-		_, err = client.Embedd(ctx, collectionName, filesystem.Generate(ctx, path))
+		_, err = client.Embedd(ctx, dcfg, filesystem.Generate(ctx, path))
 		return err
 	},
 }
@@ -63,7 +65,7 @@ var vecDbEmbbedConfluenceCmd = &cobra.Command{
 				notUsed = fmt.Sprintf("%s %s", notUsed, ragCfg.Name)
 				continue
 			}
-			if err := confluence.Embed(ctx, slog, &ragCfg); err != nil {
+			if err := confluence.Embed(ctx, slog, ragCfg); err != nil {
 				fmt.Printf("Embed confluence: %v", err)
 			}
 		}

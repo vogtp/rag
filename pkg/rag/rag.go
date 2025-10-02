@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"slices"
 	"strings"
+	"time"
 
 	chroma "github.com/amikos-tech/chroma-go"
 	"github.com/vogtp/rag/pkg/cfg"
@@ -17,7 +18,7 @@ import (
 
 type Manager struct {
 	slog   *slog.Logger
-	config *cfg.RagConfig
+	config cfg.RagConfig
 
 	vecDB  *vecdb.VecDB
 	models []Model
@@ -25,7 +26,7 @@ type Manager struct {
 	bearerAuth bearer.Auth
 }
 
-func New(ctx context.Context, slog *slog.Logger, config *cfg.RagConfig) (*Manager, error) {
+func New(ctx context.Context, slog *slog.Logger, config cfg.RagConfig) (*Manager, error) {
 	m := Manager{
 		slog:       slog,
 		config:     config,
@@ -48,9 +49,15 @@ func New(ctx context.Context, slog *slog.Logger, config *cfg.RagConfig) (*Manage
 
 	return &m, nil
 }
-func (m Manager) Name() string{
+
+func (m Manager) Name() string {
 	return m.config.Name
 }
+
+func (m Manager) UpdateIntervall() time.Duration {
+	return m.config.VecDBUpdateIntervall()
+}
+
 func (m Manager) BearerAuth() bearer.Auth {
 	return m.bearerAuth
 }
@@ -62,7 +69,7 @@ func (m Manager) ModelDefault() string {
 
 func (m *Manager) updateModelsFromChroma(ctx context.Context) error {
 
-	collections, err := m.vecDB.ListCollections(ctx)
+	collections, err := m.vecDB.ListCollections(ctx, &m.config)
 	if err != nil {
 		return fmt.Errorf("cannot list chroma collections: %w", err)
 	}
@@ -113,5 +120,5 @@ func (m Manager) SearchVecDB(ctx context.Context, slog *slog.Logger, collection 
 	return res[0].Documents, nil
 }
 func (m Manager) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
-	return m.vecDB.ListCollections(ctx)
+	return m.vecDB.ListCollections(ctx, &m.config)
 }

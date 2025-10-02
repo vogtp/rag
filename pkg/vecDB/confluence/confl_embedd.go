@@ -15,7 +15,7 @@ import (
 
 var wg sync.WaitGroup
 
-func Embed(ctx context.Context, slog *slog.Logger, config *cfg.RagConfig) error {
+func Embed(ctx context.Context, slog *slog.Logger, config cfg.RagConfig) error {
 	collectionName := config.Vecdb.CollectionName
 	client, err := vecdb.New(ctx, slog, config, vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
 	if err != nil {
@@ -30,13 +30,23 @@ func Embed(ctx context.Context, slog *slog.Logger, config *cfg.RagConfig) error 
 		o1, o2 := fanOut(c)
 
 		go func() {
-			if err := embedd(ctx, client, fmt.Sprintf("%s-%s", collectionName, "all"), o1); err != nil {
-				slog.Warn("Embedding returned an error", "collectionName", collectionName, "space", "all", "err", err)
+			colName := fmt.Sprintf("%s-%s", collectionName, "all")
+			cfg := config
+			cfg.Vecdb.CollectionName = colName
+			slog := slog.With("collectionName", colName, "space", "all")
+			slog.Info("Starting confluence embdding")
+			if err := embedd(ctx, client, cfg, o1); err != nil {
+				slog.Warn("Embedding returned an error", "err", err)
 			}
 		}()
 		go func() {
-			if err := embedd(ctx, client, fmt.Sprintf("%s-%s", collectionName, strings.ToLower(space)), o2); err != nil {
-				slog.Warn("Embedding returned an error", "collectionName", collectionName, "space", space, "err", err)
+			colName := fmt.Sprintf("%s-%s", collectionName, strings.ToLower(space))
+			cfg := config
+			cfg.Vecdb.CollectionName = colName
+			slog := slog.With("collectionName", colName, "space", space)
+			slog.Info("Starting confluence embdding")
+			if err := embedd(ctx, client, cfg, o2); err != nil {
+				slog.Warn("Embedding returned an error", "err", err)
 			}
 		}()
 		if ctx.Err() != nil {
@@ -47,12 +57,13 @@ func Embed(ctx context.Context, slog *slog.Logger, config *cfg.RagConfig) error 
 	return nil
 }
 
-func embedd(ctx context.Context, client *vecdb.VecDB, collectionName string, c chan vecdb.EmbeddDocument) error {
+func embedd(ctx context.Context, client *vecdb.VecDB, config cfg.RagConfig, c chan vecdb.EmbeddDocument) error {
 	wg.Add(1)
 	defer wg.Done()
-	slog.Info("Embebbing start", "collection", collectionName)
+	slog := slog.With("collection", config.Vecdb.CollectionName)
+	slog.Info("Embebbing start")
 	start := time.Now()
-	cnt, err := client.Embedd(ctx, collectionName, c)
+	cnt, err := client.Embedd(ctx, config, c)
 	if errors.Is(err, context.Canceled) {
 		err = nil
 	}
@@ -60,7 +71,7 @@ func embedd(ctx context.Context, client *vecdb.VecDB, collectionName string, c c
 		return fmt.Errorf("confluence embedding failed: %w", err)
 	}
 	d := time.Since(start)
-	slog.Info("Embebbing finished", "collection", collectionName, "document.count", cnt, "duration", d.String(), "duration_ms", d.Milliseconds())
+	slog.Info("Embebbing finished", "document.count", cnt, "duration", d.String(), "duration_ms", d.Milliseconds())
 	return nil
 }
 

@@ -44,7 +44,7 @@ func startWeb(ctx context.Context) error {
 	}
 	rags := make([]rag.Manager, len(ragCfgs))
 	for i, ragCfg := range ragCfgs {
-		rag, err := rag.New(ctx, slog, &ragCfg)
+		rag, err := rag.New(ctx, slog, ragCfg)
 		if err != nil {
 			return fmt.Errorf("start rag %q backend: %w", ragCfg.Name, err)
 		}

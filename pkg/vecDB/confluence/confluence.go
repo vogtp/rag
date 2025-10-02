@@ -18,7 +18,7 @@ import (
 )
 
 // GetDocuments retrives confluence spaces and generates vecdb.EmbeddDocuments
-func GetDocuments(ctx context.Context, slog *slog.Logger, config *cfg.RagConfig, spaces ...string) (chan vecdb.EmbeddDocument, error) {
+func GetDocuments(ctx context.Context, slog *slog.Logger, config cfg.RagConfig, spaces ...string) (chan vecdb.EmbeddDocument, error) {
 	baseURL := config.Confluence.BaseURL
 	baseURL = strings.TrimRight(baseURL, "/")
 	conf := confluence{
@@ -51,7 +51,7 @@ type confluence struct {
 	queryLimit int
 	spaces     []string
 	mu         sync.Mutex
-	config     *cfg.RagConfig
+	config     cfg.RagConfig
 }
 
 func (c *confluence) init() error {

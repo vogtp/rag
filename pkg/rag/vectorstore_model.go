@@ -26,7 +26,7 @@ type VectorStoreModel struct {
 	LLMName string
 
 	vecDB  *vecdb.VecDB
-	config *cfg.RagConfig
+	config cfg.RagConfig
 
 	OwnedBy    string
 	bearerAuth bearer.Auth

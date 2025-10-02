@@ -49,11 +49,12 @@ func scapper2vecDB(ctx context.Context, url string, collectionName string) error
 		return err
 	}
 
-	client, err := vecdb.New(ctx, slog.Default(), cfg.DefaultRagCfg(), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
+	dcfg := cfg.DefaultRagCfg()
+	dcfg.Vecdb.CollectionName = collectionName
+	client, err := vecdb.New(ctx, slog.Default(), dcfg, vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
 	if err != nil {
 		return fmt.Errorf("Failed to create vector DB: %w", err)
 	}
-
-	_, err = client.Embedd(ctx, collectionName, docsChannel)
+	_, err = client.Embedd(ctx, dcfg, docsChannel)
 	return err
 }

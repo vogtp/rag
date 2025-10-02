@@ -79,7 +79,9 @@ var vecDbSearchCmd = &cobra.Command{
 			fmt.Printf("Searching collection %s took %s\n", collectionName, time.Since(t))
 		}(start)
 		ctx := cmd.Context()
-		client, err := vecdb.New(ctx, slog.Default(), cfg.DefaultRagCfg(),vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
+		dcfg := cfg.DefaultRagCfg()
+		dcfg.Vecdb.CollectionName = collectionName
+		client, err := vecdb.New(ctx, slog.Default(), dcfg, vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
 		if err != nil {
 			return fmt.Errorf("Failed to create vector DB: %w", err)
 		}
@@ -107,12 +109,14 @@ var vecDbRmCmd = &cobra.Command{
 			return cmd.Usage()
 		}
 		ctx := cmd.Context()
-		client, err := vecdb.New(ctx, slog.Default(), cfg.DefaultRagCfg())
+		dcfg := cfg.RagCfgFIXME()
+		dcfg.Vecdb.CollectionName = args[0]
+		client, err := vecdb.New(ctx, slog.Default(), dcfg)
 		if err != nil {
 			return fmt.Errorf("Failed to create client: %w", err)
 		}
 		if args[0] == "all" {
-			cols, err := client.ListCollections(ctx)
+			cols, err := client.ListCollections(ctx, nil)
 			if err != nil {
 				return err
 			}
@@ -141,11 +145,11 @@ var vecDbLsCmd = &cobra.Command{
 	Long:    ``,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
-		client, err := vecdb.New(ctx, slog.Default(), cfg.DefaultRagCfg())
+		client, err := vecdb.New(ctx, slog.Default(), cfg.RagCfgFIXME())
 		if err != nil {
 			return fmt.Errorf("failed to create client: %w", err)
 		}
-		cols, err := client.ListCollections(ctx)
+		cols, err := client.ListCollections(ctx, nil)
 		if err != nil {
 			return fmt.Errorf("cannot list collections: %w", err)
 		}
@@ -168,7 +172,9 @@ var vecDbColLsCmd = &cobra.Command{
 		}
 		colName := args[0]
 		ctx := cmd.Context()
-		client, err := vecdb.New(ctx, slog.Default(), cfg.DefaultRagCfg())
+		dcfg := cfg.DefaultRagCfg()
+		dcfg.Vecdb.CollectionName = colName
+		client, err := vecdb.New(ctx, slog.Default(), dcfg)
 		if err != nil {
 			return fmt.Errorf("Failed to create client: %w", err)
 		}

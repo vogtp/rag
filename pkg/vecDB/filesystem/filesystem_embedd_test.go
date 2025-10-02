@@ -13,7 +13,9 @@ import (
 
 func TestGenerate(t *testing.T) {
 	ctx := context.Background()
-	client, err := vecdb.New(ctx, slog.Default(), cfg.DefaultRagCfg(), vecdb.WithChromaAddress("http://localhost:8000"), vecdb.WithOllamaAddress("https://llama-1.its.unibas.ch"))
+	dcfg := cfg.DefaultRagCfg()
+	dcfg.Vecdb.CollectionName = "test-test"
+	client, err := vecdb.New(ctx, slog.Default(), dcfg, vecdb.WithChromaAddress("http://localhost:8000"), vecdb.WithOllamaAddress("https://llama-1.its.unibas.ch"))
 	if err != nil {
 		t.Fatalf("Failed to create vector DB: %v", err)
 	}
@@ -22,7 +24,7 @@ func TestGenerate(t *testing.T) {
 	if err != nil {
 		t.Errorf("Cannot read dir %q: %v", dir, err)
 	}
-	cnt, err := client.Embedd(ctx, "test-Test", filesystem.Generate(ctx, dir))
+	cnt, err := client.Embedd(ctx, dcfg, filesystem.Generate(ctx, dir))
 	if err != nil {
 		t.Fatalf("Embedding: %v", err)
 	}

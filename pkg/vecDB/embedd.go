@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/amikos-tech/chroma-go/types"
+	"github.com/vogtp/rag/pkg/cfg"
 )
 
 const (
@@ -33,7 +34,8 @@ func parseTime(t string) (time.Time, error) {
 	return time.Parse(timeFormat, t)
 }
 
-func (v *VecDB) Embedd(ctx context.Context, collectionName string, in <-chan EmbeddDocument) (int, error) {
+func (v *VecDB) Embedd(ctx context.Context, config cfg.RagConfig, in <-chan EmbeddDocument) (int, error) {
+	collectionName := config.Vecdb.CollectionName
 	slog := v.slog.With("collection", collectionName)
 	slogBase := slog
 	slog.Warn("Starting embedding")
@@ -50,7 +52,7 @@ func (v *VecDB) Embedd(ctx context.Context, collectionName string, in <-chan Emb
 	history := emeddHistory{
 		slog:                 slog,
 		collectionName:       collectionName,
-		vecDBUpdateIntervall: v.config.VecDBUpdateIntervall(),
+		vecDBUpdateIntervall: config.VecDBUpdateIntervall(),
 	}
 	for d := range in {
 		slog = slogBase.With(fmt.Sprintf("MetaKey<%s>", d.IDMetaKey), d.IDMetaValue)

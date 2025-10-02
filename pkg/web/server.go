@@ -26,9 +26,9 @@ type Server struct {
 
 	usercfg *usercfg.DB
 
-	rags       []rag.Manager
-	lastEmbedd map[string]time.Time
-	docCache   docChace
+	ragManagers []rag.Manager
+	lastEmbedd  map[string]time.Time
+	docCache    docChace
 }
 
 // New creates a new webserver
@@ -41,11 +41,11 @@ func New(ctx context.Context, slog *slog.Logger, rags []rag.Manager) (*Server, e
 		return nil, err
 	}
 	srv := &Server{
-		slog:       slog,
-		rags:       rags,
-		lastEmbedd: make(map[string]time.Time),
-		docCache:   newDocCache(),
-		usercfg:    userCfg,
+		slog:        slog,
+		ragManagers: rags,
+		lastEmbedd:  make(map[string]time.Time),
+		docCache:    newDocCache(),
+		usercfg:     userCfg,
 	}
 	srv.httpSrv = &http.Server{
 		ReadTimeout:       10 * time.Second,
@@ -85,10 +85,7 @@ func New(ctx context.Context, slog *slog.Logger, rags []rag.Manager) (*Server, e
 
 // Run starts the webserver in foreground
 func (srv *Server) Run(ctx context.Context) error {
-
-	if err := srv.schedulePeriodicVecDBUpdates(ctx); err != nil {
-		slog.Error("Cannot start periodic embedding", "err", err)
-	}
+	srv.schedulePeriodicVecDBUpdates(ctx)
 
 	if err := srv.routes(); err != nil {
 		return err

@@ -7,5 +7,5 @@ import (
 )
 
 func (srv *Server) rag(r *http.Request) *rag.Manager {
-	return &srv.rags[0]
+	return &srv.ragManagers[0]
 }
