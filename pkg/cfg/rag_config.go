@@ -42,7 +42,7 @@ type RagConfig struct {
 
 type modelCfg struct {
 	Embedding string `yaml:"embedding"`
-	Default   string `yaml:"default"`
+	LLM       string `yaml:"llm"`
 }
 
 type vecDbCfg struct {
@@ -85,7 +85,7 @@ var defaultRagCfg = RagConfig{
 	Name: "Default",
 	Model: modelCfg{
 		Embedding: viper.GetString(ModelEmbedding),
-		Default:   viper.GetString(ModelDefault),
+		LLM:       viper.GetString(ModelLLM),
 	},
 	Vecdb: vecDbCfg{
 		CollectionName:  viper.GetString(VecDBColName),

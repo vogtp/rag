@@ -38,7 +38,7 @@ func getOllamaClient(ctx context.Context, model string) (*ollama.LLM, error) {
 }
 
 func ollamaChat(ctx context.Context) error {
-	llm, err := getOllamaClient(ctx, viper.GetString(cfg.ModelDefault))
+	llm, err := getOllamaClient(ctx, viper.GetString(cfg.ModelLLM))
 	if err != nil {
 		return fmt.Errorf("cannot create ollama connection: %w", err)
 	}

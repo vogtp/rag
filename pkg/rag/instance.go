@@ -16,7 +16,25 @@ import (
 	"github.com/vogtp/rag/pkg/web/bearer"
 )
 
-type Manager struct {
+type Manager interface {
+	Name() string
+
+	Model(name string) (Model, error)
+	Models(ctx context.Context) []Model
+
+	LLM() string
+
+	UpdateIntervall() time.Duration
+	Embbed(ctx context.Context) error
+	ListCollections(ctx context.Context) ([]*chroma.Collection, error)
+	SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error)
+
+	BearerAuth() bearer.Auth
+}
+
+var _ (Manager) = (*instance)(nil)
+
+type instance struct {
 	slog   *slog.Logger
 	config cfg.RagConfig
 
@@ -26,15 +44,15 @@ type Manager struct {
 	bearerAuth bearer.Auth
 }
 
-func New(ctx context.Context, slog *slog.Logger, config cfg.RagConfig) (*Manager, error) {
-	m := Manager{
+func newInstance(ctx context.Context, slog *slog.Logger, config cfg.RagConfig) (Manager, error) {
+	m := instance{
 		slog:       slog,
 		config:     config,
 		bearerAuth: bearer.TokenAuth(config.APIToken),
 		models: []Model{
 			OllamaModel{
-				Name:    config.Model.Default,
-				LLMName: config.Model.Default,
+				Name:    config.Model.LLM,
+				LLMName: config.Model.LLM,
 			},
 		},
 	}
@@ -50,31 +68,31 @@ func New(ctx context.Context, slog *slog.Logger, config cfg.RagConfig) (*Manager
 	return &m, nil
 }
 
-func (m Manager) Name() string {
+func (m instance) Name() string {
 	return m.config.Name
 }
 
-func (m Manager) UpdateIntervall() time.Duration {
+func (m instance) UpdateIntervall() time.Duration {
 	return m.config.VecDBUpdateIntervall()
 }
 
-func (m Manager) BearerAuth() bearer.Auth {
+func (m instance) BearerAuth() bearer.Auth {
 	return m.bearerAuth
 }
 
-// ModelDefault returns the name of the LLM that is used for generation
-func (m Manager) ModelDefault() string {
-	return m.config.Model.Default
+// LLM returns the name of the LLM that is used for generation
+func (m instance) LLM() string {
+	return m.config.Model.LLM
 }
 
-func (m *Manager) updateModelsFromChroma(ctx context.Context) error {
+func (m *instance) updateModelsFromChroma(ctx context.Context) error {
 
 	collections, err := m.vecDB.ListCollections(ctx, &m.config)
 	if err != nil {
 		return fmt.Errorf("cannot list chroma collections: %w", err)
 	}
 
-	model := m.config.Model.Default
+	model := m.config.Model.LLM
 	for _, c := range collections {
 		m.models = append(m.models, VectorStoreModel{Name: c.Name, vecDB: m.vecDB, Collection: c.Name, LLMName: model, config: m.config, bearerAuth: m.bearerAuth})
 	}
@@ -86,14 +104,14 @@ func (m *Manager) updateModelsFromChroma(ctx context.Context) error {
 	return nil
 }
 
-func (m *Manager) Models(ctx context.Context) []Model {
+func (m *instance) Models(ctx context.Context) []Model {
 	if err := m.updateModelsFromChroma(ctx); err != nil {
 		m.slog.WarnContext(ctx, "Cannot update models from chroma", "err", err)
 	}
 	return m.models
 }
 
-func (m Manager) Model(name string) (Model, error) {
+func (m instance) Model(name string) (Model, error) {
 	m.slog.Debug("Query model", "model", name)
 	decoded, err := url.QueryUnescape(name)
 	if err != nil {
@@ -108,17 +126,17 @@ func (m Manager) Model(name string) (Model, error) {
 	}
 	return nil, fmt.Errorf("model %s not found", name)
 }
-func (m Manager) Embbed(ctx context.Context) error {
+func (m instance) Embbed(ctx context.Context) error {
 	return confluence.Embed(ctx, m.slog, m.config)
 }
 
-func (m Manager) SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error) {
+func (m instance) SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error) {
 	res, err := m.vecDB.Query(ctx, collection, []string{query}, int32(maxResults))
 	if err != nil {
 		return nil, fmt.Errorf("query vector DB: %w", err)
 	}
 	return res[0].Documents, nil
 }
-func (m Manager) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
+func (m instance) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
 	return m.vecDB.ListCollections(ctx, &m.config)
 }

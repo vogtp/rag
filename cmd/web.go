@@ -6,7 +6,6 @@ import (
 	"log/slog"
 
 	"github.com/spf13/cobra"
-	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/rag"
 	"github.com/vogtp/rag/pkg/vecDB/chroma"
 	"github.com/vogtp/rag/pkg/web"
@@ -38,18 +37,12 @@ func startWeb(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("start chroma: %w", err)
 	}
-	ragCfgs, err := cfg.GetRagConfig()
+
+	rags, err := rag.New(ctx, slog)
 	if err != nil {
-		return fmt.Errorf("read RAG config: %w", err)
+		return err
 	}
-	rags := make([]rag.Manager, len(ragCfgs))
-	for i, ragCfg := range ragCfgs {
-		rag, err := rag.New(ctx, slog, ragCfg)
-		if err != nil {
-			return fmt.Errorf("start rag %q backend: %w", ragCfg.Name, err)
-		}
-		rags[i] = *rag
-	}
+
 	api, err := web.New(ctx, slog, rags)
 	if err != nil {
 		return fmt.Errorf("start http server: %w", err)

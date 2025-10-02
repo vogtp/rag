@@ -6,6 +6,6 @@ import (
 	"github.com/vogtp/rag/pkg/rag"
 )
 
-func (srv *Server) rag(r *http.Request) *rag.Manager {
-	return &srv.ragManagers[0]
+func (srv *Server) rag(r *http.Request) rag.Manager {
+	return srv.ragManagers[0]
 }

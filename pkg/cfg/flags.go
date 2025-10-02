@@ -29,8 +29,8 @@ const (
 	// CacheDir the subdirectory to use as cache, subdir of modeldir if it does not start with /
 	CacheDir = "cache.dir"
 
-	// ModelDefault is the default model when no model is given
-	ModelDefault = "model.default"
+	// ModelLLM is the default model when no model is given
+	ModelLLM = "model.llm"
 	// ModelEmbedding is the default model used for embeddings
 	ModelEmbedding = "model.embedding"
 
@@ -93,7 +93,7 @@ func init() {
 	pflag.String(HTTPProxy, "", "enables SOCKS5 proxies for http requests, eg. localhost:1928")
 	pflag.String(WebListen, ":8080", "Address the webserver should listen on")
 
-	pflag.String(ModelDefault, "gpt-oss", "The default model when no model is given")
+	pflag.String(ModelLLM, "gpt-oss", "The default LLM model")
 	pflag.String(ModelEmbedding, "bge-m3", "The default model used for embeddings")
 	// pflag.String(ModelEmbedding, "mxbai-embed-large", "The default model used for embeddings")
 	//pflag.String(ModelEmbedding, "nomic-embed-text", "The default model used for embeddings")
