@@ -12,18 +12,18 @@ import (
 )
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
-func (cq *CollectionQuery) CollectFields(ctx context.Context, satisfies ...string) (*CollectionQuery, error) {
+func (_q *CollectionQuery) CollectFields(ctx context.Context, satisfies ...string) (*CollectionQuery, error) {
 	fc := graphql.GetFieldContext(ctx)
 	if fc == nil {
-		return cq, nil
+		return _q, nil
 	}
-	if err := cq.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+	if err := _q.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
 		return nil, err
 	}
-	return cq, nil
+	return _q, nil
 }
 
-func (cq *CollectionQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
+func (_q *CollectionQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
 	path = append([]string(nil), path...)
 	var (
 		unknownSeen    bool
@@ -37,12 +37,12 @@ func (cq *CollectionQuery) collectField(ctx context.Context, oneNode bool, opCtx
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
-				query = (&SourceSystemClient{config: cq.config}).Query()
+				query = (&SourceSystemClient{config: _q.config}).Query()
 			)
 			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, sourcesystemImplementors)...); err != nil {
 				return err
 			}
-			cq.WithNamedSources(alias, func(wq *SourceSystemQuery) {
+			_q.WithNamedSources(alias, func(wq *SourceSystemQuery) {
 				*wq = *query
 			})
 		case "name":
@@ -62,7 +62,7 @@ func (cq *CollectionQuery) collectField(ctx context.Context, oneNode bool, opCtx
 		}
 	}
 	if !unknownSeen {
-		cq.Select(selectedFields...)
+		_q.Select(selectedFields...)
 	}
 	return nil
 }
@@ -94,18 +94,18 @@ func newCollectionPaginateArgs(rv map[string]any) *collectionPaginateArgs {
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
-func (ssq *SourceSystemQuery) CollectFields(ctx context.Context, satisfies ...string) (*SourceSystemQuery, error) {
+func (_q *SourceSystemQuery) CollectFields(ctx context.Context, satisfies ...string) (*SourceSystemQuery, error) {
 	fc := graphql.GetFieldContext(ctx)
 	if fc == nil {
-		return ssq, nil
+		return _q, nil
 	}
-	if err := ssq.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+	if err := _q.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
 		return nil, err
 	}
-	return ssq, nil
+	return _q, nil
 }
 
-func (ssq *SourceSystemQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
+func (_q *SourceSystemQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
 	path = append([]string(nil), path...)
 	var (
 		unknownSeen    bool
@@ -146,7 +146,7 @@ func (ssq *SourceSystemQuery) collectField(ctx context.Context, oneNode bool, op
 		}
 	}
 	if !unknownSeen {
-		ssq.Select(selectedFields...)
+		_q.Select(selectedFields...)
 	}
 	return nil
 }
@@ -178,18 +178,18 @@ func newSourceSystemPaginateArgs(rv map[string]any) *sourcesystemPaginateArgs {
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
-func (uq *UserQuery) CollectFields(ctx context.Context, satisfies ...string) (*UserQuery, error) {
+func (_q *UserQuery) CollectFields(ctx context.Context, satisfies ...string) (*UserQuery, error) {
 	fc := graphql.GetFieldContext(ctx)
 	if fc == nil {
-		return uq, nil
+		return _q, nil
 	}
-	if err := uq.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+	if err := _q.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
 		return nil, err
 	}
-	return uq, nil
+	return _q, nil
 }
 
-func (uq *UserQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
+func (_q *UserQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
 	path = append([]string(nil), path...)
 	var (
 		unknownSeen    bool
@@ -203,12 +203,12 @@ func (uq *UserQuery) collectField(ctx context.Context, oneNode bool, opCtx *grap
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
-				query = (&CollectionClient{config: uq.config}).Query()
+				query = (&CollectionClient{config: _q.config}).Query()
 			)
 			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, collectionImplementors)...); err != nil {
 				return err
 			}
-			uq.WithNamedCollections(alias, func(wq *CollectionQuery) {
+			_q.WithNamedCollections(alias, func(wq *CollectionQuery) {
 				*wq = *query
 			})
 		case "name":
@@ -228,7 +228,7 @@ func (uq *UserQuery) collectField(ctx context.Context, oneNode bool, opCtx *grap
 		}
 	}
 	if !unknownSeen {
-		uq.Select(selectedFields...)
+		_q.Select(selectedFields...)
 	}
 	return nil
 }

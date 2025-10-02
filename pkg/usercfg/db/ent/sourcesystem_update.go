@@ -22,106 +22,106 @@ type SourceSystemUpdate struct {
 }
 
 // Where appends a list predicates to the SourceSystemUpdate builder.
-func (ssu *SourceSystemUpdate) Where(ps ...predicate.SourceSystem) *SourceSystemUpdate {
-	ssu.mutation.Where(ps...)
-	return ssu
+func (_u *SourceSystemUpdate) Where(ps ...predicate.SourceSystem) *SourceSystemUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetName sets the "Name" field.
-func (ssu *SourceSystemUpdate) SetName(s string) *SourceSystemUpdate {
-	ssu.mutation.SetName(s)
-	return ssu
+func (_u *SourceSystemUpdate) SetName(v string) *SourceSystemUpdate {
+	_u.mutation.SetName(v)
+	return _u
 }
 
 // SetNillableName sets the "Name" field if the given value is not nil.
-func (ssu *SourceSystemUpdate) SetNillableName(s *string) *SourceSystemUpdate {
-	if s != nil {
-		ssu.SetName(*s)
+func (_u *SourceSystemUpdate) SetNillableName(v *string) *SourceSystemUpdate {
+	if v != nil {
+		_u.SetName(*v)
 	}
-	return ssu
+	return _u
 }
 
 // SetType sets the "Type" field.
-func (ssu *SourceSystemUpdate) SetType(s sourcesystem.Type) *SourceSystemUpdate {
-	ssu.mutation.SetType(s)
-	return ssu
+func (_u *SourceSystemUpdate) SetType(v sourcesystem.Type) *SourceSystemUpdate {
+	_u.mutation.SetType(v)
+	return _u
 }
 
 // SetNillableType sets the "Type" field if the given value is not nil.
-func (ssu *SourceSystemUpdate) SetNillableType(s *sourcesystem.Type) *SourceSystemUpdate {
-	if s != nil {
-		ssu.SetType(*s)
+func (_u *SourceSystemUpdate) SetNillableType(v *sourcesystem.Type) *SourceSystemUpdate {
+	if v != nil {
+		_u.SetType(*v)
 	}
-	return ssu
+	return _u
 }
 
 // SetURL sets the "URL" field.
-func (ssu *SourceSystemUpdate) SetURL(s string) *SourceSystemUpdate {
-	ssu.mutation.SetURL(s)
-	return ssu
+func (_u *SourceSystemUpdate) SetURL(v string) *SourceSystemUpdate {
+	_u.mutation.SetURL(v)
+	return _u
 }
 
 // SetNillableURL sets the "URL" field if the given value is not nil.
-func (ssu *SourceSystemUpdate) SetNillableURL(s *string) *SourceSystemUpdate {
-	if s != nil {
-		ssu.SetURL(*s)
+func (_u *SourceSystemUpdate) SetNillableURL(v *string) *SourceSystemUpdate {
+	if v != nil {
+		_u.SetURL(*v)
 	}
-	return ssu
+	return _u
 }
 
 // SetKey sets the "key" field.
-func (ssu *SourceSystemUpdate) SetKey(s string) *SourceSystemUpdate {
-	ssu.mutation.SetKey(s)
-	return ssu
+func (_u *SourceSystemUpdate) SetKey(v string) *SourceSystemUpdate {
+	_u.mutation.SetKey(v)
+	return _u
 }
 
 // SetNillableKey sets the "key" field if the given value is not nil.
-func (ssu *SourceSystemUpdate) SetNillableKey(s *string) *SourceSystemUpdate {
-	if s != nil {
-		ssu.SetKey(*s)
+func (_u *SourceSystemUpdate) SetNillableKey(v *string) *SourceSystemUpdate {
+	if v != nil {
+		_u.SetKey(*v)
 	}
-	return ssu
+	return _u
 }
 
 // ClearKey clears the value of the "key" field.
-func (ssu *SourceSystemUpdate) ClearKey() *SourceSystemUpdate {
-	ssu.mutation.ClearKey()
-	return ssu
+func (_u *SourceSystemUpdate) ClearKey() *SourceSystemUpdate {
+	_u.mutation.ClearKey()
+	return _u
 }
 
 // SetParts sets the "parts" field.
-func (ssu *SourceSystemUpdate) SetParts(s string) *SourceSystemUpdate {
-	ssu.mutation.SetParts(s)
-	return ssu
+func (_u *SourceSystemUpdate) SetParts(v string) *SourceSystemUpdate {
+	_u.mutation.SetParts(v)
+	return _u
 }
 
 // SetNillableParts sets the "parts" field if the given value is not nil.
-func (ssu *SourceSystemUpdate) SetNillableParts(s *string) *SourceSystemUpdate {
-	if s != nil {
-		ssu.SetParts(*s)
+func (_u *SourceSystemUpdate) SetNillableParts(v *string) *SourceSystemUpdate {
+	if v != nil {
+		_u.SetParts(*v)
 	}
-	return ssu
+	return _u
 }
 
 // ClearParts clears the value of the "parts" field.
-func (ssu *SourceSystemUpdate) ClearParts() *SourceSystemUpdate {
-	ssu.mutation.ClearParts()
-	return ssu
+func (_u *SourceSystemUpdate) ClearParts() *SourceSystemUpdate {
+	_u.mutation.ClearParts()
+	return _u
 }
 
 // Mutation returns the SourceSystemMutation object of the builder.
-func (ssu *SourceSystemUpdate) Mutation() *SourceSystemMutation {
-	return ssu.mutation
+func (_u *SourceSystemUpdate) Mutation() *SourceSystemMutation {
+	return _u.mutation
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (ssu *SourceSystemUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, ssu.sqlSave, ssu.mutation, ssu.hooks)
+func (_u *SourceSystemUpdate) Save(ctx context.Context) (int, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (ssu *SourceSystemUpdate) SaveX(ctx context.Context) int {
-	affected, err := ssu.Save(ctx)
+func (_u *SourceSystemUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -129,21 +129,21 @@ func (ssu *SourceSystemUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (ssu *SourceSystemUpdate) Exec(ctx context.Context) error {
-	_, err := ssu.Save(ctx)
+func (_u *SourceSystemUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ssu *SourceSystemUpdate) ExecX(ctx context.Context) {
-	if err := ssu.Exec(ctx); err != nil {
+func (_u *SourceSystemUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ssu *SourceSystemUpdate) check() error {
-	if v, ok := ssu.mutation.GetType(); ok {
+func (_u *SourceSystemUpdate) check() error {
+	if v, ok := _u.mutation.GetType(); ok {
 		if err := sourcesystem.TypeValidator(v); err != nil {
 			return &ValidationError{Name: "Type", err: fmt.Errorf(`ent: validator failed for field "SourceSystem.Type": %w`, err)}
 		}
@@ -151,40 +151,40 @@ func (ssu *SourceSystemUpdate) check() error {
 	return nil
 }
 
-func (ssu *SourceSystemUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := ssu.check(); err != nil {
-		return n, err
+func (_u *SourceSystemUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(sourcesystem.Table, sourcesystem.Columns, sqlgraph.NewFieldSpec(sourcesystem.FieldID, field.TypeInt))
-	if ps := ssu.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := ssu.mutation.Name(); ok {
+	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(sourcesystem.FieldName, field.TypeString, value)
 	}
-	if value, ok := ssu.mutation.GetType(); ok {
+	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(sourcesystem.FieldType, field.TypeEnum, value)
 	}
-	if value, ok := ssu.mutation.URL(); ok {
+	if value, ok := _u.mutation.URL(); ok {
 		_spec.SetField(sourcesystem.FieldURL, field.TypeString, value)
 	}
-	if value, ok := ssu.mutation.Key(); ok {
+	if value, ok := _u.mutation.Key(); ok {
 		_spec.SetField(sourcesystem.FieldKey, field.TypeString, value)
 	}
-	if ssu.mutation.KeyCleared() {
+	if _u.mutation.KeyCleared() {
 		_spec.ClearField(sourcesystem.FieldKey, field.TypeString)
 	}
-	if value, ok := ssu.mutation.Parts(); ok {
+	if value, ok := _u.mutation.Parts(); ok {
 		_spec.SetField(sourcesystem.FieldParts, field.TypeString, value)
 	}
-	if ssu.mutation.PartsCleared() {
+	if _u.mutation.PartsCleared() {
 		_spec.ClearField(sourcesystem.FieldParts, field.TypeString)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, ssu.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{sourcesystem.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -192,8 +192,8 @@ func (ssu *SourceSystemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
-	ssu.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // SourceSystemUpdateOne is the builder for updating a single SourceSystem entity.
@@ -205,113 +205,113 @@ type SourceSystemUpdateOne struct {
 }
 
 // SetName sets the "Name" field.
-func (ssuo *SourceSystemUpdateOne) SetName(s string) *SourceSystemUpdateOne {
-	ssuo.mutation.SetName(s)
-	return ssuo
+func (_u *SourceSystemUpdateOne) SetName(v string) *SourceSystemUpdateOne {
+	_u.mutation.SetName(v)
+	return _u
 }
 
 // SetNillableName sets the "Name" field if the given value is not nil.
-func (ssuo *SourceSystemUpdateOne) SetNillableName(s *string) *SourceSystemUpdateOne {
-	if s != nil {
-		ssuo.SetName(*s)
+func (_u *SourceSystemUpdateOne) SetNillableName(v *string) *SourceSystemUpdateOne {
+	if v != nil {
+		_u.SetName(*v)
 	}
-	return ssuo
+	return _u
 }
 
 // SetType sets the "Type" field.
-func (ssuo *SourceSystemUpdateOne) SetType(s sourcesystem.Type) *SourceSystemUpdateOne {
-	ssuo.mutation.SetType(s)
-	return ssuo
+func (_u *SourceSystemUpdateOne) SetType(v sourcesystem.Type) *SourceSystemUpdateOne {
+	_u.mutation.SetType(v)
+	return _u
 }
 
 // SetNillableType sets the "Type" field if the given value is not nil.
-func (ssuo *SourceSystemUpdateOne) SetNillableType(s *sourcesystem.Type) *SourceSystemUpdateOne {
-	if s != nil {
-		ssuo.SetType(*s)
+func (_u *SourceSystemUpdateOne) SetNillableType(v *sourcesystem.Type) *SourceSystemUpdateOne {
+	if v != nil {
+		_u.SetType(*v)
 	}
-	return ssuo
+	return _u
 }
 
 // SetURL sets the "URL" field.
-func (ssuo *SourceSystemUpdateOne) SetURL(s string) *SourceSystemUpdateOne {
-	ssuo.mutation.SetURL(s)
-	return ssuo
+func (_u *SourceSystemUpdateOne) SetURL(v string) *SourceSystemUpdateOne {
+	_u.mutation.SetURL(v)
+	return _u
 }
 
 // SetNillableURL sets the "URL" field if the given value is not nil.
-func (ssuo *SourceSystemUpdateOne) SetNillableURL(s *string) *SourceSystemUpdateOne {
-	if s != nil {
-		ssuo.SetURL(*s)
+func (_u *SourceSystemUpdateOne) SetNillableURL(v *string) *SourceSystemUpdateOne {
+	if v != nil {
+		_u.SetURL(*v)
 	}
-	return ssuo
+	return _u
 }
 
 // SetKey sets the "key" field.
-func (ssuo *SourceSystemUpdateOne) SetKey(s string) *SourceSystemUpdateOne {
-	ssuo.mutation.SetKey(s)
-	return ssuo
+func (_u *SourceSystemUpdateOne) SetKey(v string) *SourceSystemUpdateOne {
+	_u.mutation.SetKey(v)
+	return _u
 }
 
 // SetNillableKey sets the "key" field if the given value is not nil.
-func (ssuo *SourceSystemUpdateOne) SetNillableKey(s *string) *SourceSystemUpdateOne {
-	if s != nil {
-		ssuo.SetKey(*s)
+func (_u *SourceSystemUpdateOne) SetNillableKey(v *string) *SourceSystemUpdateOne {
+	if v != nil {
+		_u.SetKey(*v)
 	}
-	return ssuo
+	return _u
 }
 
 // ClearKey clears the value of the "key" field.
-func (ssuo *SourceSystemUpdateOne) ClearKey() *SourceSystemUpdateOne {
-	ssuo.mutation.ClearKey()
-	return ssuo
+func (_u *SourceSystemUpdateOne) ClearKey() *SourceSystemUpdateOne {
+	_u.mutation.ClearKey()
+	return _u
 }
 
 // SetParts sets the "parts" field.
-func (ssuo *SourceSystemUpdateOne) SetParts(s string) *SourceSystemUpdateOne {
-	ssuo.mutation.SetParts(s)
-	return ssuo
+func (_u *SourceSystemUpdateOne) SetParts(v string) *SourceSystemUpdateOne {
+	_u.mutation.SetParts(v)
+	return _u
 }
 
 // SetNillableParts sets the "parts" field if the given value is not nil.
-func (ssuo *SourceSystemUpdateOne) SetNillableParts(s *string) *SourceSystemUpdateOne {
-	if s != nil {
-		ssuo.SetParts(*s)
+func (_u *SourceSystemUpdateOne) SetNillableParts(v *string) *SourceSystemUpdateOne {
+	if v != nil {
+		_u.SetParts(*v)
 	}
-	return ssuo
+	return _u
 }
 
 // ClearParts clears the value of the "parts" field.
-func (ssuo *SourceSystemUpdateOne) ClearParts() *SourceSystemUpdateOne {
-	ssuo.mutation.ClearParts()
-	return ssuo
+func (_u *SourceSystemUpdateOne) ClearParts() *SourceSystemUpdateOne {
+	_u.mutation.ClearParts()
+	return _u
 }
 
 // Mutation returns the SourceSystemMutation object of the builder.
-func (ssuo *SourceSystemUpdateOne) Mutation() *SourceSystemMutation {
-	return ssuo.mutation
+func (_u *SourceSystemUpdateOne) Mutation() *SourceSystemMutation {
+	return _u.mutation
 }
 
 // Where appends a list predicates to the SourceSystemUpdate builder.
-func (ssuo *SourceSystemUpdateOne) Where(ps ...predicate.SourceSystem) *SourceSystemUpdateOne {
-	ssuo.mutation.Where(ps...)
-	return ssuo
+func (_u *SourceSystemUpdateOne) Where(ps ...predicate.SourceSystem) *SourceSystemUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (ssuo *SourceSystemUpdateOne) Select(field string, fields ...string) *SourceSystemUpdateOne {
-	ssuo.fields = append([]string{field}, fields...)
-	return ssuo
+func (_u *SourceSystemUpdateOne) Select(field string, fields ...string) *SourceSystemUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated SourceSystem entity.
-func (ssuo *SourceSystemUpdateOne) Save(ctx context.Context) (*SourceSystem, error) {
-	return withHooks(ctx, ssuo.sqlSave, ssuo.mutation, ssuo.hooks)
+func (_u *SourceSystemUpdateOne) Save(ctx context.Context) (*SourceSystem, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (ssuo *SourceSystemUpdateOne) SaveX(ctx context.Context) *SourceSystem {
-	node, err := ssuo.Save(ctx)
+func (_u *SourceSystemUpdateOne) SaveX(ctx context.Context) *SourceSystem {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -319,21 +319,21 @@ func (ssuo *SourceSystemUpdateOne) SaveX(ctx context.Context) *SourceSystem {
 }
 
 // Exec executes the query on the entity.
-func (ssuo *SourceSystemUpdateOne) Exec(ctx context.Context) error {
-	_, err := ssuo.Save(ctx)
+func (_u *SourceSystemUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ssuo *SourceSystemUpdateOne) ExecX(ctx context.Context) {
-	if err := ssuo.Exec(ctx); err != nil {
+func (_u *SourceSystemUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ssuo *SourceSystemUpdateOne) check() error {
-	if v, ok := ssuo.mutation.GetType(); ok {
+func (_u *SourceSystemUpdateOne) check() error {
+	if v, ok := _u.mutation.GetType(); ok {
 		if err := sourcesystem.TypeValidator(v); err != nil {
 			return &ValidationError{Name: "Type", err: fmt.Errorf(`ent: validator failed for field "SourceSystem.Type": %w`, err)}
 		}
@@ -341,17 +341,17 @@ func (ssuo *SourceSystemUpdateOne) check() error {
 	return nil
 }
 
-func (ssuo *SourceSystemUpdateOne) sqlSave(ctx context.Context) (_node *SourceSystem, err error) {
-	if err := ssuo.check(); err != nil {
+func (_u *SourceSystemUpdateOne) sqlSave(ctx context.Context) (_node *SourceSystem, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(sourcesystem.Table, sourcesystem.Columns, sqlgraph.NewFieldSpec(sourcesystem.FieldID, field.TypeInt))
-	id, ok := ssuo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "SourceSystem.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := ssuo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, sourcesystem.FieldID)
 		for _, f := range fields {
@@ -363,38 +363,38 @@ func (ssuo *SourceSystemUpdateOne) sqlSave(ctx context.Context) (_node *SourceSy
 			}
 		}
 	}
-	if ps := ssuo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := ssuo.mutation.Name(); ok {
+	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(sourcesystem.FieldName, field.TypeString, value)
 	}
-	if value, ok := ssuo.mutation.GetType(); ok {
+	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(sourcesystem.FieldType, field.TypeEnum, value)
 	}
-	if value, ok := ssuo.mutation.URL(); ok {
+	if value, ok := _u.mutation.URL(); ok {
 		_spec.SetField(sourcesystem.FieldURL, field.TypeString, value)
 	}
-	if value, ok := ssuo.mutation.Key(); ok {
+	if value, ok := _u.mutation.Key(); ok {
 		_spec.SetField(sourcesystem.FieldKey, field.TypeString, value)
 	}
-	if ssuo.mutation.KeyCleared() {
+	if _u.mutation.KeyCleared() {
 		_spec.ClearField(sourcesystem.FieldKey, field.TypeString)
 	}
-	if value, ok := ssuo.mutation.Parts(); ok {
+	if value, ok := _u.mutation.Parts(); ok {
 		_spec.SetField(sourcesystem.FieldParts, field.TypeString, value)
 	}
-	if ssuo.mutation.PartsCleared() {
+	if _u.mutation.PartsCleared() {
 		_spec.ClearField(sourcesystem.FieldParts, field.TypeString)
 	}
-	_node = &SourceSystem{config: ssuo.config}
+	_node = &SourceSystem{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, ssuo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{sourcesystem.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -402,6 +402,6 @@ func (ssuo *SourceSystemUpdateOne) sqlSave(ctx context.Context) (_node *SourceSy
 		}
 		return nil, err
 	}
-	ssuo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

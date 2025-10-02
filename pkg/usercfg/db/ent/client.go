@@ -274,8 +274,8 @@ func (c *CollectionClient) Update() *CollectionUpdate {
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *CollectionClient) UpdateOne(co *Collection) *CollectionUpdateOne {
-	mutation := newCollectionMutation(c.config, OpUpdateOne, withCollection(co))
+func (c *CollectionClient) UpdateOne(_m *Collection) *CollectionUpdateOne {
+	mutation := newCollectionMutation(c.config, OpUpdateOne, withCollection(_m))
 	return &CollectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
@@ -292,8 +292,8 @@ func (c *CollectionClient) Delete() *CollectionDelete {
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *CollectionClient) DeleteOne(co *Collection) *CollectionDeleteOne {
-	return c.DeleteOneID(co.ID)
+func (c *CollectionClient) DeleteOne(_m *Collection) *CollectionDeleteOne {
+	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
@@ -328,16 +328,16 @@ func (c *CollectionClient) GetX(ctx context.Context, id int) *Collection {
 }
 
 // QuerySources queries the Sources edge of a Collection.
-func (c *CollectionClient) QuerySources(co *Collection) *SourceSystemQuery {
+func (c *CollectionClient) QuerySources(_m *Collection) *SourceSystemQuery {
 	query := (&SourceSystemClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := co.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(collection.Table, collection.FieldID, id),
 			sqlgraph.To(sourcesystem.Table, sourcesystem.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, collection.SourcesTable, collection.SourcesColumn),
 		)
-		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
@@ -423,8 +423,8 @@ func (c *SourceSystemClient) Update() *SourceSystemUpdate {
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *SourceSystemClient) UpdateOne(ss *SourceSystem) *SourceSystemUpdateOne {
-	mutation := newSourceSystemMutation(c.config, OpUpdateOne, withSourceSystem(ss))
+func (c *SourceSystemClient) UpdateOne(_m *SourceSystem) *SourceSystemUpdateOne {
+	mutation := newSourceSystemMutation(c.config, OpUpdateOne, withSourceSystem(_m))
 	return &SourceSystemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
@@ -441,8 +441,8 @@ func (c *SourceSystemClient) Delete() *SourceSystemDelete {
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *SourceSystemClient) DeleteOne(ss *SourceSystem) *SourceSystemDeleteOne {
-	return c.DeleteOneID(ss.ID)
+func (c *SourceSystemClient) DeleteOne(_m *SourceSystem) *SourceSystemDeleteOne {
+	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
@@ -556,8 +556,8 @@ func (c *UserClient) Update() *UserUpdate {
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *UserClient) UpdateOne(u *User) *UserUpdateOne {
-	mutation := newUserMutation(c.config, OpUpdateOne, withUser(u))
+func (c *UserClient) UpdateOne(_m *User) *UserUpdateOne {
+	mutation := newUserMutation(c.config, OpUpdateOne, withUser(_m))
 	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
@@ -574,8 +574,8 @@ func (c *UserClient) Delete() *UserDelete {
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *UserClient) DeleteOne(u *User) *UserDeleteOne {
-	return c.DeleteOneID(u.ID)
+func (c *UserClient) DeleteOne(_m *User) *UserDeleteOne {
+	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
@@ -610,16 +610,16 @@ func (c *UserClient) GetX(ctx context.Context, id int) *User {
 }
 
 // QueryCollections queries the Collections edge of a User.
-func (c *UserClient) QueryCollections(u *User) *CollectionQuery {
+func (c *UserClient) QueryCollections(_m *User) *CollectionQuery {
 	query := (&CollectionClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := u.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(collection.Table, collection.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.CollectionsTable, user.CollectionsColumn),
 		)
-		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query

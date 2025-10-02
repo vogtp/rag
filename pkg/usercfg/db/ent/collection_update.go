@@ -23,94 +23,94 @@ type CollectionUpdate struct {
 }
 
 // Where appends a list predicates to the CollectionUpdate builder.
-func (cu *CollectionUpdate) Where(ps ...predicate.Collection) *CollectionUpdate {
-	cu.mutation.Where(ps...)
-	return cu
+func (_u *CollectionUpdate) Where(ps ...predicate.Collection) *CollectionUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetName sets the "Name" field.
-func (cu *CollectionUpdate) SetName(s string) *CollectionUpdate {
-	cu.mutation.SetName(s)
-	return cu
+func (_u *CollectionUpdate) SetName(v string) *CollectionUpdate {
+	_u.mutation.SetName(v)
+	return _u
 }
 
 // SetNillableName sets the "Name" field if the given value is not nil.
-func (cu *CollectionUpdate) SetNillableName(s *string) *CollectionUpdate {
-	if s != nil {
-		cu.SetName(*s)
+func (_u *CollectionUpdate) SetNillableName(v *string) *CollectionUpdate {
+	if v != nil {
+		_u.SetName(*v)
 	}
-	return cu
+	return _u
 }
 
 // SetAPIKey sets the "APIKey" field.
-func (cu *CollectionUpdate) SetAPIKey(s string) *CollectionUpdate {
-	cu.mutation.SetAPIKey(s)
-	return cu
+func (_u *CollectionUpdate) SetAPIKey(v string) *CollectionUpdate {
+	_u.mutation.SetAPIKey(v)
+	return _u
 }
 
 // SetNillableAPIKey sets the "APIKey" field if the given value is not nil.
-func (cu *CollectionUpdate) SetNillableAPIKey(s *string) *CollectionUpdate {
-	if s != nil {
-		cu.SetAPIKey(*s)
+func (_u *CollectionUpdate) SetNillableAPIKey(v *string) *CollectionUpdate {
+	if v != nil {
+		_u.SetAPIKey(*v)
 	}
-	return cu
+	return _u
 }
 
 // ClearAPIKey clears the value of the "APIKey" field.
-func (cu *CollectionUpdate) ClearAPIKey() *CollectionUpdate {
-	cu.mutation.ClearAPIKey()
-	return cu
+func (_u *CollectionUpdate) ClearAPIKey() *CollectionUpdate {
+	_u.mutation.ClearAPIKey()
+	return _u
 }
 
 // AddSourceIDs adds the "Sources" edge to the SourceSystem entity by IDs.
-func (cu *CollectionUpdate) AddSourceIDs(ids ...int) *CollectionUpdate {
-	cu.mutation.AddSourceIDs(ids...)
-	return cu
+func (_u *CollectionUpdate) AddSourceIDs(ids ...int) *CollectionUpdate {
+	_u.mutation.AddSourceIDs(ids...)
+	return _u
 }
 
 // AddSources adds the "Sources" edges to the SourceSystem entity.
-func (cu *CollectionUpdate) AddSources(s ...*SourceSystem) *CollectionUpdate {
-	ids := make([]int, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+func (_u *CollectionUpdate) AddSources(v ...*SourceSystem) *CollectionUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return cu.AddSourceIDs(ids...)
+	return _u.AddSourceIDs(ids...)
 }
 
 // Mutation returns the CollectionMutation object of the builder.
-func (cu *CollectionUpdate) Mutation() *CollectionMutation {
-	return cu.mutation
+func (_u *CollectionUpdate) Mutation() *CollectionMutation {
+	return _u.mutation
 }
 
 // ClearSources clears all "Sources" edges to the SourceSystem entity.
-func (cu *CollectionUpdate) ClearSources() *CollectionUpdate {
-	cu.mutation.ClearSources()
-	return cu
+func (_u *CollectionUpdate) ClearSources() *CollectionUpdate {
+	_u.mutation.ClearSources()
+	return _u
 }
 
 // RemoveSourceIDs removes the "Sources" edge to SourceSystem entities by IDs.
-func (cu *CollectionUpdate) RemoveSourceIDs(ids ...int) *CollectionUpdate {
-	cu.mutation.RemoveSourceIDs(ids...)
-	return cu
+func (_u *CollectionUpdate) RemoveSourceIDs(ids ...int) *CollectionUpdate {
+	_u.mutation.RemoveSourceIDs(ids...)
+	return _u
 }
 
 // RemoveSources removes "Sources" edges to SourceSystem entities.
-func (cu *CollectionUpdate) RemoveSources(s ...*SourceSystem) *CollectionUpdate {
-	ids := make([]int, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+func (_u *CollectionUpdate) RemoveSources(v ...*SourceSystem) *CollectionUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return cu.RemoveSourceIDs(ids...)
+	return _u.RemoveSourceIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (cu *CollectionUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, cu.sqlSave, cu.mutation, cu.hooks)
+func (_u *CollectionUpdate) Save(ctx context.Context) (int, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (cu *CollectionUpdate) SaveX(ctx context.Context) int {
-	affected, err := cu.Save(ctx)
+func (_u *CollectionUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -118,37 +118,37 @@ func (cu *CollectionUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (cu *CollectionUpdate) Exec(ctx context.Context) error {
-	_, err := cu.Save(ctx)
+func (_u *CollectionUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (cu *CollectionUpdate) ExecX(ctx context.Context) {
-	if err := cu.Exec(ctx); err != nil {
+func (_u *CollectionUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
-func (cu *CollectionUpdate) sqlSave(ctx context.Context) (n int, err error) {
+func (_u *CollectionUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	_spec := sqlgraph.NewUpdateSpec(collection.Table, collection.Columns, sqlgraph.NewFieldSpec(collection.FieldID, field.TypeInt))
-	if ps := cu.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := cu.mutation.Name(); ok {
+	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(collection.FieldName, field.TypeString, value)
 	}
-	if value, ok := cu.mutation.APIKey(); ok {
+	if value, ok := _u.mutation.APIKey(); ok {
 		_spec.SetField(collection.FieldAPIKey, field.TypeString, value)
 	}
-	if cu.mutation.APIKeyCleared() {
+	if _u.mutation.APIKeyCleared() {
 		_spec.ClearField(collection.FieldAPIKey, field.TypeString)
 	}
-	if cu.mutation.SourcesCleared() {
+	if _u.mutation.SourcesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -161,7 +161,7 @@ func (cu *CollectionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cu.mutation.RemovedSourcesIDs(); len(nodes) > 0 && !cu.mutation.SourcesCleared() {
+	if nodes := _u.mutation.RemovedSourcesIDs(); len(nodes) > 0 && !_u.mutation.SourcesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -177,7 +177,7 @@ func (cu *CollectionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cu.mutation.SourcesIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.SourcesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -193,7 +193,7 @@ func (cu *CollectionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{collection.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -201,8 +201,8 @@ func (cu *CollectionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
-	cu.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // CollectionUpdateOne is the builder for updating a single Collection entity.
@@ -214,101 +214,101 @@ type CollectionUpdateOne struct {
 }
 
 // SetName sets the "Name" field.
-func (cuo *CollectionUpdateOne) SetName(s string) *CollectionUpdateOne {
-	cuo.mutation.SetName(s)
-	return cuo
+func (_u *CollectionUpdateOne) SetName(v string) *CollectionUpdateOne {
+	_u.mutation.SetName(v)
+	return _u
 }
 
 // SetNillableName sets the "Name" field if the given value is not nil.
-func (cuo *CollectionUpdateOne) SetNillableName(s *string) *CollectionUpdateOne {
-	if s != nil {
-		cuo.SetName(*s)
+func (_u *CollectionUpdateOne) SetNillableName(v *string) *CollectionUpdateOne {
+	if v != nil {
+		_u.SetName(*v)
 	}
-	return cuo
+	return _u
 }
 
 // SetAPIKey sets the "APIKey" field.
-func (cuo *CollectionUpdateOne) SetAPIKey(s string) *CollectionUpdateOne {
-	cuo.mutation.SetAPIKey(s)
-	return cuo
+func (_u *CollectionUpdateOne) SetAPIKey(v string) *CollectionUpdateOne {
+	_u.mutation.SetAPIKey(v)
+	return _u
 }
 
 // SetNillableAPIKey sets the "APIKey" field if the given value is not nil.
-func (cuo *CollectionUpdateOne) SetNillableAPIKey(s *string) *CollectionUpdateOne {
-	if s != nil {
-		cuo.SetAPIKey(*s)
+func (_u *CollectionUpdateOne) SetNillableAPIKey(v *string) *CollectionUpdateOne {
+	if v != nil {
+		_u.SetAPIKey(*v)
 	}
-	return cuo
+	return _u
 }
 
 // ClearAPIKey clears the value of the "APIKey" field.
-func (cuo *CollectionUpdateOne) ClearAPIKey() *CollectionUpdateOne {
-	cuo.mutation.ClearAPIKey()
-	return cuo
+func (_u *CollectionUpdateOne) ClearAPIKey() *CollectionUpdateOne {
+	_u.mutation.ClearAPIKey()
+	return _u
 }
 
 // AddSourceIDs adds the "Sources" edge to the SourceSystem entity by IDs.
-func (cuo *CollectionUpdateOne) AddSourceIDs(ids ...int) *CollectionUpdateOne {
-	cuo.mutation.AddSourceIDs(ids...)
-	return cuo
+func (_u *CollectionUpdateOne) AddSourceIDs(ids ...int) *CollectionUpdateOne {
+	_u.mutation.AddSourceIDs(ids...)
+	return _u
 }
 
 // AddSources adds the "Sources" edges to the SourceSystem entity.
-func (cuo *CollectionUpdateOne) AddSources(s ...*SourceSystem) *CollectionUpdateOne {
-	ids := make([]int, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+func (_u *CollectionUpdateOne) AddSources(v ...*SourceSystem) *CollectionUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return cuo.AddSourceIDs(ids...)
+	return _u.AddSourceIDs(ids...)
 }
 
 // Mutation returns the CollectionMutation object of the builder.
-func (cuo *CollectionUpdateOne) Mutation() *CollectionMutation {
-	return cuo.mutation
+func (_u *CollectionUpdateOne) Mutation() *CollectionMutation {
+	return _u.mutation
 }
 
 // ClearSources clears all "Sources" edges to the SourceSystem entity.
-func (cuo *CollectionUpdateOne) ClearSources() *CollectionUpdateOne {
-	cuo.mutation.ClearSources()
-	return cuo
+func (_u *CollectionUpdateOne) ClearSources() *CollectionUpdateOne {
+	_u.mutation.ClearSources()
+	return _u
 }
 
 // RemoveSourceIDs removes the "Sources" edge to SourceSystem entities by IDs.
-func (cuo *CollectionUpdateOne) RemoveSourceIDs(ids ...int) *CollectionUpdateOne {
-	cuo.mutation.RemoveSourceIDs(ids...)
-	return cuo
+func (_u *CollectionUpdateOne) RemoveSourceIDs(ids ...int) *CollectionUpdateOne {
+	_u.mutation.RemoveSourceIDs(ids...)
+	return _u
 }
 
 // RemoveSources removes "Sources" edges to SourceSystem entities.
-func (cuo *CollectionUpdateOne) RemoveSources(s ...*SourceSystem) *CollectionUpdateOne {
-	ids := make([]int, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+func (_u *CollectionUpdateOne) RemoveSources(v ...*SourceSystem) *CollectionUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return cuo.RemoveSourceIDs(ids...)
+	return _u.RemoveSourceIDs(ids...)
 }
 
 // Where appends a list predicates to the CollectionUpdate builder.
-func (cuo *CollectionUpdateOne) Where(ps ...predicate.Collection) *CollectionUpdateOne {
-	cuo.mutation.Where(ps...)
-	return cuo
+func (_u *CollectionUpdateOne) Where(ps ...predicate.Collection) *CollectionUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (cuo *CollectionUpdateOne) Select(field string, fields ...string) *CollectionUpdateOne {
-	cuo.fields = append([]string{field}, fields...)
-	return cuo
+func (_u *CollectionUpdateOne) Select(field string, fields ...string) *CollectionUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated Collection entity.
-func (cuo *CollectionUpdateOne) Save(ctx context.Context) (*Collection, error) {
-	return withHooks(ctx, cuo.sqlSave, cuo.mutation, cuo.hooks)
+func (_u *CollectionUpdateOne) Save(ctx context.Context) (*Collection, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (cuo *CollectionUpdateOne) SaveX(ctx context.Context) *Collection {
-	node, err := cuo.Save(ctx)
+func (_u *CollectionUpdateOne) SaveX(ctx context.Context) *Collection {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -316,26 +316,26 @@ func (cuo *CollectionUpdateOne) SaveX(ctx context.Context) *Collection {
 }
 
 // Exec executes the query on the entity.
-func (cuo *CollectionUpdateOne) Exec(ctx context.Context) error {
-	_, err := cuo.Save(ctx)
+func (_u *CollectionUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (cuo *CollectionUpdateOne) ExecX(ctx context.Context) {
-	if err := cuo.Exec(ctx); err != nil {
+func (_u *CollectionUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
-func (cuo *CollectionUpdateOne) sqlSave(ctx context.Context) (_node *Collection, err error) {
+func (_u *CollectionUpdateOne) sqlSave(ctx context.Context) (_node *Collection, err error) {
 	_spec := sqlgraph.NewUpdateSpec(collection.Table, collection.Columns, sqlgraph.NewFieldSpec(collection.FieldID, field.TypeInt))
-	id, ok := cuo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Collection.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := cuo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, collection.FieldID)
 		for _, f := range fields {
@@ -347,23 +347,23 @@ func (cuo *CollectionUpdateOne) sqlSave(ctx context.Context) (_node *Collection,
 			}
 		}
 	}
-	if ps := cuo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := cuo.mutation.Name(); ok {
+	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(collection.FieldName, field.TypeString, value)
 	}
-	if value, ok := cuo.mutation.APIKey(); ok {
+	if value, ok := _u.mutation.APIKey(); ok {
 		_spec.SetField(collection.FieldAPIKey, field.TypeString, value)
 	}
-	if cuo.mutation.APIKeyCleared() {
+	if _u.mutation.APIKeyCleared() {
 		_spec.ClearField(collection.FieldAPIKey, field.TypeString)
 	}
-	if cuo.mutation.SourcesCleared() {
+	if _u.mutation.SourcesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -376,7 +376,7 @@ func (cuo *CollectionUpdateOne) sqlSave(ctx context.Context) (_node *Collection,
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cuo.mutation.RemovedSourcesIDs(); len(nodes) > 0 && !cuo.mutation.SourcesCleared() {
+	if nodes := _u.mutation.RemovedSourcesIDs(); len(nodes) > 0 && !_u.mutation.SourcesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -392,7 +392,7 @@ func (cuo *CollectionUpdateOne) sqlSave(ctx context.Context) (_node *Collection,
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cuo.mutation.SourcesIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.SourcesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -408,10 +408,10 @@ func (cuo *CollectionUpdateOne) sqlSave(ctx context.Context) (_node *Collection,
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &Collection{config: cuo.config}
+	_node = &Collection{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, cuo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{collection.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -419,6 +419,6 @@ func (cuo *CollectionUpdateOne) sqlSave(ctx context.Context) (_node *Collection,
 		}
 		return nil, err
 	}
-	cuo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

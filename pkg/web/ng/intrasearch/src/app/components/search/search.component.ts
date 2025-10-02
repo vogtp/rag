@@ -49,9 +49,16 @@ export class SearchComponent {
     private router: Router,
     private searchService: CollectionSearchService
   ) {
-    route.params.subscribe((val) => {
-      this.collection = this.route.snapshot.params['collection'];
-      this.search();
+    route.params.subscribe({
+      next: (data) => {
+        this.collection = this.route.snapshot.params['collection'];
+        this.search();
+      },
+      error: (err) => {
+        console.error(err);
+        window.location.href = '/login?OrigPath=' + window.location.href;
+      },
+      complete: () => console.debug('search request complete'),
     });
   }
 

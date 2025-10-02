@@ -25,7 +25,10 @@ export class CollectionsListComponent {
       next: (data) => {
         this.collectionResponse = data;
       },
-      error: (err) => console.error(err),
+      error: (err) => {
+        console.error(err);
+        window.location.href = '/login?OrigPath=' + window.location.href;
+      },
     });
   }
 

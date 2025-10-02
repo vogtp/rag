@@ -8,26 +8,26 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 )
 
-func (c *Collection) Sources(ctx context.Context) (result []*SourceSystem, err error) {
+func (_m *Collection) Sources(ctx context.Context) (result []*SourceSystem, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = c.NamedSources(graphql.GetFieldContext(ctx).Field.Alias)
+		result, err = _m.NamedSources(graphql.GetFieldContext(ctx).Field.Alias)
 	} else {
-		result, err = c.Edges.SourcesOrErr()
+		result, err = _m.Edges.SourcesOrErr()
 	}
 	if IsNotLoaded(err) {
-		result, err = c.QuerySources().All(ctx)
+		result, err = _m.QuerySources().All(ctx)
 	}
 	return result, err
 }
 
-func (u *User) Collections(ctx context.Context) (result []*Collection, err error) {
+func (_m *User) Collections(ctx context.Context) (result []*Collection, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = u.NamedCollections(graphql.GetFieldContext(ctx).Field.Alias)
+		result, err = _m.NamedCollections(graphql.GetFieldContext(ctx).Field.Alias)
 	} else {
-		result, err = u.Edges.CollectionsOrErr()
+		result, err = _m.Edges.CollectionsOrErr()
 	}
 	if IsNotLoaded(err) {
-		result, err = u.QueryCollections().All(ctx)
+		result, err = _m.QueryCollections().All(ctx)
 	}
 	return result, err
 }

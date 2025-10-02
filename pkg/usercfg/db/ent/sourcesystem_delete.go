@@ -20,56 +20,56 @@ type SourceSystemDelete struct {
 }
 
 // Where appends a list predicates to the SourceSystemDelete builder.
-func (ssd *SourceSystemDelete) Where(ps ...predicate.SourceSystem) *SourceSystemDelete {
-	ssd.mutation.Where(ps...)
-	return ssd
+func (_d *SourceSystemDelete) Where(ps ...predicate.SourceSystem) *SourceSystemDelete {
+	_d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (ssd *SourceSystemDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks(ctx, ssd.sqlExec, ssd.mutation, ssd.hooks)
+func (_d *SourceSystemDelete) Exec(ctx context.Context) (int, error) {
+	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ssd *SourceSystemDelete) ExecX(ctx context.Context) int {
-	n, err := ssd.Exec(ctx)
+func (_d *SourceSystemDelete) ExecX(ctx context.Context) int {
+	n, err := _d.Exec(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return n
 }
 
-func (ssd *SourceSystemDelete) sqlExec(ctx context.Context) (int, error) {
+func (_d *SourceSystemDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(sourcesystem.Table, sqlgraph.NewFieldSpec(sourcesystem.FieldID, field.TypeInt))
-	if ps := ssd.mutation.predicates; len(ps) > 0 {
+	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	affected, err := sqlgraph.DeleteNodes(ctx, ssd.driver, _spec)
+	affected, err := sqlgraph.DeleteNodes(ctx, _d.driver, _spec)
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
-	ssd.mutation.done = true
+	_d.mutation.done = true
 	return affected, err
 }
 
 // SourceSystemDeleteOne is the builder for deleting a single SourceSystem entity.
 type SourceSystemDeleteOne struct {
-	ssd *SourceSystemDelete
+	_d *SourceSystemDelete
 }
 
 // Where appends a list predicates to the SourceSystemDelete builder.
-func (ssdo *SourceSystemDeleteOne) Where(ps ...predicate.SourceSystem) *SourceSystemDeleteOne {
-	ssdo.ssd.mutation.Where(ps...)
-	return ssdo
+func (_d *SourceSystemDeleteOne) Where(ps ...predicate.SourceSystem) *SourceSystemDeleteOne {
+	_d._d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query.
-func (ssdo *SourceSystemDeleteOne) Exec(ctx context.Context) error {
-	n, err := ssdo.ssd.Exec(ctx)
+func (_d *SourceSystemDeleteOne) Exec(ctx context.Context) error {
+	n, err := _d._d.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
@@ -81,8 +81,8 @@ func (ssdo *SourceSystemDeleteOne) Exec(ctx context.Context) error {
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ssdo *SourceSystemDeleteOne) ExecX(ctx context.Context) {
-	if err := ssdo.Exec(ctx); err != nil {
+func (_d *SourceSystemDeleteOne) ExecX(ctx context.Context) {
+	if err := _d.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

@@ -30,8 +30,14 @@ export class SpaceListButtonComponent {
   constructor(private collectionService: CollectionListService) {}
 
   loadCollections() {
-    this.collectionService.getCollections().subscribe((data) => {
-      this.collectionResponse = data;
+    this.collectionService.getCollections().subscribe({
+      next: (data) => {
+         this.collectionResponse = data;
+      },
+      error: (err) => {
+        console.error(err);
+        window.location.href = '/login?OrigPath=' + window.location.href;
+      },
     });
   }
 

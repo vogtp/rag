@@ -69,7 +69,7 @@ func (*Collection) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Collection fields.
-func (c *Collection) assignValues(columns []string, values []any) error {
+func (_m *Collection) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -80,28 +80,28 @@ func (c *Collection) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			c.ID = int(value.Int64)
+			_m.ID = int(value.Int64)
 		case collection.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field Name", values[i])
 			} else if value.Valid {
-				c.Name = value.String
+				_m.Name = value.String
 			}
 		case collection.FieldAPIKey:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field APIKey", values[i])
 			} else if value.Valid {
-				c.APIKey = value.String
+				_m.APIKey = value.String
 			}
 		case collection.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field user_collections", value)
 			} else if value.Valid {
-				c.user_collections = new(int)
-				*c.user_collections = int(value.Int64)
+				_m.user_collections = new(int)
+				*_m.user_collections = int(value.Int64)
 			}
 		default:
-			c.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -109,68 +109,68 @@ func (c *Collection) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Collection.
 // This includes values selected through modifiers, order, etc.
-func (c *Collection) Value(name string) (ent.Value, error) {
-	return c.selectValues.Get(name)
+func (_m *Collection) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QuerySources queries the "Sources" edge of the Collection entity.
-func (c *Collection) QuerySources() *SourceSystemQuery {
-	return NewCollectionClient(c.config).QuerySources(c)
+func (_m *Collection) QuerySources() *SourceSystemQuery {
+	return NewCollectionClient(_m.config).QuerySources(_m)
 }
 
 // Update returns a builder for updating this Collection.
 // Note that you need to call Collection.Unwrap() before calling this method if this Collection
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (c *Collection) Update() *CollectionUpdateOne {
-	return NewCollectionClient(c.config).UpdateOne(c)
+func (_m *Collection) Update() *CollectionUpdateOne {
+	return NewCollectionClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the Collection entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (c *Collection) Unwrap() *Collection {
-	_tx, ok := c.config.driver.(*txDriver)
+func (_m *Collection) Unwrap() *Collection {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Collection is not a transactional entity")
 	}
-	c.config.driver = _tx.drv
-	return c
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (c *Collection) String() string {
+func (_m *Collection) String() string {
 	var builder strings.Builder
 	builder.WriteString("Collection(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", c.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("Name=")
-	builder.WriteString(c.Name)
+	builder.WriteString(_m.Name)
 	builder.WriteString(", ")
 	builder.WriteString("APIKey=")
-	builder.WriteString(c.APIKey)
+	builder.WriteString(_m.APIKey)
 	builder.WriteByte(')')
 	return builder.String()
 }
 
 // NamedSources returns the Sources named value or an error if the edge was not
 // loaded in eager-loading with this name.
-func (c *Collection) NamedSources(name string) ([]*SourceSystem, error) {
-	if c.Edges.namedSources == nil {
+func (_m *Collection) NamedSources(name string) ([]*SourceSystem, error) {
+	if _m.Edges.namedSources == nil {
 		return nil, &NotLoadedError{edge: name}
 	}
-	nodes, ok := c.Edges.namedSources[name]
+	nodes, ok := _m.Edges.namedSources[name]
 	if !ok {
 		return nil, &NotLoadedError{edge: name}
 	}
 	return nodes, nil
 }
 
-func (c *Collection) appendNamedSources(name string, edges ...*SourceSystem) {
-	if c.Edges.namedSources == nil {
-		c.Edges.namedSources = make(map[string][]*SourceSystem)
+func (_m *Collection) appendNamedSources(name string, edges ...*SourceSystem) {
+	if _m.Edges.namedSources == nil {
+		_m.Edges.namedSources = make(map[string][]*SourceSystem)
 	}
 	if len(edges) == 0 {
-		c.Edges.namedSources[name] = []*SourceSystem{}
+		_m.Edges.namedSources[name] = []*SourceSystem{}
 	} else {
-		c.Edges.namedSources[name] = append(c.Edges.namedSources[name], edges...)
+		_m.Edges.namedSources[name] = append(_m.Edges.namedSources[name], edges...)
 	}
 }
 

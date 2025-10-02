@@ -21,6 +21,7 @@ import { CollectionComponent } from './collection/collection.component';
 
 @Component({
   selector: 'app-settings',
+  standalone: true,
   imports: [
     FormsModule,
     MatButtonModule,
@@ -55,7 +56,10 @@ export class SettingsComponent {
         this.collections.set(data.edges.Collections);
         this.cdRef.detectChanges();
       },
-      error: (err) => console.error(err),
+      error: (err) => {
+        console.error(err);
+        window.location.href = '/login?OrigPath=' + window.location.href;
+      },
       complete: () => console.debug('request usersettings complete'),
     });
   }

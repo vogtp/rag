@@ -37,17 +37,17 @@ func (srv *Server) saveUser(w http.ResponseWriter, r *http.Request) {
 
 	}
 	usr := &ent.User{}
-	if err:=json.NewDecoder(r.Body).Decode(usr); err!=nil{
-		http.Error(w,fmt.Sprintf("decode user settings: %v",err),http.StatusInternalServerError)
+	if err := json.NewDecoder(r.Body).Decode(usr); err != nil {
+		http.Error(w, fmt.Sprintf("decode user settings: %v", err), http.StatusInternalServerError)
 	}
-	srv.slog.Debug("Saved user settings","data",usr)
+	srv.slog.Debug("Saved user settings", "data", usr)
 	if !strings.EqualFold(userName, usr.Name) {
 		http.Error(w, fmt.Sprintf("User setting %q does not match oidc user %q", usr.Name, userName), http.StatusNotAcceptable)
 		return
 	}
 
-	if err := srv.usercfg.SaveUser(r.Context(), usr);err != nil {
-		srv.slog.Warn("Cannot save user setting", "usersetting", usr, "err",err)
+	if err := srv.usercfg.SaveUser(r.Context(), usr); err != nil {
+		srv.slog.Warn("Cannot save user setting", "usersetting", usr, "err", err)
 		http.Error(w, fmt.Sprintf("cannot save user setting: %v", err), http.StatusInternalServerError)
 		return
 	}
@@ -80,9 +80,9 @@ func (srv *Server) loadUser(w http.ResponseWriter, r *http.Request) {
 func (srv *Server) getUserName(w http.ResponseWriter, r *http.Request) (string, error) {
 	sessioner, ok := srv.oidcMux.(Sessioner)
 	if !ok {
-		// return "", fmt.Errorf("no session found")
-		srv.slog.Error("USING HARDCODED USER")
-		return "vogtp", nil // FIXME Debug only
+		return "", fmt.Errorf("no session found")
+		// srv.slog.Error("USING HARDCODED USER")
+		// return "vogtp", nil // FIXME Debug only
 	}
 	sess, err := sessioner.GetSession(w, r)
 	if err != nil {

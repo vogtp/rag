@@ -22,64 +22,64 @@ type SourceSystemCreate struct {
 }
 
 // SetName sets the "Name" field.
-func (ssc *SourceSystemCreate) SetName(s string) *SourceSystemCreate {
-	ssc.mutation.SetName(s)
-	return ssc
+func (_c *SourceSystemCreate) SetName(v string) *SourceSystemCreate {
+	_c.mutation.SetName(v)
+	return _c
 }
 
 // SetType sets the "Type" field.
-func (ssc *SourceSystemCreate) SetType(s sourcesystem.Type) *SourceSystemCreate {
-	ssc.mutation.SetType(s)
-	return ssc
+func (_c *SourceSystemCreate) SetType(v sourcesystem.Type) *SourceSystemCreate {
+	_c.mutation.SetType(v)
+	return _c
 }
 
 // SetURL sets the "URL" field.
-func (ssc *SourceSystemCreate) SetURL(s string) *SourceSystemCreate {
-	ssc.mutation.SetURL(s)
-	return ssc
+func (_c *SourceSystemCreate) SetURL(v string) *SourceSystemCreate {
+	_c.mutation.SetURL(v)
+	return _c
 }
 
 // SetKey sets the "key" field.
-func (ssc *SourceSystemCreate) SetKey(s string) *SourceSystemCreate {
-	ssc.mutation.SetKey(s)
-	return ssc
+func (_c *SourceSystemCreate) SetKey(v string) *SourceSystemCreate {
+	_c.mutation.SetKey(v)
+	return _c
 }
 
 // SetNillableKey sets the "key" field if the given value is not nil.
-func (ssc *SourceSystemCreate) SetNillableKey(s *string) *SourceSystemCreate {
-	if s != nil {
-		ssc.SetKey(*s)
+func (_c *SourceSystemCreate) SetNillableKey(v *string) *SourceSystemCreate {
+	if v != nil {
+		_c.SetKey(*v)
 	}
-	return ssc
+	return _c
 }
 
 // SetParts sets the "parts" field.
-func (ssc *SourceSystemCreate) SetParts(s string) *SourceSystemCreate {
-	ssc.mutation.SetParts(s)
-	return ssc
+func (_c *SourceSystemCreate) SetParts(v string) *SourceSystemCreate {
+	_c.mutation.SetParts(v)
+	return _c
 }
 
 // SetNillableParts sets the "parts" field if the given value is not nil.
-func (ssc *SourceSystemCreate) SetNillableParts(s *string) *SourceSystemCreate {
-	if s != nil {
-		ssc.SetParts(*s)
+func (_c *SourceSystemCreate) SetNillableParts(v *string) *SourceSystemCreate {
+	if v != nil {
+		_c.SetParts(*v)
 	}
-	return ssc
+	return _c
 }
 
 // Mutation returns the SourceSystemMutation object of the builder.
-func (ssc *SourceSystemCreate) Mutation() *SourceSystemMutation {
-	return ssc.mutation
+func (_c *SourceSystemCreate) Mutation() *SourceSystemMutation {
+	return _c.mutation
 }
 
 // Save creates the SourceSystem in the database.
-func (ssc *SourceSystemCreate) Save(ctx context.Context) (*SourceSystem, error) {
-	return withHooks(ctx, ssc.sqlSave, ssc.mutation, ssc.hooks)
+func (_c *SourceSystemCreate) Save(ctx context.Context) (*SourceSystem, error) {
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (ssc *SourceSystemCreate) SaveX(ctx context.Context) *SourceSystem {
-	v, err := ssc.Save(ctx)
+func (_c *SourceSystemCreate) SaveX(ctx context.Context) *SourceSystem {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -87,43 +87,43 @@ func (ssc *SourceSystemCreate) SaveX(ctx context.Context) *SourceSystem {
 }
 
 // Exec executes the query.
-func (ssc *SourceSystemCreate) Exec(ctx context.Context) error {
-	_, err := ssc.Save(ctx)
+func (_c *SourceSystemCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ssc *SourceSystemCreate) ExecX(ctx context.Context) {
-	if err := ssc.Exec(ctx); err != nil {
+func (_c *SourceSystemCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ssc *SourceSystemCreate) check() error {
-	if _, ok := ssc.mutation.Name(); !ok {
+func (_c *SourceSystemCreate) check() error {
+	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "Name", err: errors.New(`ent: missing required field "SourceSystem.Name"`)}
 	}
-	if _, ok := ssc.mutation.GetType(); !ok {
+	if _, ok := _c.mutation.GetType(); !ok {
 		return &ValidationError{Name: "Type", err: errors.New(`ent: missing required field "SourceSystem.Type"`)}
 	}
-	if v, ok := ssc.mutation.GetType(); ok {
+	if v, ok := _c.mutation.GetType(); ok {
 		if err := sourcesystem.TypeValidator(v); err != nil {
 			return &ValidationError{Name: "Type", err: fmt.Errorf(`ent: validator failed for field "SourceSystem.Type": %w`, err)}
 		}
 	}
-	if _, ok := ssc.mutation.URL(); !ok {
+	if _, ok := _c.mutation.URL(); !ok {
 		return &ValidationError{Name: "URL", err: errors.New(`ent: missing required field "SourceSystem.URL"`)}
 	}
 	return nil
 }
 
-func (ssc *SourceSystemCreate) sqlSave(ctx context.Context) (*SourceSystem, error) {
-	if err := ssc.check(); err != nil {
+func (_c *SourceSystemCreate) sqlSave(ctx context.Context) (*SourceSystem, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := ssc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, ssc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -131,34 +131,34 @@ func (ssc *SourceSystemCreate) sqlSave(ctx context.Context) (*SourceSystem, erro
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
-	ssc.mutation.id = &_node.ID
-	ssc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (ssc *SourceSystemCreate) createSpec() (*SourceSystem, *sqlgraph.CreateSpec) {
+func (_c *SourceSystemCreate) createSpec() (*SourceSystem, *sqlgraph.CreateSpec) {
 	var (
-		_node = &SourceSystem{config: ssc.config}
+		_node = &SourceSystem{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(sourcesystem.Table, sqlgraph.NewFieldSpec(sourcesystem.FieldID, field.TypeInt))
 	)
-	_spec.OnConflict = ssc.conflict
-	if value, ok := ssc.mutation.Name(); ok {
+	_spec.OnConflict = _c.conflict
+	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(sourcesystem.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if value, ok := ssc.mutation.GetType(); ok {
+	if value, ok := _c.mutation.GetType(); ok {
 		_spec.SetField(sourcesystem.FieldType, field.TypeEnum, value)
 		_node.Type = value
 	}
-	if value, ok := ssc.mutation.URL(); ok {
+	if value, ok := _c.mutation.URL(); ok {
 		_spec.SetField(sourcesystem.FieldURL, field.TypeString, value)
 		_node.URL = value
 	}
-	if value, ok := ssc.mutation.Key(); ok {
+	if value, ok := _c.mutation.Key(); ok {
 		_spec.SetField(sourcesystem.FieldKey, field.TypeString, value)
 		_node.Key = value
 	}
-	if value, ok := ssc.mutation.Parts(); ok {
+	if value, ok := _c.mutation.Parts(); ok {
 		_spec.SetField(sourcesystem.FieldParts, field.TypeString, value)
 		_node.Parts = value
 	}
@@ -181,10 +181,10 @@ func (ssc *SourceSystemCreate) createSpec() (*SourceSystem, *sqlgraph.CreateSpec
 //			SetName(v+v).
 //		}).
 //		Exec(ctx)
-func (ssc *SourceSystemCreate) OnConflict(opts ...sql.ConflictOption) *SourceSystemUpsertOne {
-	ssc.conflict = opts
+func (_c *SourceSystemCreate) OnConflict(opts ...sql.ConflictOption) *SourceSystemUpsertOne {
+	_c.conflict = opts
 	return &SourceSystemUpsertOne{
-		create: ssc,
+		create: _c,
 	}
 }
 
@@ -194,10 +194,10 @@ func (ssc *SourceSystemCreate) OnConflict(opts ...sql.ConflictOption) *SourceSys
 //	client.SourceSystem.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-func (ssc *SourceSystemCreate) OnConflictColumns(columns ...string) *SourceSystemUpsertOne {
-	ssc.conflict = append(ssc.conflict, sql.ConflictColumns(columns...))
+func (_c *SourceSystemCreate) OnConflictColumns(columns ...string) *SourceSystemUpsertOne {
+	_c.conflict = append(_c.conflict, sql.ConflictColumns(columns...))
 	return &SourceSystemUpsertOne{
-		create: ssc,
+		create: _c,
 	}
 }
 
@@ -452,16 +452,16 @@ type SourceSystemCreateBulk struct {
 }
 
 // Save creates the SourceSystem entities in the database.
-func (sscb *SourceSystemCreateBulk) Save(ctx context.Context) ([]*SourceSystem, error) {
-	if sscb.err != nil {
-		return nil, sscb.err
+func (_c *SourceSystemCreateBulk) Save(ctx context.Context) ([]*SourceSystem, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(sscb.builders))
-	nodes := make([]*SourceSystem, len(sscb.builders))
-	mutators := make([]Mutator, len(sscb.builders))
-	for i := range sscb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*SourceSystem, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := sscb.builders[i]
+			builder := _c.builders[i]
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*SourceSystemMutation)
 				if !ok {
@@ -474,12 +474,12 @@ func (sscb *SourceSystemCreateBulk) Save(ctx context.Context) ([]*SourceSystem, 
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, sscb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
-					spec.OnConflict = sscb.conflict
+					spec.OnConflict = _c.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, sscb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -503,7 +503,7 @@ func (sscb *SourceSystemCreateBulk) Save(ctx context.Context) ([]*SourceSystem, 
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, sscb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -511,8 +511,8 @@ func (sscb *SourceSystemCreateBulk) Save(ctx context.Context) ([]*SourceSystem, 
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (sscb *SourceSystemCreateBulk) SaveX(ctx context.Context) []*SourceSystem {
-	v, err := sscb.Save(ctx)
+func (_c *SourceSystemCreateBulk) SaveX(ctx context.Context) []*SourceSystem {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -520,14 +520,14 @@ func (sscb *SourceSystemCreateBulk) SaveX(ctx context.Context) []*SourceSystem {
 }
 
 // Exec executes the query.
-func (sscb *SourceSystemCreateBulk) Exec(ctx context.Context) error {
-	_, err := sscb.Save(ctx)
+func (_c *SourceSystemCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (sscb *SourceSystemCreateBulk) ExecX(ctx context.Context) {
-	if err := sscb.Exec(ctx); err != nil {
+func (_c *SourceSystemCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
@@ -547,10 +547,10 @@ func (sscb *SourceSystemCreateBulk) ExecX(ctx context.Context) {
 //			SetName(v+v).
 //		}).
 //		Exec(ctx)
-func (sscb *SourceSystemCreateBulk) OnConflict(opts ...sql.ConflictOption) *SourceSystemUpsertBulk {
-	sscb.conflict = opts
+func (_c *SourceSystemCreateBulk) OnConflict(opts ...sql.ConflictOption) *SourceSystemUpsertBulk {
+	_c.conflict = opts
 	return &SourceSystemUpsertBulk{
-		create: sscb,
+		create: _c,
 	}
 }
 
@@ -560,10 +560,10 @@ func (sscb *SourceSystemCreateBulk) OnConflict(opts ...sql.ConflictOption) *Sour
 //	client.SourceSystem.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-func (sscb *SourceSystemCreateBulk) OnConflictColumns(columns ...string) *SourceSystemUpsertBulk {
-	sscb.conflict = append(sscb.conflict, sql.ConflictColumns(columns...))
+func (_c *SourceSystemCreateBulk) OnConflictColumns(columns ...string) *SourceSystemUpsertBulk {
+	_c.conflict = append(_c.conflict, sql.ConflictColumns(columns...))
 	return &SourceSystemUpsertBulk{
-		create: sscb,
+		create: _c,
 	}
 }
 

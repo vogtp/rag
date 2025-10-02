@@ -31,40 +31,40 @@ type SourceSystemQuery struct {
 }
 
 // Where adds a new predicate for the SourceSystemQuery builder.
-func (ssq *SourceSystemQuery) Where(ps ...predicate.SourceSystem) *SourceSystemQuery {
-	ssq.predicates = append(ssq.predicates, ps...)
-	return ssq
+func (_q *SourceSystemQuery) Where(ps ...predicate.SourceSystem) *SourceSystemQuery {
+	_q.predicates = append(_q.predicates, ps...)
+	return _q
 }
 
 // Limit the number of records to be returned by this query.
-func (ssq *SourceSystemQuery) Limit(limit int) *SourceSystemQuery {
-	ssq.ctx.Limit = &limit
-	return ssq
+func (_q *SourceSystemQuery) Limit(limit int) *SourceSystemQuery {
+	_q.ctx.Limit = &limit
+	return _q
 }
 
 // Offset to start from.
-func (ssq *SourceSystemQuery) Offset(offset int) *SourceSystemQuery {
-	ssq.ctx.Offset = &offset
-	return ssq
+func (_q *SourceSystemQuery) Offset(offset int) *SourceSystemQuery {
+	_q.ctx.Offset = &offset
+	return _q
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (ssq *SourceSystemQuery) Unique(unique bool) *SourceSystemQuery {
-	ssq.ctx.Unique = &unique
-	return ssq
+func (_q *SourceSystemQuery) Unique(unique bool) *SourceSystemQuery {
+	_q.ctx.Unique = &unique
+	return _q
 }
 
 // Order specifies how the records should be ordered.
-func (ssq *SourceSystemQuery) Order(o ...sourcesystem.OrderOption) *SourceSystemQuery {
-	ssq.order = append(ssq.order, o...)
-	return ssq
+func (_q *SourceSystemQuery) Order(o ...sourcesystem.OrderOption) *SourceSystemQuery {
+	_q.order = append(_q.order, o...)
+	return _q
 }
 
 // First returns the first SourceSystem entity from the query.
 // Returns a *NotFoundError when no SourceSystem was found.
-func (ssq *SourceSystemQuery) First(ctx context.Context) (*SourceSystem, error) {
-	nodes, err := ssq.Limit(1).All(setContextOp(ctx, ssq.ctx, ent.OpQueryFirst))
+func (_q *SourceSystemQuery) First(ctx context.Context) (*SourceSystem, error) {
+	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -75,8 +75,8 @@ func (ssq *SourceSystemQuery) First(ctx context.Context) (*SourceSystem, error) 
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (ssq *SourceSystemQuery) FirstX(ctx context.Context) *SourceSystem {
-	node, err := ssq.First(ctx)
+func (_q *SourceSystemQuery) FirstX(ctx context.Context) *SourceSystem {
+	node, err := _q.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -85,9 +85,9 @@ func (ssq *SourceSystemQuery) FirstX(ctx context.Context) *SourceSystem {
 
 // FirstID returns the first SourceSystem ID from the query.
 // Returns a *NotFoundError when no SourceSystem ID was found.
-func (ssq *SourceSystemQuery) FirstID(ctx context.Context) (id int, err error) {
+func (_q *SourceSystemQuery) FirstID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = ssq.Limit(1).IDs(setContextOp(ctx, ssq.ctx, ent.OpQueryFirstID)); err != nil {
+	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -98,8 +98,8 @@ func (ssq *SourceSystemQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (ssq *SourceSystemQuery) FirstIDX(ctx context.Context) int {
-	id, err := ssq.FirstID(ctx)
+func (_q *SourceSystemQuery) FirstIDX(ctx context.Context) int {
+	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -109,8 +109,8 @@ func (ssq *SourceSystemQuery) FirstIDX(ctx context.Context) int {
 // Only returns a single SourceSystem entity found by the query, ensuring it only returns one.
 // Returns a *NotSingularError when more than one SourceSystem entity is found.
 // Returns a *NotFoundError when no SourceSystem entities are found.
-func (ssq *SourceSystemQuery) Only(ctx context.Context) (*SourceSystem, error) {
-	nodes, err := ssq.Limit(2).All(setContextOp(ctx, ssq.ctx, ent.OpQueryOnly))
+func (_q *SourceSystemQuery) Only(ctx context.Context) (*SourceSystem, error) {
+	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -125,8 +125,8 @@ func (ssq *SourceSystemQuery) Only(ctx context.Context) (*SourceSystem, error) {
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (ssq *SourceSystemQuery) OnlyX(ctx context.Context) *SourceSystem {
-	node, err := ssq.Only(ctx)
+func (_q *SourceSystemQuery) OnlyX(ctx context.Context) *SourceSystem {
+	node, err := _q.Only(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -136,9 +136,9 @@ func (ssq *SourceSystemQuery) OnlyX(ctx context.Context) *SourceSystem {
 // OnlyID is like Only, but returns the only SourceSystem ID in the query.
 // Returns a *NotSingularError when more than one SourceSystem ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (ssq *SourceSystemQuery) OnlyID(ctx context.Context) (id int, err error) {
+func (_q *SourceSystemQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = ssq.Limit(2).IDs(setContextOp(ctx, ssq.ctx, ent.OpQueryOnlyID)); err != nil {
+	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -153,8 +153,8 @@ func (ssq *SourceSystemQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (ssq *SourceSystemQuery) OnlyIDX(ctx context.Context) int {
-	id, err := ssq.OnlyID(ctx)
+func (_q *SourceSystemQuery) OnlyIDX(ctx context.Context) int {
+	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -162,18 +162,18 @@ func (ssq *SourceSystemQuery) OnlyIDX(ctx context.Context) int {
 }
 
 // All executes the query and returns a list of SourceSystems.
-func (ssq *SourceSystemQuery) All(ctx context.Context) ([]*SourceSystem, error) {
-	ctx = setContextOp(ctx, ssq.ctx, ent.OpQueryAll)
-	if err := ssq.prepareQuery(ctx); err != nil {
+func (_q *SourceSystemQuery) All(ctx context.Context) ([]*SourceSystem, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
+	if err := _q.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
 	qr := querierAll[[]*SourceSystem, *SourceSystemQuery]()
-	return withInterceptors[[]*SourceSystem](ctx, ssq, qr, ssq.inters)
+	return withInterceptors[[]*SourceSystem](ctx, _q, qr, _q.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (ssq *SourceSystemQuery) AllX(ctx context.Context) []*SourceSystem {
-	nodes, err := ssq.All(ctx)
+func (_q *SourceSystemQuery) AllX(ctx context.Context) []*SourceSystem {
+	nodes, err := _q.All(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -181,20 +181,20 @@ func (ssq *SourceSystemQuery) AllX(ctx context.Context) []*SourceSystem {
 }
 
 // IDs executes the query and returns a list of SourceSystem IDs.
-func (ssq *SourceSystemQuery) IDs(ctx context.Context) (ids []int, err error) {
-	if ssq.ctx.Unique == nil && ssq.path != nil {
-		ssq.Unique(true)
+func (_q *SourceSystemQuery) IDs(ctx context.Context) (ids []int, err error) {
+	if _q.ctx.Unique == nil && _q.path != nil {
+		_q.Unique(true)
 	}
-	ctx = setContextOp(ctx, ssq.ctx, ent.OpQueryIDs)
-	if err = ssq.Select(sourcesystem.FieldID).Scan(ctx, &ids); err != nil {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
+	if err = _q.Select(sourcesystem.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (ssq *SourceSystemQuery) IDsX(ctx context.Context) []int {
-	ids, err := ssq.IDs(ctx)
+func (_q *SourceSystemQuery) IDsX(ctx context.Context) []int {
+	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -202,17 +202,17 @@ func (ssq *SourceSystemQuery) IDsX(ctx context.Context) []int {
 }
 
 // Count returns the count of the given query.
-func (ssq *SourceSystemQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, ssq.ctx, ent.OpQueryCount)
-	if err := ssq.prepareQuery(ctx); err != nil {
+func (_q *SourceSystemQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
+	if err := _q.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, ssq, querierCount[*SourceSystemQuery](), ssq.inters)
+	return withInterceptors[int](ctx, _q, querierCount[*SourceSystemQuery](), _q.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (ssq *SourceSystemQuery) CountX(ctx context.Context) int {
-	count, err := ssq.Count(ctx)
+func (_q *SourceSystemQuery) CountX(ctx context.Context) int {
+	count, err := _q.Count(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -220,9 +220,9 @@ func (ssq *SourceSystemQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (ssq *SourceSystemQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, ssq.ctx, ent.OpQueryExist)
-	switch _, err := ssq.FirstID(ctx); {
+func (_q *SourceSystemQuery) Exist(ctx context.Context) (bool, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
+	switch _, err := _q.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
@@ -233,8 +233,8 @@ func (ssq *SourceSystemQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (ssq *SourceSystemQuery) ExistX(ctx context.Context) bool {
-	exist, err := ssq.Exist(ctx)
+func (_q *SourceSystemQuery) ExistX(ctx context.Context) bool {
+	exist, err := _q.Exist(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -243,19 +243,19 @@ func (ssq *SourceSystemQuery) ExistX(ctx context.Context) bool {
 
 // Clone returns a duplicate of the SourceSystemQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (ssq *SourceSystemQuery) Clone() *SourceSystemQuery {
-	if ssq == nil {
+func (_q *SourceSystemQuery) Clone() *SourceSystemQuery {
+	if _q == nil {
 		return nil
 	}
 	return &SourceSystemQuery{
-		config:     ssq.config,
-		ctx:        ssq.ctx.Clone(),
-		order:      append([]sourcesystem.OrderOption{}, ssq.order...),
-		inters:     append([]Interceptor{}, ssq.inters...),
-		predicates: append([]predicate.SourceSystem{}, ssq.predicates...),
+		config:     _q.config,
+		ctx:        _q.ctx.Clone(),
+		order:      append([]sourcesystem.OrderOption{}, _q.order...),
+		inters:     append([]Interceptor{}, _q.inters...),
+		predicates: append([]predicate.SourceSystem{}, _q.predicates...),
 		// clone intermediate query.
-		sql:  ssq.sql.Clone(),
-		path: ssq.path,
+		sql:  _q.sql.Clone(),
+		path: _q.path,
 	}
 }
 
@@ -273,10 +273,10 @@ func (ssq *SourceSystemQuery) Clone() *SourceSystemQuery {
 //		GroupBy(sourcesystem.FieldName).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (ssq *SourceSystemQuery) GroupBy(field string, fields ...string) *SourceSystemGroupBy {
-	ssq.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &SourceSystemGroupBy{build: ssq}
-	grbuild.flds = &ssq.ctx.Fields
+func (_q *SourceSystemQuery) GroupBy(field string, fields ...string) *SourceSystemGroupBy {
+	_q.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &SourceSystemGroupBy{build: _q}
+	grbuild.flds = &_q.ctx.Fields
 	grbuild.label = sourcesystem.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -294,50 +294,50 @@ func (ssq *SourceSystemQuery) GroupBy(field string, fields ...string) *SourceSys
 //	client.SourceSystem.Query().
 //		Select(sourcesystem.FieldName).
 //		Scan(ctx, &v)
-func (ssq *SourceSystemQuery) Select(fields ...string) *SourceSystemSelect {
-	ssq.ctx.Fields = append(ssq.ctx.Fields, fields...)
-	sbuild := &SourceSystemSelect{SourceSystemQuery: ssq}
+func (_q *SourceSystemQuery) Select(fields ...string) *SourceSystemSelect {
+	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
+	sbuild := &SourceSystemSelect{SourceSystemQuery: _q}
 	sbuild.label = sourcesystem.Label
-	sbuild.flds, sbuild.scan = &ssq.ctx.Fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
 // Aggregate returns a SourceSystemSelect configured with the given aggregations.
-func (ssq *SourceSystemQuery) Aggregate(fns ...AggregateFunc) *SourceSystemSelect {
-	return ssq.Select().Aggregate(fns...)
+func (_q *SourceSystemQuery) Aggregate(fns ...AggregateFunc) *SourceSystemSelect {
+	return _q.Select().Aggregate(fns...)
 }
 
-func (ssq *SourceSystemQuery) prepareQuery(ctx context.Context) error {
-	for _, inter := range ssq.inters {
+func (_q *SourceSystemQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range _q.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
-			if err := trv.Traverse(ctx, ssq); err != nil {
+			if err := trv.Traverse(ctx, _q); err != nil {
 				return err
 			}
 		}
 	}
-	for _, f := range ssq.ctx.Fields {
+	for _, f := range _q.ctx.Fields {
 		if !sourcesystem.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
-	if ssq.path != nil {
-		prev, err := ssq.path(ctx)
+	if _q.path != nil {
+		prev, err := _q.path(ctx)
 		if err != nil {
 			return err
 		}
-		ssq.sql = prev
+		_q.sql = prev
 	}
 	return nil
 }
 
-func (ssq *SourceSystemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*SourceSystem, error) {
+func (_q *SourceSystemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*SourceSystem, error) {
 	var (
 		nodes   = []*SourceSystem{}
-		withFKs = ssq.withFKs
-		_spec   = ssq.querySpec()
+		withFKs = _q.withFKs
+		_spec   = _q.querySpec()
 	)
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, sourcesystem.ForeignKeys...)
@@ -346,51 +346,51 @@ func (ssq *SourceSystemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 		return (*SourceSystem).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &SourceSystem{config: ssq.config}
+		node := &SourceSystem{config: _q.config}
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
 	}
-	if len(ssq.modifiers) > 0 {
-		_spec.Modifiers = ssq.modifiers
+	if len(_q.modifiers) > 0 {
+		_spec.Modifiers = _q.modifiers
 	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
-	if err := sqlgraph.QueryNodes(ctx, ssq.driver, _spec); err != nil {
+	if err := sqlgraph.QueryNodes(ctx, _q.driver, _spec); err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	for i := range ssq.loadTotal {
-		if err := ssq.loadTotal[i](ctx, nodes); err != nil {
+	for i := range _q.loadTotal {
+		if err := _q.loadTotal[i](ctx, nodes); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (ssq *SourceSystemQuery) sqlCount(ctx context.Context) (int, error) {
-	_spec := ssq.querySpec()
-	if len(ssq.modifiers) > 0 {
-		_spec.Modifiers = ssq.modifiers
+func (_q *SourceSystemQuery) sqlCount(ctx context.Context) (int, error) {
+	_spec := _q.querySpec()
+	if len(_q.modifiers) > 0 {
+		_spec.Modifiers = _q.modifiers
 	}
-	_spec.Node.Columns = ssq.ctx.Fields
-	if len(ssq.ctx.Fields) > 0 {
-		_spec.Unique = ssq.ctx.Unique != nil && *ssq.ctx.Unique
+	_spec.Node.Columns = _q.ctx.Fields
+	if len(_q.ctx.Fields) > 0 {
+		_spec.Unique = _q.ctx.Unique != nil && *_q.ctx.Unique
 	}
-	return sqlgraph.CountNodes(ctx, ssq.driver, _spec)
+	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
 }
 
-func (ssq *SourceSystemQuery) querySpec() *sqlgraph.QuerySpec {
+func (_q *SourceSystemQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := sqlgraph.NewQuerySpec(sourcesystem.Table, sourcesystem.Columns, sqlgraph.NewFieldSpec(sourcesystem.FieldID, field.TypeInt))
-	_spec.From = ssq.sql
-	if unique := ssq.ctx.Unique; unique != nil {
+	_spec.From = _q.sql
+	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
-	} else if ssq.path != nil {
+	} else if _q.path != nil {
 		_spec.Unique = true
 	}
-	if fields := ssq.ctx.Fields; len(fields) > 0 {
+	if fields := _q.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, sourcesystem.FieldID)
 		for i := range fields {
@@ -399,20 +399,20 @@ func (ssq *SourceSystemQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if ps := ssq.predicates; len(ps) > 0 {
+	if ps := _q.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if limit := ssq.ctx.Limit; limit != nil {
+	if limit := _q.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := ssq.ctx.Offset; offset != nil {
+	if offset := _q.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
-	if ps := ssq.order; len(ps) > 0 {
+	if ps := _q.order; len(ps) > 0 {
 		_spec.Order = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
@@ -422,33 +422,33 @@ func (ssq *SourceSystemQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (ssq *SourceSystemQuery) sqlQuery(ctx context.Context) *sql.Selector {
-	builder := sql.Dialect(ssq.driver.Dialect())
+func (_q *SourceSystemQuery) sqlQuery(ctx context.Context) *sql.Selector {
+	builder := sql.Dialect(_q.driver.Dialect())
 	t1 := builder.Table(sourcesystem.Table)
-	columns := ssq.ctx.Fields
+	columns := _q.ctx.Fields
 	if len(columns) == 0 {
 		columns = sourcesystem.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
-	if ssq.sql != nil {
-		selector = ssq.sql
+	if _q.sql != nil {
+		selector = _q.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if ssq.ctx.Unique != nil && *ssq.ctx.Unique {
+	if _q.ctx.Unique != nil && *_q.ctx.Unique {
 		selector.Distinct()
 	}
-	for _, p := range ssq.predicates {
+	for _, p := range _q.predicates {
 		p(selector)
 	}
-	for _, p := range ssq.order {
+	for _, p := range _q.order {
 		p(selector)
 	}
-	if offset := ssq.ctx.Offset; offset != nil {
+	if offset := _q.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := ssq.ctx.Limit; limit != nil {
+	if limit := _q.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -461,41 +461,41 @@ type SourceSystemGroupBy struct {
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (ssgb *SourceSystemGroupBy) Aggregate(fns ...AggregateFunc) *SourceSystemGroupBy {
-	ssgb.fns = append(ssgb.fns, fns...)
-	return ssgb
+func (_g *SourceSystemGroupBy) Aggregate(fns ...AggregateFunc) *SourceSystemGroupBy {
+	_g.fns = append(_g.fns, fns...)
+	return _g
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ssgb *SourceSystemGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ssgb.build.ctx, ent.OpQueryGroupBy)
-	if err := ssgb.build.prepareQuery(ctx); err != nil {
+func (_g *SourceSystemGroupBy) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
+	if err := _g.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*SourceSystemQuery, *SourceSystemGroupBy](ctx, ssgb.build, ssgb, ssgb.build.inters, v)
+	return scanWithInterceptors[*SourceSystemQuery, *SourceSystemGroupBy](ctx, _g.build, _g, _g.build.inters, v)
 }
 
-func (ssgb *SourceSystemGroupBy) sqlScan(ctx context.Context, root *SourceSystemQuery, v any) error {
+func (_g *SourceSystemGroupBy) sqlScan(ctx context.Context, root *SourceSystemQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
-	aggregation := make([]string, 0, len(ssgb.fns))
-	for _, fn := range ssgb.fns {
+	aggregation := make([]string, 0, len(_g.fns))
+	for _, fn := range _g.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
 	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(*ssgb.flds)+len(ssgb.fns))
-		for _, f := range *ssgb.flds {
+		columns := make([]string, 0, len(*_g.flds)+len(_g.fns))
+		for _, f := range *_g.flds {
 			columns = append(columns, selector.C(f))
 		}
 		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
-	selector.GroupBy(selector.Columns(*ssgb.flds...)...)
+	selector.GroupBy(selector.Columns(*_g.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := ssgb.build.driver.Query(ctx, query, args, rows); err != nil {
+	if err := _g.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
@@ -509,27 +509,27 @@ type SourceSystemSelect struct {
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (sss *SourceSystemSelect) Aggregate(fns ...AggregateFunc) *SourceSystemSelect {
-	sss.fns = append(sss.fns, fns...)
-	return sss
+func (_s *SourceSystemSelect) Aggregate(fns ...AggregateFunc) *SourceSystemSelect {
+	_s.fns = append(_s.fns, fns...)
+	return _s
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (sss *SourceSystemSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, sss.ctx, ent.OpQuerySelect)
-	if err := sss.prepareQuery(ctx); err != nil {
+func (_s *SourceSystemSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
+	if err := _s.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*SourceSystemQuery, *SourceSystemSelect](ctx, sss.SourceSystemQuery, sss, sss.inters, v)
+	return scanWithInterceptors[*SourceSystemQuery, *SourceSystemSelect](ctx, _s.SourceSystemQuery, _s, _s.inters, v)
 }
 
-func (sss *SourceSystemSelect) sqlScan(ctx context.Context, root *SourceSystemQuery, v any) error {
+func (_s *SourceSystemSelect) sqlScan(ctx context.Context, root *SourceSystemQuery, v any) error {
 	selector := root.sqlQuery(ctx)
-	aggregation := make([]string, 0, len(sss.fns))
-	for _, fn := range sss.fns {
+	aggregation := make([]string, 0, len(_s.fns))
+	for _, fn := range _s.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	switch n := len(*sss.selector.flds); {
+	switch n := len(*_s.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
 		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
@@ -537,7 +537,7 @@ func (sss *SourceSystemSelect) sqlScan(ctx context.Context, root *SourceSystemQu
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := sss.driver.Query(ctx, query, args, rows); err != nil {
+	if err := _s.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
