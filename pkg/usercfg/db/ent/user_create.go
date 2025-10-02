@@ -28,16 +28,16 @@ func (uc *UserCreate) SetName(s string) *UserCreate {
 	return uc
 }
 
-// SetOpenaiAPIkey sets the "OpenaiAPIkey" field.
-func (uc *UserCreate) SetOpenaiAPIkey(s string) *UserCreate {
-	uc.mutation.SetOpenaiAPIkey(s)
+// SetAPIKey sets the "APIKey" field.
+func (uc *UserCreate) SetAPIKey(s string) *UserCreate {
+	uc.mutation.SetAPIKey(s)
 	return uc
 }
 
-// SetNillableOpenaiAPIkey sets the "OpenaiAPIkey" field if the given value is not nil.
-func (uc *UserCreate) SetNillableOpenaiAPIkey(s *string) *UserCreate {
+// SetNillableAPIKey sets the "APIKey" field if the given value is not nil.
+func (uc *UserCreate) SetNillableAPIKey(s *string) *UserCreate {
 	if s != nil {
-		uc.SetOpenaiAPIkey(*s)
+		uc.SetAPIKey(*s)
 	}
 	return uc
 }
@@ -125,9 +125,9 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if value, ok := uc.mutation.OpenaiAPIkey(); ok {
-		_spec.SetField(user.FieldOpenaiAPIkey, field.TypeString, value)
-		_node.OpenaiAPIkey = value
+	if value, ok := uc.mutation.APIKey(); ok {
+		_spec.SetField(user.FieldAPIKey, field.TypeString, value)
+		_node.APIKey = value
 	}
 	if nodes := uc.mutation.CollectionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -209,21 +209,21 @@ func (u *UserUpsert) UpdateName() *UserUpsert {
 	return u
 }
 
-// SetOpenaiAPIkey sets the "OpenaiAPIkey" field.
-func (u *UserUpsert) SetOpenaiAPIkey(v string) *UserUpsert {
-	u.Set(user.FieldOpenaiAPIkey, v)
+// SetAPIKey sets the "APIKey" field.
+func (u *UserUpsert) SetAPIKey(v string) *UserUpsert {
+	u.Set(user.FieldAPIKey, v)
 	return u
 }
 
-// UpdateOpenaiAPIkey sets the "OpenaiAPIkey" field to the value that was provided on create.
-func (u *UserUpsert) UpdateOpenaiAPIkey() *UserUpsert {
-	u.SetExcluded(user.FieldOpenaiAPIkey)
+// UpdateAPIKey sets the "APIKey" field to the value that was provided on create.
+func (u *UserUpsert) UpdateAPIKey() *UserUpsert {
+	u.SetExcluded(user.FieldAPIKey)
 	return u
 }
 
-// ClearOpenaiAPIkey clears the value of the "OpenaiAPIkey" field.
-func (u *UserUpsert) ClearOpenaiAPIkey() *UserUpsert {
-	u.SetNull(user.FieldOpenaiAPIkey)
+// ClearAPIKey clears the value of the "APIKey" field.
+func (u *UserUpsert) ClearAPIKey() *UserUpsert {
+	u.SetNull(user.FieldAPIKey)
 	return u
 }
 
@@ -281,24 +281,24 @@ func (u *UserUpsertOne) UpdateName() *UserUpsertOne {
 	})
 }
 
-// SetOpenaiAPIkey sets the "OpenaiAPIkey" field.
-func (u *UserUpsertOne) SetOpenaiAPIkey(v string) *UserUpsertOne {
+// SetAPIKey sets the "APIKey" field.
+func (u *UserUpsertOne) SetAPIKey(v string) *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
-		s.SetOpenaiAPIkey(v)
+		s.SetAPIKey(v)
 	})
 }
 
-// UpdateOpenaiAPIkey sets the "OpenaiAPIkey" field to the value that was provided on create.
-func (u *UserUpsertOne) UpdateOpenaiAPIkey() *UserUpsertOne {
+// UpdateAPIKey sets the "APIKey" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateAPIKey() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
-		s.UpdateOpenaiAPIkey()
+		s.UpdateAPIKey()
 	})
 }
 
-// ClearOpenaiAPIkey clears the value of the "OpenaiAPIkey" field.
-func (u *UserUpsertOne) ClearOpenaiAPIkey() *UserUpsertOne {
+// ClearAPIKey clears the value of the "APIKey" field.
+func (u *UserUpsertOne) ClearAPIKey() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
-		s.ClearOpenaiAPIkey()
+		s.ClearAPIKey()
 	})
 }
 
@@ -519,24 +519,24 @@ func (u *UserUpsertBulk) UpdateName() *UserUpsertBulk {
 	})
 }
 
-// SetOpenaiAPIkey sets the "OpenaiAPIkey" field.
-func (u *UserUpsertBulk) SetOpenaiAPIkey(v string) *UserUpsertBulk {
+// SetAPIKey sets the "APIKey" field.
+func (u *UserUpsertBulk) SetAPIKey(v string) *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
-		s.SetOpenaiAPIkey(v)
+		s.SetAPIKey(v)
 	})
 }
 
-// UpdateOpenaiAPIkey sets the "OpenaiAPIkey" field to the value that was provided on create.
-func (u *UserUpsertBulk) UpdateOpenaiAPIkey() *UserUpsertBulk {
+// UpdateAPIKey sets the "APIKey" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateAPIKey() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
-		s.UpdateOpenaiAPIkey()
+		s.UpdateAPIKey()
 	})
 }
 
-// ClearOpenaiAPIkey clears the value of the "OpenaiAPIkey" field.
-func (u *UserUpsertBulk) ClearOpenaiAPIkey() *UserUpsertBulk {
+// ClearAPIKey clears the value of the "APIKey" field.
+func (u *UserUpsertBulk) ClearAPIKey() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
-		s.ClearOpenaiAPIkey()
+		s.ClearAPIKey()
 	})
 }
 

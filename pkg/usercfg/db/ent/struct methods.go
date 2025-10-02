@@ -47,18 +47,18 @@ func (ssuo *SourceSystemUpdateOne) SetSourceSystem(input *SourceSystem) *SourceS
 
 func (uc *UserCreate) SetUser(input *User) *UserCreate {
 	uc.SetName(input.Name)
-	uc.SetOpenaiAPIkey(input.OpenaiAPIkey)
+	uc.SetAPIKey(input.APIKey)
 	return uc
 }
 
 func (uu *UserUpdate) SetUser(input *User) *UserUpdate {
 	uu.SetName(input.Name)
-	uu.SetOpenaiAPIkey(input.OpenaiAPIkey)
+	uu.SetAPIKey(input.APIKey)
 	return uu
 }
 
 func (uuo *UserUpdateOne) SetUser(input *User) *UserUpdateOne {
 	uuo.SetName(input.Name)
-	uuo.SetOpenaiAPIkey(input.OpenaiAPIkey)
+	uuo.SetAPIKey(input.APIKey)
 	return uuo
 }

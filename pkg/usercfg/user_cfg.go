@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/vogtp/rag/pkg/usercfg/db/ent"
+	"github.com/vogtp/rag/pkg/usercfg/db/ent/sourcesystem"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/user"
 )
 
@@ -22,4 +23,19 @@ func (db *DB) GetUserQuery(ctx context.Context) *ent.UserQuery {
 		cq.WithSources()
 	})
 	return uq
+}
+func (db *DB) CreateUser(ctx context.Context, name string) (*ent.User, error) {
+	uc := db.User.Create().SetName(name)
+	conflDefault, err := db.SourceSystem.Create().SetName("Intranet").SetURL("https://intranet.unibas.ch/").SetType(sourcesystem.TypeConfluence).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	coll, err := db.Collection.Create().SetName("Collection").AddSources(conflDefault).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := uc.AddCollections(coll).Save(ctx); err != nil {
+		return nil, err
+	}
+	return db.ByName(ctx, name)
 }

@@ -58,9 +58,9 @@ func Name(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldName, v))
 }
 
-// OpenaiAPIkey applies equality check predicate on the "OpenaiAPIkey" field. It's identical to OpenaiAPIkeyEQ.
-func OpenaiAPIkey(v string) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldOpenaiAPIkey, v))
+// APIKey applies equality check predicate on the "APIKey" field. It's identical to APIKeyEQ.
+func APIKey(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldAPIKey, v))
 }
 
 // NameEQ applies the EQ predicate on the "Name" field.
@@ -128,79 +128,79 @@ func NameContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldName, v))
 }
 
-// OpenaiAPIkeyEQ applies the EQ predicate on the "OpenaiAPIkey" field.
-func OpenaiAPIkeyEQ(v string) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldOpenaiAPIkey, v))
+// APIKeyEQ applies the EQ predicate on the "APIKey" field.
+func APIKeyEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldAPIKey, v))
 }
 
-// OpenaiAPIkeyNEQ applies the NEQ predicate on the "OpenaiAPIkey" field.
-func OpenaiAPIkeyNEQ(v string) predicate.User {
-	return predicate.User(sql.FieldNEQ(FieldOpenaiAPIkey, v))
+// APIKeyNEQ applies the NEQ predicate on the "APIKey" field.
+func APIKeyNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldAPIKey, v))
 }
 
-// OpenaiAPIkeyIn applies the In predicate on the "OpenaiAPIkey" field.
-func OpenaiAPIkeyIn(vs ...string) predicate.User {
-	return predicate.User(sql.FieldIn(FieldOpenaiAPIkey, vs...))
+// APIKeyIn applies the In predicate on the "APIKey" field.
+func APIKeyIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldAPIKey, vs...))
 }
 
-// OpenaiAPIkeyNotIn applies the NotIn predicate on the "OpenaiAPIkey" field.
-func OpenaiAPIkeyNotIn(vs ...string) predicate.User {
-	return predicate.User(sql.FieldNotIn(FieldOpenaiAPIkey, vs...))
+// APIKeyNotIn applies the NotIn predicate on the "APIKey" field.
+func APIKeyNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldAPIKey, vs...))
 }
 
-// OpenaiAPIkeyGT applies the GT predicate on the "OpenaiAPIkey" field.
-func OpenaiAPIkeyGT(v string) predicate.User {
-	return predicate.User(sql.FieldGT(FieldOpenaiAPIkey, v))
+// APIKeyGT applies the GT predicate on the "APIKey" field.
+func APIKeyGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldAPIKey, v))
 }
 
-// OpenaiAPIkeyGTE applies the GTE predicate on the "OpenaiAPIkey" field.
-func OpenaiAPIkeyGTE(v string) predicate.User {
-	return predicate.User(sql.FieldGTE(FieldOpenaiAPIkey, v))
+// APIKeyGTE applies the GTE predicate on the "APIKey" field.
+func APIKeyGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldAPIKey, v))
 }
 
-// OpenaiAPIkeyLT applies the LT predicate on the "OpenaiAPIkey" field.
-func OpenaiAPIkeyLT(v string) predicate.User {
-	return predicate.User(sql.FieldLT(FieldOpenaiAPIkey, v))
+// APIKeyLT applies the LT predicate on the "APIKey" field.
+func APIKeyLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldAPIKey, v))
 }
 
-// OpenaiAPIkeyLTE applies the LTE predicate on the "OpenaiAPIkey" field.
-func OpenaiAPIkeyLTE(v string) predicate.User {
-	return predicate.User(sql.FieldLTE(FieldOpenaiAPIkey, v))
+// APIKeyLTE applies the LTE predicate on the "APIKey" field.
+func APIKeyLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldAPIKey, v))
 }
 
-// OpenaiAPIkeyContains applies the Contains predicate on the "OpenaiAPIkey" field.
-func OpenaiAPIkeyContains(v string) predicate.User {
-	return predicate.User(sql.FieldContains(FieldOpenaiAPIkey, v))
+// APIKeyContains applies the Contains predicate on the "APIKey" field.
+func APIKeyContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldAPIKey, v))
 }
 
-// OpenaiAPIkeyHasPrefix applies the HasPrefix predicate on the "OpenaiAPIkey" field.
-func OpenaiAPIkeyHasPrefix(v string) predicate.User {
-	return predicate.User(sql.FieldHasPrefix(FieldOpenaiAPIkey, v))
+// APIKeyHasPrefix applies the HasPrefix predicate on the "APIKey" field.
+func APIKeyHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldAPIKey, v))
 }
 
-// OpenaiAPIkeyHasSuffix applies the HasSuffix predicate on the "OpenaiAPIkey" field.
-func OpenaiAPIkeyHasSuffix(v string) predicate.User {
-	return predicate.User(sql.FieldHasSuffix(FieldOpenaiAPIkey, v))
+// APIKeyHasSuffix applies the HasSuffix predicate on the "APIKey" field.
+func APIKeyHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldAPIKey, v))
 }
 
-// OpenaiAPIkeyIsNil applies the IsNil predicate on the "OpenaiAPIkey" field.
-func OpenaiAPIkeyIsNil() predicate.User {
-	return predicate.User(sql.FieldIsNull(FieldOpenaiAPIkey))
+// APIKeyIsNil applies the IsNil predicate on the "APIKey" field.
+func APIKeyIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldAPIKey))
 }
 
-// OpenaiAPIkeyNotNil applies the NotNil predicate on the "OpenaiAPIkey" field.
-func OpenaiAPIkeyNotNil() predicate.User {
-	return predicate.User(sql.FieldNotNull(FieldOpenaiAPIkey))
+// APIKeyNotNil applies the NotNil predicate on the "APIKey" field.
+func APIKeyNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldAPIKey))
 }
 
-// OpenaiAPIkeyEqualFold applies the EqualFold predicate on the "OpenaiAPIkey" field.
-func OpenaiAPIkeyEqualFold(v string) predicate.User {
-	return predicate.User(sql.FieldEqualFold(FieldOpenaiAPIkey, v))
+// APIKeyEqualFold applies the EqualFold predicate on the "APIKey" field.
+func APIKeyEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldAPIKey, v))
 }
 
-// OpenaiAPIkeyContainsFold applies the ContainsFold predicate on the "OpenaiAPIkey" field.
-func OpenaiAPIkeyContainsFold(v string) predicate.User {
-	return predicate.User(sql.FieldContainsFold(FieldOpenaiAPIkey, v))
+// APIKeyContainsFold applies the ContainsFold predicate on the "APIKey" field.
+func APIKeyContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldAPIKey, v))
 }
 
 // HasCollections applies the HasEdge predicate on the "Collections" edge.

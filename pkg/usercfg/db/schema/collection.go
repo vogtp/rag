@@ -13,7 +13,7 @@ type Collection struct {
 func (Collection) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("Name"),
-		field.String("APIKey"),
+		field.String("APIKey").Optional(),
 	}
 }
 

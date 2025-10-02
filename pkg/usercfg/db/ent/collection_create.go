@@ -34,6 +34,14 @@ func (cc *CollectionCreate) SetAPIKey(s string) *CollectionCreate {
 	return cc
 }
 
+// SetNillableAPIKey sets the "APIKey" field if the given value is not nil.
+func (cc *CollectionCreate) SetNillableAPIKey(s *string) *CollectionCreate {
+	if s != nil {
+		cc.SetAPIKey(*s)
+	}
+	return cc
+}
+
 // AddSourceIDs adds the "Sources" edge to the SourceSystem entity by IDs.
 func (cc *CollectionCreate) AddSourceIDs(ids ...int) *CollectionCreate {
 	cc.mutation.AddSourceIDs(ids...)
@@ -85,9 +93,6 @@ func (cc *CollectionCreate) ExecX(ctx context.Context) {
 func (cc *CollectionCreate) check() error {
 	if _, ok := cc.mutation.Name(); !ok {
 		return &ValidationError{Name: "Name", err: errors.New(`ent: missing required field "Collection.Name"`)}
-	}
-	if _, ok := cc.mutation.APIKey(); !ok {
-		return &ValidationError{Name: "APIKey", err: errors.New(`ent: missing required field "Collection.APIKey"`)}
 	}
 	return nil
 }
@@ -216,6 +221,12 @@ func (u *CollectionUpsert) UpdateAPIKey() *CollectionUpsert {
 	return u
 }
 
+// ClearAPIKey clears the value of the "APIKey" field.
+func (u *CollectionUpsert) ClearAPIKey() *CollectionUpsert {
+	u.SetNull(collection.FieldAPIKey)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -281,6 +292,13 @@ func (u *CollectionUpsertOne) SetAPIKey(v string) *CollectionUpsertOne {
 func (u *CollectionUpsertOne) UpdateAPIKey() *CollectionUpsertOne {
 	return u.Update(func(s *CollectionUpsert) {
 		s.UpdateAPIKey()
+	})
+}
+
+// ClearAPIKey clears the value of the "APIKey" field.
+func (u *CollectionUpsertOne) ClearAPIKey() *CollectionUpsertOne {
+	return u.Update(func(s *CollectionUpsert) {
+		s.ClearAPIKey()
 	})
 }
 
@@ -512,6 +530,13 @@ func (u *CollectionUpsertBulk) SetAPIKey(v string) *CollectionUpsertBulk {
 func (u *CollectionUpsertBulk) UpdateAPIKey() *CollectionUpsertBulk {
 	return u.Update(func(s *CollectionUpsert) {
 		s.UpdateAPIKey()
+	})
+}
+
+// ClearAPIKey clears the value of the "APIKey" field.
+func (u *CollectionUpsertBulk) ClearAPIKey() *CollectionUpsertBulk {
+	return u.Update(func(s *CollectionUpsert) {
+		s.ClearAPIKey()
 	})
 }
 

@@ -3,7 +3,7 @@ directive @goModel(model: String, models: [String!], forceGenerate: Boolean) on 
 type Collection implements Node {
   id: ID!
   name: String!
-  apikey: String! @goField(name: "APIKey", forceResolver: false)
+  apikey: String @goField(name: "APIKey", forceResolver: false)
   sources: [SourceSystem!]
 }
 """
@@ -94,6 +94,6 @@ enum SourceSystemType @goModel(model: "github.com/vogtp/rag/pkg/usercfg/db/ent/s
 type User implements Node {
   id: ID!
   name: String!
-  openaiapikey: String @goField(name: "OpenaiAPIkey", forceResolver: false)
+  apikey: String @goField(name: "APIKey", forceResolver: false)
   collections: [Collection!]
 }

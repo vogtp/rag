@@ -18,8 +18,8 @@ type User struct {
 	ID int `json:"id,omitempty"`
 	// Name holds the value of the "Name" field.
 	Name string `json:"Name,omitempty"`
-	// OpenaiAPIkey holds the value of the "OpenaiAPIkey" field.
-	OpenaiAPIkey string `json:"OpenaiAPIkey,omitempty"`
+	// APIKey holds the value of the "APIKey" field.
+	APIKey string `json:"APIKey,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges        UserEdges `json:"edges"`
@@ -55,7 +55,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldID:
 			values[i] = new(sql.NullInt64)
-		case user.FieldName, user.FieldOpenaiAPIkey:
+		case user.FieldName, user.FieldAPIKey:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -84,11 +84,11 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.Name = value.String
 			}
-		case user.FieldOpenaiAPIkey:
+		case user.FieldAPIKey:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field OpenaiAPIkey", values[i])
+				return fmt.Errorf("unexpected type %T for field APIKey", values[i])
 			} else if value.Valid {
-				u.OpenaiAPIkey = value.String
+				u.APIKey = value.String
 			}
 		default:
 			u.selectValues.Set(columns[i], values[i])
@@ -134,8 +134,8 @@ func (u *User) String() string {
 	builder.WriteString("Name=")
 	builder.WriteString(u.Name)
 	builder.WriteString(", ")
-	builder.WriteString("OpenaiAPIkey=")
-	builder.WriteString(u.OpenaiAPIkey)
+	builder.WriteString("APIKey=")
+	builder.WriteString(u.APIKey)
 	builder.WriteByte(')')
 	return builder.String()
 }

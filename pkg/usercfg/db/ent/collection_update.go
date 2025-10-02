@@ -56,6 +56,12 @@ func (cu *CollectionUpdate) SetNillableAPIKey(s *string) *CollectionUpdate {
 	return cu
 }
 
+// ClearAPIKey clears the value of the "APIKey" field.
+func (cu *CollectionUpdate) ClearAPIKey() *CollectionUpdate {
+	cu.mutation.ClearAPIKey()
+	return cu
+}
+
 // AddSourceIDs adds the "Sources" edge to the SourceSystem entity by IDs.
 func (cu *CollectionUpdate) AddSourceIDs(ids ...int) *CollectionUpdate {
 	cu.mutation.AddSourceIDs(ids...)
@@ -138,6 +144,9 @@ func (cu *CollectionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := cu.mutation.APIKey(); ok {
 		_spec.SetField(collection.FieldAPIKey, field.TypeString, value)
+	}
+	if cu.mutation.APIKeyCleared() {
+		_spec.ClearField(collection.FieldAPIKey, field.TypeString)
 	}
 	if cu.mutation.SourcesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -229,6 +238,12 @@ func (cuo *CollectionUpdateOne) SetNillableAPIKey(s *string) *CollectionUpdateOn
 	if s != nil {
 		cuo.SetAPIKey(*s)
 	}
+	return cuo
+}
+
+// ClearAPIKey clears the value of the "APIKey" field.
+func (cuo *CollectionUpdateOne) ClearAPIKey() *CollectionUpdateOne {
+	cuo.mutation.ClearAPIKey()
 	return cuo
 }
 
@@ -344,6 +359,9 @@ func (cuo *CollectionUpdateOne) sqlSave(ctx context.Context) (_node *Collection,
 	}
 	if value, ok := cuo.mutation.APIKey(); ok {
 		_spec.SetField(collection.FieldAPIKey, field.TypeString, value)
+	}
+	if cuo.mutation.APIKeyCleared() {
+		_spec.ClearField(collection.FieldAPIKey, field.TypeString)
 	}
 	if cuo.mutation.SourcesCleared() {
 		edge := &sqlgraph.EdgeSpec{

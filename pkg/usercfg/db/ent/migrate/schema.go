@@ -12,7 +12,7 @@ var (
 	CollectionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
-		{Name: "api_key", Type: field.TypeString},
+		{Name: "api_key", Type: field.TypeString, Nullable: true},
 		{Name: "user_collections", Type: field.TypeInt, Nullable: true},
 	}
 	// CollectionsTable holds the schema information for the "collections" table.
@@ -57,7 +57,7 @@ var (
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString, Unique: true},
-		{Name: "openai_ap_ikey", Type: field.TypeString, Nullable: true},
+		{Name: "api_key", Type: field.TypeString, Nullable: true},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{

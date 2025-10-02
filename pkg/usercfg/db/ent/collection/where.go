@@ -183,6 +183,16 @@ func APIKeyHasSuffix(v string) predicate.Collection {
 	return predicate.Collection(sql.FieldHasSuffix(FieldAPIKey, v))
 }
 
+// APIKeyIsNil applies the IsNil predicate on the "APIKey" field.
+func APIKeyIsNil() predicate.Collection {
+	return predicate.Collection(sql.FieldIsNull(FieldAPIKey))
+}
+
+// APIKeyNotNil applies the NotNil predicate on the "APIKey" field.
+func APIKeyNotNil() predicate.Collection {
+	return predicate.Collection(sql.FieldNotNull(FieldAPIKey))
+}
+
 // APIKeyEqualFold applies the EqualFold predicate on the "APIKey" field.
 func APIKeyEqualFold(v string) predicate.Collection {
 	return predicate.Collection(sql.FieldEqualFold(FieldAPIKey, v))

@@ -212,9 +212,22 @@ func (m *CollectionMutation) OldAPIKey(ctx context.Context) (v string, err error
 	return oldValue.APIKey, nil
 }
 
+// ClearAPIKey clears the value of the "APIKey" field.
+func (m *CollectionMutation) ClearAPIKey() {
+	m._APIKey = nil
+	m.clearedFields[collection.FieldAPIKey] = struct{}{}
+}
+
+// APIKeyCleared returns if the "APIKey" field was cleared in this mutation.
+func (m *CollectionMutation) APIKeyCleared() bool {
+	_, ok := m.clearedFields[collection.FieldAPIKey]
+	return ok
+}
+
 // ResetAPIKey resets all changes to the "APIKey" field.
 func (m *CollectionMutation) ResetAPIKey() {
 	m._APIKey = nil
+	delete(m.clearedFields, collection.FieldAPIKey)
 }
 
 // AddSourceIDs adds the "Sources" edge to the SourceSystem entity by ids.
@@ -389,7 +402,11 @@ func (m *CollectionMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *CollectionMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(collection.FieldAPIKey) {
+		fields = append(fields, collection.FieldAPIKey)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -402,6 +419,11 @@ func (m *CollectionMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *CollectionMutation) ClearField(name string) error {
+	switch name {
+	case collection.FieldAPIKey:
+		m.ClearAPIKey()
+		return nil
+	}
 	return fmt.Errorf("unknown Collection nullable field %s", name)
 }
 
@@ -1093,7 +1115,7 @@ type UserMutation struct {
 	typ                 string
 	id                  *int
 	_Name               *string
-	_OpenaiAPIkey       *string
+	_APIKey             *string
 	clearedFields       map[string]struct{}
 	_Collections        map[int]struct{}
 	removed_Collections map[int]struct{}
@@ -1237,53 +1259,53 @@ func (m *UserMutation) ResetName() {
 	m._Name = nil
 }
 
-// SetOpenaiAPIkey sets the "OpenaiAPIkey" field.
-func (m *UserMutation) SetOpenaiAPIkey(s string) {
-	m._OpenaiAPIkey = &s
+// SetAPIKey sets the "APIKey" field.
+func (m *UserMutation) SetAPIKey(s string) {
+	m._APIKey = &s
 }
 
-// OpenaiAPIkey returns the value of the "OpenaiAPIkey" field in the mutation.
-func (m *UserMutation) OpenaiAPIkey() (r string, exists bool) {
-	v := m._OpenaiAPIkey
+// APIKey returns the value of the "APIKey" field in the mutation.
+func (m *UserMutation) APIKey() (r string, exists bool) {
+	v := m._APIKey
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldOpenaiAPIkey returns the old "OpenaiAPIkey" field's value of the User entity.
+// OldAPIKey returns the old "APIKey" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldOpenaiAPIkey(ctx context.Context) (v string, err error) {
+func (m *UserMutation) OldAPIKey(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldOpenaiAPIkey is only allowed on UpdateOne operations")
+		return v, errors.New("OldAPIKey is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldOpenaiAPIkey requires an ID field in the mutation")
+		return v, errors.New("OldAPIKey requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldOpenaiAPIkey: %w", err)
+		return v, fmt.Errorf("querying old value for OldAPIKey: %w", err)
 	}
-	return oldValue.OpenaiAPIkey, nil
+	return oldValue.APIKey, nil
 }
 
-// ClearOpenaiAPIkey clears the value of the "OpenaiAPIkey" field.
-func (m *UserMutation) ClearOpenaiAPIkey() {
-	m._OpenaiAPIkey = nil
-	m.clearedFields[user.FieldOpenaiAPIkey] = struct{}{}
+// ClearAPIKey clears the value of the "APIKey" field.
+func (m *UserMutation) ClearAPIKey() {
+	m._APIKey = nil
+	m.clearedFields[user.FieldAPIKey] = struct{}{}
 }
 
-// OpenaiAPIkeyCleared returns if the "OpenaiAPIkey" field was cleared in this mutation.
-func (m *UserMutation) OpenaiAPIkeyCleared() bool {
-	_, ok := m.clearedFields[user.FieldOpenaiAPIkey]
+// APIKeyCleared returns if the "APIKey" field was cleared in this mutation.
+func (m *UserMutation) APIKeyCleared() bool {
+	_, ok := m.clearedFields[user.FieldAPIKey]
 	return ok
 }
 
-// ResetOpenaiAPIkey resets all changes to the "OpenaiAPIkey" field.
-func (m *UserMutation) ResetOpenaiAPIkey() {
-	m._OpenaiAPIkey = nil
-	delete(m.clearedFields, user.FieldOpenaiAPIkey)
+// ResetAPIKey resets all changes to the "APIKey" field.
+func (m *UserMutation) ResetAPIKey() {
+	m._APIKey = nil
+	delete(m.clearedFields, user.FieldAPIKey)
 }
 
 // AddCollectionIDs adds the "Collections" edge to the Collection entity by ids.
@@ -1378,8 +1400,8 @@ func (m *UserMutation) Fields() []string {
 	if m._Name != nil {
 		fields = append(fields, user.FieldName)
 	}
-	if m._OpenaiAPIkey != nil {
-		fields = append(fields, user.FieldOpenaiAPIkey)
+	if m._APIKey != nil {
+		fields = append(fields, user.FieldAPIKey)
 	}
 	return fields
 }
@@ -1391,8 +1413,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case user.FieldName:
 		return m.Name()
-	case user.FieldOpenaiAPIkey:
-		return m.OpenaiAPIkey()
+	case user.FieldAPIKey:
+		return m.APIKey()
 	}
 	return nil, false
 }
@@ -1404,8 +1426,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 	switch name {
 	case user.FieldName:
 		return m.OldName(ctx)
-	case user.FieldOpenaiAPIkey:
-		return m.OldOpenaiAPIkey(ctx)
+	case user.FieldAPIKey:
+		return m.OldAPIKey(ctx)
 	}
 	return nil, fmt.Errorf("unknown User field %s", name)
 }
@@ -1422,12 +1444,12 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetName(v)
 		return nil
-	case user.FieldOpenaiAPIkey:
+	case user.FieldAPIKey:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetOpenaiAPIkey(v)
+		m.SetAPIKey(v)
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
@@ -1459,8 +1481,8 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *UserMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(user.FieldOpenaiAPIkey) {
-		fields = append(fields, user.FieldOpenaiAPIkey)
+	if m.FieldCleared(user.FieldAPIKey) {
+		fields = append(fields, user.FieldAPIKey)
 	}
 	return fields
 }
@@ -1476,8 +1498,8 @@ func (m *UserMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *UserMutation) ClearField(name string) error {
 	switch name {
-	case user.FieldOpenaiAPIkey:
-		m.ClearOpenaiAPIkey()
+	case user.FieldAPIKey:
+		m.ClearAPIKey()
 		return nil
 	}
 	return fmt.Errorf("unknown User nullable field %s", name)
@@ -1490,8 +1512,8 @@ func (m *UserMutation) ResetField(name string) error {
 	case user.FieldName:
 		m.ResetName()
 		return nil
-	case user.FieldOpenaiAPIkey:
-		m.ResetOpenaiAPIkey()
+	case user.FieldAPIKey:
+		m.ResetAPIKey()
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)

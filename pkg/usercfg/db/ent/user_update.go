@@ -42,23 +42,23 @@ func (uu *UserUpdate) SetNillableName(s *string) *UserUpdate {
 	return uu
 }
 
-// SetOpenaiAPIkey sets the "OpenaiAPIkey" field.
-func (uu *UserUpdate) SetOpenaiAPIkey(s string) *UserUpdate {
-	uu.mutation.SetOpenaiAPIkey(s)
+// SetAPIKey sets the "APIKey" field.
+func (uu *UserUpdate) SetAPIKey(s string) *UserUpdate {
+	uu.mutation.SetAPIKey(s)
 	return uu
 }
 
-// SetNillableOpenaiAPIkey sets the "OpenaiAPIkey" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableOpenaiAPIkey(s *string) *UserUpdate {
+// SetNillableAPIKey sets the "APIKey" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableAPIKey(s *string) *UserUpdate {
 	if s != nil {
-		uu.SetOpenaiAPIkey(*s)
+		uu.SetAPIKey(*s)
 	}
 	return uu
 }
 
-// ClearOpenaiAPIkey clears the value of the "OpenaiAPIkey" field.
-func (uu *UserUpdate) ClearOpenaiAPIkey() *UserUpdate {
-	uu.mutation.ClearOpenaiAPIkey()
+// ClearAPIKey clears the value of the "APIKey" field.
+func (uu *UserUpdate) ClearAPIKey() *UserUpdate {
+	uu.mutation.ClearAPIKey()
 	return uu
 }
 
@@ -142,11 +142,11 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.Name(); ok {
 		_spec.SetField(user.FieldName, field.TypeString, value)
 	}
-	if value, ok := uu.mutation.OpenaiAPIkey(); ok {
-		_spec.SetField(user.FieldOpenaiAPIkey, field.TypeString, value)
+	if value, ok := uu.mutation.APIKey(); ok {
+		_spec.SetField(user.FieldAPIKey, field.TypeString, value)
 	}
-	if uu.mutation.OpenaiAPIkeyCleared() {
-		_spec.ClearField(user.FieldOpenaiAPIkey, field.TypeString)
+	if uu.mutation.APIKeyCleared() {
+		_spec.ClearField(user.FieldAPIKey, field.TypeString)
 	}
 	if uu.mutation.CollectionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -227,23 +227,23 @@ func (uuo *UserUpdateOne) SetNillableName(s *string) *UserUpdateOne {
 	return uuo
 }
 
-// SetOpenaiAPIkey sets the "OpenaiAPIkey" field.
-func (uuo *UserUpdateOne) SetOpenaiAPIkey(s string) *UserUpdateOne {
-	uuo.mutation.SetOpenaiAPIkey(s)
+// SetAPIKey sets the "APIKey" field.
+func (uuo *UserUpdateOne) SetAPIKey(s string) *UserUpdateOne {
+	uuo.mutation.SetAPIKey(s)
 	return uuo
 }
 
-// SetNillableOpenaiAPIkey sets the "OpenaiAPIkey" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableOpenaiAPIkey(s *string) *UserUpdateOne {
+// SetNillableAPIKey sets the "APIKey" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableAPIKey(s *string) *UserUpdateOne {
 	if s != nil {
-		uuo.SetOpenaiAPIkey(*s)
+		uuo.SetAPIKey(*s)
 	}
 	return uuo
 }
 
-// ClearOpenaiAPIkey clears the value of the "OpenaiAPIkey" field.
-func (uuo *UserUpdateOne) ClearOpenaiAPIkey() *UserUpdateOne {
-	uuo.mutation.ClearOpenaiAPIkey()
+// ClearAPIKey clears the value of the "APIKey" field.
+func (uuo *UserUpdateOne) ClearAPIKey() *UserUpdateOne {
+	uuo.mutation.ClearAPIKey()
 	return uuo
 }
 
@@ -357,11 +357,11 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if value, ok := uuo.mutation.Name(); ok {
 		_spec.SetField(user.FieldName, field.TypeString, value)
 	}
-	if value, ok := uuo.mutation.OpenaiAPIkey(); ok {
-		_spec.SetField(user.FieldOpenaiAPIkey, field.TypeString, value)
+	if value, ok := uuo.mutation.APIKey(); ok {
+		_spec.SetField(user.FieldAPIKey, field.TypeString, value)
 	}
-	if uuo.mutation.OpenaiAPIkeyCleared() {
-		_spec.ClearField(user.FieldOpenaiAPIkey, field.TypeString)
+	if uuo.mutation.APIKeyCleared() {
+		_spec.ClearField(user.FieldAPIKey, field.TypeString)
 	}
 	if uuo.mutation.CollectionsCleared() {
 		edge := &sqlgraph.EdgeSpec{

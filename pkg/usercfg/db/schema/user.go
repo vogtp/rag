@@ -14,7 +14,7 @@ type User struct {
 func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("Name").Unique(),
-		field.String("OpenaiAPIkey").Optional(),
+		field.String("APIKey").Optional(),
 	}
 }
 
