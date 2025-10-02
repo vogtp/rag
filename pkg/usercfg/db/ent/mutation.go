@@ -1115,7 +1115,6 @@ type UserMutation struct {
 	typ                 string
 	id                  *int
 	_Name               *string
-	_APIKey             *string
 	clearedFields       map[string]struct{}
 	_Collections        map[int]struct{}
 	removed_Collections map[int]struct{}
@@ -1259,55 +1258,6 @@ func (m *UserMutation) ResetName() {
 	m._Name = nil
 }
 
-// SetAPIKey sets the "APIKey" field.
-func (m *UserMutation) SetAPIKey(s string) {
-	m._APIKey = &s
-}
-
-// APIKey returns the value of the "APIKey" field in the mutation.
-func (m *UserMutation) APIKey() (r string, exists bool) {
-	v := m._APIKey
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldAPIKey returns the old "APIKey" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldAPIKey(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAPIKey is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAPIKey requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAPIKey: %w", err)
-	}
-	return oldValue.APIKey, nil
-}
-
-// ClearAPIKey clears the value of the "APIKey" field.
-func (m *UserMutation) ClearAPIKey() {
-	m._APIKey = nil
-	m.clearedFields[user.FieldAPIKey] = struct{}{}
-}
-
-// APIKeyCleared returns if the "APIKey" field was cleared in this mutation.
-func (m *UserMutation) APIKeyCleared() bool {
-	_, ok := m.clearedFields[user.FieldAPIKey]
-	return ok
-}
-
-// ResetAPIKey resets all changes to the "APIKey" field.
-func (m *UserMutation) ResetAPIKey() {
-	m._APIKey = nil
-	delete(m.clearedFields, user.FieldAPIKey)
-}
-
 // AddCollectionIDs adds the "Collections" edge to the Collection entity by ids.
 func (m *UserMutation) AddCollectionIDs(ids ...int) {
 	if m._Collections == nil {
@@ -1396,12 +1346,9 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 1)
 	if m._Name != nil {
 		fields = append(fields, user.FieldName)
-	}
-	if m._APIKey != nil {
-		fields = append(fields, user.FieldAPIKey)
 	}
 	return fields
 }
@@ -1413,8 +1360,6 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case user.FieldName:
 		return m.Name()
-	case user.FieldAPIKey:
-		return m.APIKey()
 	}
 	return nil, false
 }
@@ -1426,8 +1371,6 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 	switch name {
 	case user.FieldName:
 		return m.OldName(ctx)
-	case user.FieldAPIKey:
-		return m.OldAPIKey(ctx)
 	}
 	return nil, fmt.Errorf("unknown User field %s", name)
 }
@@ -1443,13 +1386,6 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
-		return nil
-	case user.FieldAPIKey:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetAPIKey(v)
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
@@ -1480,11 +1416,7 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *UserMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(user.FieldAPIKey) {
-		fields = append(fields, user.FieldAPIKey)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1497,11 +1429,6 @@ func (m *UserMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *UserMutation) ClearField(name string) error {
-	switch name {
-	case user.FieldAPIKey:
-		m.ClearAPIKey()
-		return nil
-	}
 	return fmt.Errorf("unknown User nullable field %s", name)
 }
 
@@ -1511,9 +1438,6 @@ func (m *UserMutation) ResetField(name string) error {
 	switch name {
 	case user.FieldName:
 		m.ResetName()
-		return nil
-	case user.FieldAPIKey:
-		m.ResetAPIKey()
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)

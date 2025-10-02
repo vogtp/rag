@@ -14,8 +14,6 @@ const (
 	FieldID = "id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldAPIKey holds the string denoting the apikey field in the database.
-	FieldAPIKey = "api_key"
 	// EdgeCollections holds the string denoting the collections edge name in mutations.
 	EdgeCollections = "Collections"
 	// Table holds the table name of the user in the database.
@@ -33,7 +31,6 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldName,
-	FieldAPIKey,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -57,11 +54,6 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByName orders the results by the Name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
-}
-
-// ByAPIKey orders the results by the APIKey field.
-func ByAPIKey(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldAPIKey, opts...).ToFunc()
 }
 
 // ByCollectionsCount orders the results by Collections count.

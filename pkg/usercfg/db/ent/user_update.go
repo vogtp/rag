@@ -42,26 +42,6 @@ func (_u *UserUpdate) SetNillableName(v *string) *UserUpdate {
 	return _u
 }
 
-// SetAPIKey sets the "APIKey" field.
-func (_u *UserUpdate) SetAPIKey(v string) *UserUpdate {
-	_u.mutation.SetAPIKey(v)
-	return _u
-}
-
-// SetNillableAPIKey sets the "APIKey" field if the given value is not nil.
-func (_u *UserUpdate) SetNillableAPIKey(v *string) *UserUpdate {
-	if v != nil {
-		_u.SetAPIKey(*v)
-	}
-	return _u
-}
-
-// ClearAPIKey clears the value of the "APIKey" field.
-func (_u *UserUpdate) ClearAPIKey() *UserUpdate {
-	_u.mutation.ClearAPIKey()
-	return _u
-}
-
 // AddCollectionIDs adds the "Collections" edge to the Collection entity by IDs.
 func (_u *UserUpdate) AddCollectionIDs(ids ...int) *UserUpdate {
 	_u.mutation.AddCollectionIDs(ids...)
@@ -142,12 +122,6 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(user.FieldName, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.APIKey(); ok {
-		_spec.SetField(user.FieldAPIKey, field.TypeString, value)
-	}
-	if _u.mutation.APIKeyCleared() {
-		_spec.ClearField(user.FieldAPIKey, field.TypeString)
-	}
 	if _u.mutation.CollectionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -224,26 +198,6 @@ func (_u *UserUpdateOne) SetNillableName(v *string) *UserUpdateOne {
 	if v != nil {
 		_u.SetName(*v)
 	}
-	return _u
-}
-
-// SetAPIKey sets the "APIKey" field.
-func (_u *UserUpdateOne) SetAPIKey(v string) *UserUpdateOne {
-	_u.mutation.SetAPIKey(v)
-	return _u
-}
-
-// SetNillableAPIKey sets the "APIKey" field if the given value is not nil.
-func (_u *UserUpdateOne) SetNillableAPIKey(v *string) *UserUpdateOne {
-	if v != nil {
-		_u.SetAPIKey(*v)
-	}
-	return _u
-}
-
-// ClearAPIKey clears the value of the "APIKey" field.
-func (_u *UserUpdateOne) ClearAPIKey() *UserUpdateOne {
-	_u.mutation.ClearAPIKey()
 	return _u
 }
 
@@ -356,12 +310,6 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(user.FieldName, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.APIKey(); ok {
-		_spec.SetField(user.FieldAPIKey, field.TypeString, value)
-	}
-	if _u.mutation.APIKeyCleared() {
-		_spec.ClearField(user.FieldAPIKey, field.TypeString)
 	}
 	if _u.mutation.CollectionsCleared() {
 		edge := &sqlgraph.EdgeSpec{

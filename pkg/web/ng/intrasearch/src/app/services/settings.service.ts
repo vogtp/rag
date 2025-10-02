@@ -39,7 +39,6 @@ export interface Edges {
 export interface Collection {
   id: number;
   Name: string;
-  APIKey: string;
   edges: EdgesCol;
 }
 
