@@ -55,23 +55,9 @@ export class SettingsComponent {
         this.collections.set(data.edges.Collections);
         this.cdRef.detectChanges();
       },
-      error: (err) => {
-        console.log('err');
-        console.log(err);
-      },
-      complete: () => console.info('request usersettings complete'),
+      error: (err) => console.error(err),
+      complete: () => console.debug('request usersettings complete'),
     });
-    // this.settingsService.getUserSetting().subscribe(
-    //   (data) => {
-    //     this.userSettings = data;
-    //     this.collections.set(data.edges.Collections);
-    //     this.cdRef.detectChanges();
-    //   },
-    //   (err) => {
-    //     console.log('err');
-    //     console.log(err);
-    //   }
-    // );
   }
 
   ngOnInit() {

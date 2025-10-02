@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { CollectionListResponse, CollectionListService } from '../../services/collection-list.service';
+import {
+  CollectionListResponse,
+  CollectionListService,
+} from '../../services/collection-list.service';
 
 import { MatListModule } from '@angular/material/list';
 import { RouterLink } from '@angular/router';
@@ -10,23 +13,23 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [CommonModule, MatListModule, RouterLink],
   templateUrl: './collections-list.component.html',
-  styleUrl: './collections-list.component.css'
+  styleUrl: './collections-list.component.css',
 })
 export class CollectionsListComponent {
   collectionResponse: CollectionListResponse | undefined;
 
   constructor(private collectionService: CollectionListService) {}
 
-  
   loadCollections() {
-    this.collectionService.getCollections()
-      .subscribe(data => {
-        this.collectionResponse = data
-      }
-      );
+    this.collectionService.getCollections().subscribe({
+      next: (data) => {
+        this.collectionResponse = data;
+      },
+      error: (err) => console.error(err),
+    });
   }
-  
- ngOnInit() {
-   this.loadCollections()
- }
+
+  ngOnInit() {
+    this.loadCollections();
+  }
 }
