@@ -8,6 +8,7 @@ import (
 
 	"github.com/zitadel/oidc/v3/pkg/client/rp"
 	httphelper "github.com/zitadel/oidc/v3/pkg/http"
+	"github.com/zitadel/oidc/v3/pkg/oidc"
 )
 
 // NewMux creates a new OIDC authenticated mux
@@ -29,7 +30,7 @@ func NewMux(ctx context.Context, slog *slog.Logger, serveMux *http.ServeMux, add
 	}
 	om.scopes = cfg.Scopes
 	if len(om.scopes) < 1 {
-		om.scopes = []string{"openid", "profile"}
+		om.scopes = []string{oidc.ScopeOpenID, oidc.ScopeProfile}
 	}
 	om.responseMode = cfg.ResponseMode
 	if len(om.responseMode) < 1 {
