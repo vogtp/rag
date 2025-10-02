@@ -38,14 +38,16 @@ const (
 
 // Session represents an authorised OIDC session
 type Session struct {
-	User    *oidc.UserInfo
-	Created time.Time
+	User     *oidc.UserInfo
+	UserName string
+	Created  time.Time
 }
 
 func (om *mux) setSession(w http.ResponseWriter, info *oidc.UserInfo) error {
 	session := Session{
-		User:    info,
-		Created: time.Now(),
+		User:     info,
+		UserName: fmt.Sprintf("%v", info.Claims["subname"]),
+		Created:  time.Now(),
 	}
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(&session); err != nil {
