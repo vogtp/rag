@@ -92,7 +92,7 @@ func DefaultRagCfg() *RagConfig {
 		return defaultRagCfg
 	}
 	defaultRagCfg = &RagConfig{
-		Name: "Defaule",
+		Name: "Default",
 		Model: modelCfg{
 			Embedding: viper.GetString(ModelEmbedding),
 			Default:   viper.GetString(ModelDefault),
