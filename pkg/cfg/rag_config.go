@@ -12,6 +12,7 @@ const (
 	ragConfigKey = "rag_model"
 
 	DefaultVecDBUpdateIntervall = 24 * time.Hour
+	MinVecDBUpdateIntervall     = time.Hour
 )
 
 // type RagConfig struct {

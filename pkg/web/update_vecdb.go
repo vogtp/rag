@@ -3,13 +3,24 @@ package web
 import (
 	"context"
 	"time"
+
+	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/rag"
 )
 
+type getAllRager interface {
+	GetAllRags() []rag.Instance
+}
+
 func (srv *Server) schedulePeriodicVecDBUpdates(ctx context.Context) {
-	for _, rag := range srv.ragManagers {
+	ragger, ok := srv.ragHandlers.(getAllRager)
+	if !ok {
+		panic("Cannot get all RAGs")
+	}
+	for _, rag := range ragger.GetAllRags() {
 		updateIntervall := rag.UpdateIntervall()
 		slog := srv.slog.With("rag", rag.Name(), "updateIntervall", updateIntervall.String())
-		if updateIntervall < time.Hour {
+		if updateIntervall < cfg.MinVecDBUpdateIntervall {
 			slog.Warn("Not starting periodic vector DB updates since update intervall is too short")
 			return
 		}
@@ -17,7 +28,7 @@ func (srv *Server) schedulePeriodicVecDBUpdates(ctx context.Context) {
 		go func() {
 			start := time.Now()
 			if err := rag.Embbed(ctx); err != nil {
-				slog.Error("Cannot embedd", "err", err)
+				slog.Error("Cannot embed", "err", err)
 			}
 			select {
 			case <-ticker.C:

@@ -34,8 +34,8 @@ func (ta tokenAuth) Authorise(w http.ResponseWriter, r *http.Request) bool {
 	}
 	t, ok := readBearer(w, r)
 	// slog.Warn(" auth check", "ok", ok, "t", t, "token", ta.token)
-	if t != ta.token {
-		http.Error(w, "Could not authorise request", http.StatusUnauthorized)
-	}
+	// if t != ta.token {
+	// 	http.Error(w, "Could not authorise request", http.StatusUnauthorized)
+	// }
 	return ok && t == ta.token
 }

@@ -11,9 +11,10 @@ import (
 
 func (srv *Server) modelsHandler(w http.ResponseWriter, r *http.Request) {
 	var ret any
-	rag:=srv.rag(r)
-	if !rag.BearerAuth().Authorise(w, r) {
+	rag := srv.rag(r)
+	if !rag.Authorise(w, r) {
 		slog.Warn("Not authorised", "host", r.Host, "remote", r.RemoteAddr, "URL", r.URL.String())
+		http.Error(w, "Could not authorise request", http.StatusUnauthorized)
 		return
 	}
 	if name := r.PathValue("model"); len(name) > 0 {

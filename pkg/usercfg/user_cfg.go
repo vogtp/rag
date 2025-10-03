@@ -6,6 +6,7 @@ import (
 	"log/slog"
 
 	"github.com/vogtp/rag/pkg/usercfg/db/ent"
+	"github.com/vogtp/rag/pkg/usercfg/db/ent/collection"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/sourcesystem"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/user"
 )
@@ -80,6 +81,13 @@ func (db *DB) SaveUser(ctx context.Context, usr *ent.User) (err error) {
 	userUp := usrDB.Update().SetUser(usr)
 	cols := usr.Edges.Collections
 	for _, c := range cols {
+		keys := tx.Collection.Query().Where(collection.APIKey(c.APIKey)).AllX(ctx)
+		for _, k := range keys {
+			if k.ID != c.ID {
+				return fmt.Errorf("an API must not be used twice: %s", c.APIKey)
+			}
+		}
+
 		col, ok := colsMap[c.ID]
 		if !ok {
 			col = tx.Collection.Create().SaveX(ctx)

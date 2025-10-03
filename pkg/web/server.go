@@ -26,23 +26,23 @@ type Server struct {
 
 	usercfg *usercfg.DB
 
-	ragManagers []rag.Manager
+	ragHandlers rag.Handler
 	lastEmbedd  map[string]time.Time
 	docCache    docChace
 }
 
 // New creates a new webserver
-func New(ctx context.Context, slog *slog.Logger, rags []rag.Manager) (*Server, error) {
-	if len(rags) == 0 {
-		return nil, fmt.Errorf("no RAGs passed")
-	}
+func New(ctx context.Context, slog *slog.Logger, rags rag.Handler) (*Server, error) {
+	// if len(rags) == 0 {
+	// 	return nil, fmt.Errorf("no RAGs passed")
+	// }
 	userCfg, err := usercfg.New(ctx, slog, usercfg.Dialect, usercfg.DBFileName)
 	if err != nil {
 		return nil, err
 	}
 	srv := &Server{
 		slog:        slog,
-		ragManagers: rags,
+		ragHandlers: rags,
 		lastEmbedd:  make(map[string]time.Time),
 		docCache:    newDocCache(),
 		usercfg:     userCfg,
