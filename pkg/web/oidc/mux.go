@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/zitadel/oidc/v3/pkg/client/rp"
 	httphelper "github.com/zitadel/oidc/v3/pkg/http"
@@ -14,10 +15,11 @@ import (
 // NewMux creates a new OIDC authenticated mux
 func NewMux(ctx context.Context, slog *slog.Logger, serveMux *http.ServeMux, addr string, cfg Config) (Mux, error) {
 	om := &mux{
-		slog:     slog.With("oidc", "oidc"),
-		serveMux: serveMux,
-		addr:     addr,
-		cfg:      cfg,
+		slog:          slog.With("oidc", "oidc"),
+		serveMux:      serveMux,
+		sessionMaxAge: 24 * time.Hour,
+		addr:          addr,
+		cfg:           cfg,
 	}
 	redURI, err := url.Parse(cfg.RedirectURI)
 	if err != nil {
@@ -35,6 +37,9 @@ func NewMux(ctx context.Context, slog *slog.Logger, serveMux *http.ServeMux, add
 	om.responseMode = cfg.ResponseMode
 	if len(om.responseMode) < 1 {
 		om.responseMode = "code token"
+	}
+	if cfg.sessionMaxAge > 0 {
+		om.sessionMaxAge = cfg.sessionMaxAge
 	}
 	if err := om.init(ctx, slog); err != nil {
 		return nil, err
@@ -55,6 +60,7 @@ type mux struct {
 	scopes       []string
 	responseMode string
 
+	sessionMaxAge  time.Duration
 	cookieHandler  *httphelper.CookieHandler
 	providerOIDC   rp.RelyingParty
 	stateOIDC      func() string

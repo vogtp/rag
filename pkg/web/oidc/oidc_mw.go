@@ -2,6 +2,7 @@ package oidc
 
 import (
 	"net/http"
+	"time"
 )
 
 // oidcMux can hold a oidc authenticated mux or a standard one
@@ -13,8 +14,17 @@ type Mux interface {
 // Handle makes shure it is authenticated
 func (om *mux) Handle(pattern string, handler http.Handler) {
 	handleFunc := func(w http.ResponseWriter, r *http.Request) {
-		_, err := om.GetSession(w, r)
+
+		session, err := om.GetSession(r)
 		if err != nil {
+			om.slog.Warn("Not authorised", "err", err)
+			http.Redirect(w, r, om.loginPath, http.StatusTemporaryRedirect)
+			return
+		}
+		if time.Since(session.Created) > om.sessionMaxAge {
+			a := time.Since(session.Created).Truncate(time.Second).String()
+			om.ClearSession(w, r)
+			om.slog.Info("Session expired", "age", a, "maxAge", om.sessionMaxAge.String(), "session", session)
 			om.slog.Warn("Not authorised", "err", err)
 			http.Redirect(w, r, om.loginPath, http.StatusTemporaryRedirect)
 			return

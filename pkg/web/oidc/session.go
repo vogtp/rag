@@ -16,9 +16,6 @@ var (
 	ParamOrigPath = "OrigPath"
 	//DefaultPath is the default path to redirect to
 	DefaultPath = "/"
-
-	//SessionMaxAge is the max age of a internal session, after it gets revalidated (possible transparent)
-	SessionMaxAge = 5 * time.Minute
 )
 
 func getOrigPath(r *http.Request) string {
@@ -58,7 +55,7 @@ func (om *mux) setSession(w http.ResponseWriter, info *oidc.UserInfo) error {
 }
 
 // GetSession returns session information with user info
-func (om *mux) GetSession(w http.ResponseWriter, r *http.Request) (*Session, error) {
+func (om *mux) GetSession(r *http.Request) (*Session, error) {
 	s, err := om.cookieHandler.CheckCookie(r, sessionCookieName)
 	if err != nil {
 		return nil, fmt.Errorf("get session cookie: %w", err)
@@ -69,11 +66,10 @@ func (om *mux) GetSession(w http.ResponseWriter, r *http.Request) (*Session, err
 	if err := json.Unmarshal([]byte(s), session); err != nil {
 		return nil, fmt.Errorf("unmarshal session cookie: %w", err)
 	}
-	if time.Since(session.Created) > SessionMaxAge {
-		a := time.Since(session.Created).Truncate(time.Second).String()
-		om.cookieHandler.DeleteCookie(w, sessionCookieName)
-		om.slog.Info("Session expired", "age", a, "maxAge", SessionMaxAge.String(), "session", session)
-		return nil, fmt.Errorf("session expired. age: %s", a)
-	}
+
 	return session, err
+}
+
+func (om *mux) ClearSession(w http.ResponseWriter, r *http.Request) {
+	om.cookieHandler.DeleteCookie(w, sessionCookieName)
 }
