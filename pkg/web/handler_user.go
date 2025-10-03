@@ -10,10 +10,6 @@ import (
 	"github.com/vogtp/rag/pkg/web/oidc"
 )
 
-type Sessioner interface {
-	GetSession(r *http.Request) (*oidc.Session, error)
-}
-
 func (srv *Server) handleUser(w http.ResponseWriter, r *http.Request) {
 	srv.slog.Info("User config request", "url", r.URL.String(), "remote", r.RemoteAddr, "method", r.Method)
 	switch r.Method {
@@ -30,7 +26,7 @@ func (srv *Server) handleUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (srv *Server) saveUser(w http.ResponseWriter, r *http.Request) {
-	userName, err := srv.getUserName(r)
+	userName, err := oidc.UserName(r)
 	if len(userName) < 1 {
 		http.Error(w, fmt.Sprintf("User not found: %v", err), http.StatusUnauthorized)
 		return
@@ -54,7 +50,7 @@ func (srv *Server) saveUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (srv *Server) loadUser(w http.ResponseWriter, r *http.Request) {
-	userName, err := srv.getUserName(r)
+	userName, err := oidc.UserName(r)
 	if len(userName) < 1 {
 		http.Error(w, fmt.Sprintf("User not found: %v", err), http.StatusUnauthorized)
 		return
@@ -75,24 +71,4 @@ func (srv *Server) loadUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-}
-
-func (srv *Server) getUserName(r *http.Request) (string, error) {
-	sessioner, ok := srv.oidcMux.(Sessioner)
-	if !ok {
-		return "", fmt.Errorf("no session found")
-		// srv.slog.Error("USING HARDCODED USER")
-		// return "vogtp", nil // FIXME Debug only
-	}
-	sess, err := sessioner.GetSession(r)
-	if err != nil {
-		return "", err
-	}
-	userName := sess.UserName
-	if len(userName) < 1 {
-		return "", err
-
-	}
-	srv.slog.Info("found user session", "session", sess, "userName", userName)
-	return userName, nil
 }

@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/zitadel/logging"
 	"github.com/zitadel/oidc/v3/pkg/client/rp"
-	httphelper "github.com/zitadel/oidc/v3/pkg/http"
 	"github.com/zitadel/oidc/v3/pkg/oidc"
 )
 
@@ -19,9 +18,6 @@ func generateState() string {
 }
 
 func (om *mux) init(ctx context.Context, slog *slog.Logger) error {
-
-	om.cookieHandler = httphelper.NewCookieHandler(randomKey(16), randomKey(16), httphelper.WithMaxAge(15*60*60))
-
 	client := &http.Client{
 		Timeout:   time.Minute,
 		Transport: getSocksProxy(om.slog),
@@ -32,7 +28,7 @@ func (om *mux) init(ctx context.Context, slog *slog.Logger) error {
 	)
 
 	options := []rp.Option{
-		rp.WithCookieHandler(om.cookieHandler),
+		rp.WithCookieHandler(cookieHandler),
 		rp.WithVerifierOpts(rp.WithIssuedAtOffset(5 * time.Second)),
 		rp.WithHTTPClient(client),
 		rp.WithLogger(slog),
@@ -41,7 +37,7 @@ func (om *mux) init(ctx context.Context, slog *slog.Logger) error {
 		rp.WithUnauthorizedHandler(om.oidcUnauthHandler),
 	}
 	if om.cfg.ClientSecret == "" {
-		options = append(options, rp.WithPKCE(om.cookieHandler))
+		options = append(options, rp.WithPKCE(cookieHandler))
 	}
 	if om.cfg.KeyPath != "" {
 		options = append(options, rp.WithJWTProfile(rp.SignerFromKeyPath(om.cfg.KeyPath)))

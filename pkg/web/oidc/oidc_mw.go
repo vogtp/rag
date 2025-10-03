@@ -15,7 +15,7 @@ type Mux interface {
 func (om *mux) Handle(pattern string, handler http.Handler) {
 	handleFunc := func(w http.ResponseWriter, r *http.Request) {
 
-		session, err := om.GetSession(r)
+		session, err := GetSession(r)
 		if err != nil {
 			om.slog.Warn("Not authorised", "err", err)
 			http.Redirect(w, r, om.loginPath, http.StatusTemporaryRedirect)
@@ -23,7 +23,7 @@ func (om *mux) Handle(pattern string, handler http.Handler) {
 		}
 		if time.Since(session.Created) > om.sessionMaxAge {
 			a := time.Since(session.Created).Truncate(time.Second).String()
-			om.ClearSession(w, r)
+			ClearSession(w, r)
 			om.slog.Info("Session expired", "age", a, "maxAge", om.sessionMaxAge.String(), "session", session)
 			om.slog.Warn("Not authorised", "err", err)
 			http.Redirect(w, r, om.loginPath, http.StatusTemporaryRedirect)
@@ -38,3 +38,4 @@ func (om *mux) Handle(pattern string, handler http.Handler) {
 func (om *mux) HandleFunc(pattern string, handler func(http.ResponseWriter, *http.Request)) {
 	om.Handle(pattern, http.HandlerFunc(handler))
 }
+

@@ -51,12 +51,12 @@ func (om *mux) setSession(w http.ResponseWriter, info *oidc.UserInfo) error {
 		return err
 	}
 	om.slog.Info("New session info", slog.Group("session", slog.Any("orig", session), slog.String("encoded", buf.String())))
-	return om.cookieHandler.SetCookie(w, sessionCookieName, buf.String())
+	return cookieHandler.SetCookie(w, sessionCookieName, buf.String())
 }
 
 // GetSession returns session information with user info
-func (om *mux) GetSession(r *http.Request) (*Session, error) {
-	s, err := om.cookieHandler.CheckCookie(r, sessionCookieName)
+func GetSession(r *http.Request) (*Session, error) {
+	s, err := cookieHandler.CheckCookie(r, sessionCookieName)
 	if err != nil {
 		return nil, fmt.Errorf("get session cookie: %w", err)
 	}
@@ -70,6 +70,19 @@ func (om *mux) GetSession(r *http.Request) (*Session, error) {
 	return session, err
 }
 
-func (om *mux) ClearSession(w http.ResponseWriter, r *http.Request) {
-	om.cookieHandler.DeleteCookie(w, sessionCookieName)
+func ClearSession(w http.ResponseWriter, r *http.Request) {
+	cookieHandler.DeleteCookie(w, sessionCookieName)
+}
+
+func UserName(r *http.Request) (string, error) {
+	sess, err := GetSession(r)
+	if err != nil {
+		return "", err
+	}
+	userName := sess.UserName
+	if len(userName) < 1 {
+		return "", fmt.Errorf("Username is empty")
+
+	}
+	return userName, nil
 }

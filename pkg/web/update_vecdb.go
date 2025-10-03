@@ -13,7 +13,7 @@ type getAllRager interface {
 }
 
 func (srv *Server) schedulePeriodicVecDBUpdates(ctx context.Context) {
-	ragger, ok := srv.ragHandlers.(getAllRager)
+	ragger, ok := srv.rag.(getAllRager)
 	if !ok {
 		panic("Cannot get all RAGs")
 	}

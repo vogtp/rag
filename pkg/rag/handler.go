@@ -4,12 +4,14 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"net/http"
 
 	"github.com/vogtp/rag/pkg/cfg"
 )
 
 type Handler interface {
 	Public() Instance
+	FromRequest(r *http.Request) Instance
 }
 
 var _ (Handler) = (*handler)(nil)
@@ -37,6 +39,18 @@ func New(ctx context.Context, slog *slog.Logger) (Handler, error) {
 		globalRags: rags,
 	}
 	return m, nil
+}
+
+func (h handler) FromRequest(r *http.Request) Instance {
+
+	// by authenticated User
+	//	u, err := oidc.getUserName(r)
+
+	// by Bearer Token
+
+	// fix summary handler
+
+	return h.Public()
 }
 
 func (h handler) Public() Instance {

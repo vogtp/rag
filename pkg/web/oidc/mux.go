@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/gorilla/securecookie"
 	"github.com/zitadel/oidc/v3/pkg/client/rp"
 	httphelper "github.com/zitadel/oidc/v3/pkg/http"
 	"github.com/zitadel/oidc/v3/pkg/oidc"
@@ -44,8 +45,11 @@ func NewMux(ctx context.Context, slog *slog.Logger, serveMux *http.ServeMux, add
 	if err := om.init(ctx, slog); err != nil {
 		return nil, err
 	}
+	cookieHandler = httphelper.NewCookieHandler(securecookie.GenerateRandomKey(24), securecookie.GenerateRandomKey(24), httphelper.WithMaxAge(int(om.sessionMaxAge.Seconds())))
 	return om, nil
 }
+
+var cookieHandler *httphelper.CookieHandler
 
 // mux OIDC authenticated mux
 type mux struct {
@@ -61,7 +65,6 @@ type mux struct {
 	responseMode string
 
 	sessionMaxAge  time.Duration
-	cookieHandler  *httphelper.CookieHandler
 	providerOIDC   rp.RelyingParty
 	stateOIDC      func() string
 	urlOptionsOIDC []rp.URLParamOpt

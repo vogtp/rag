@@ -39,7 +39,7 @@ func (srv *Server) handleSummary(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	model := srv.rag(r).LLM()
+	model := srv.rag.FromRequest(r).LLM()
 	llm, err := getOllamaClient(ctx, model)
 	if err != nil {
 		slog.Warn("Cannot connect to ollama", "err", err)

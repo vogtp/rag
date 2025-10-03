@@ -26,9 +26,9 @@ type Server struct {
 
 	usercfg *usercfg.DB
 
-	ragHandlers rag.Handler
-	lastEmbedd  map[string]time.Time
-	docCache    docChace
+	rag        rag.Handler
+	lastEmbedd map[string]time.Time
+	docCache   docChace
 }
 
 // New creates a new webserver
@@ -41,11 +41,11 @@ func New(ctx context.Context, slog *slog.Logger, rags rag.Handler) (*Server, err
 		return nil, err
 	}
 	srv := &Server{
-		slog:        slog,
-		ragHandlers: rags,
-		lastEmbedd:  make(map[string]time.Time),
-		docCache:    newDocCache(),
-		usercfg:     userCfg,
+		slog:       slog,
+		rag:        rags,
+		lastEmbedd: make(map[string]time.Time),
+		docCache:   newDocCache(),
+		usercfg:    userCfg,
 	}
 	srv.httpSrv = &http.Server{
 		ReadTimeout:       10 * time.Second,
