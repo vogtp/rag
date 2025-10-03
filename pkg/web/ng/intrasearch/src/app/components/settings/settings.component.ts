@@ -12,11 +12,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
-import {
-  Collection,
-  SettingsService,
-  UserSettings,
-} from '../../services/settings.service';
+import { SettingsService } from '../../services/settings.service';
+import { Collection, User } from '../../services/settings.service.structs';
 import { CollectionComponent } from './collection/collection.component';
 
 @Component({
@@ -40,7 +37,7 @@ import { CollectionComponent } from './collection/collection.component';
   styleUrl: './settings.component.css',
 })
 export class SettingsComponent {
-  userSettings: UserSettings | undefined;
+  userSettings: User | undefined;
   collections = model<Collection[]>();
   //userSettings = model<UserSettings>();
 
@@ -53,7 +50,7 @@ export class SettingsComponent {
     this.settingsService.getUserSetting().subscribe({
       next: (data) => {
         this.userSettings = data;
-        this.collections.set(data.edges.Collections);
+        this.collections.set(data.edges.Collections!);
         this.cdRef.detectChanges();
       },
       error: (err) => {

@@ -2,17 +2,18 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { httpHeaders, userSettingsURL } from './common';
+import { User } from './settings.service.structs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SettingsService {
-  getUserSetting(): Observable<UserSettings> {
+  getUserSetting(): Observable<User> {
     let url = userSettingsURL;
-    return this.http.get<UserSettings>(url, { headers: httpHeaders });
+    return this.http.get<User>(url, { headers: httpHeaders });
   }
 
-  saveUserSetting(us: UserSettings) {
+  saveUserSetting(us: User) {
     let url = userSettingsURL;
     // url = 'http://localhost:4444' + userSettingsURL;
     console.log('Sending usersettings save put: ' + url);
@@ -24,33 +25,4 @@ export class SettingsService {
   }
 
   constructor(private http: HttpClient) {}
-}
-
-export interface UserSettings {
-  id: number;
-  Name: string;
-  edges: Edges;
-}
-
-export interface Edges {
-  Collections: Collection[];
-}
-
-export interface Collection {
-  id: number;
-  Name: string;
-  edges: EdgesCol;
-}
-
-export interface EdgesCol {
-  Sources: Source[];
-}
-
-export interface Source {
-  id: number;
-  Name: string;
-  Type: string;
-  URL: string;
-  key?: string;
-  parts: string;
 }

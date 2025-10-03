@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTreeModule } from '@angular/material/tree';
-import { Collection, Source } from '../../../services/settings.service';
+import { Collection } from '../../../services/settings.service.structs';
 import { SourceComponent } from '../source/source.component';
 
 @Component({
@@ -38,8 +38,4 @@ export class CollectionComponent {
   collection = model<Collection>();
   //@Input({ required: true }) collection: Collection | undefined;
   // @Output() collectionChange = new EventEmitter<Collection>();
-
-  childrenAccessor = (node: Source) => [];
-
-  hasChild = (_: number, node: Source) => true;
 }

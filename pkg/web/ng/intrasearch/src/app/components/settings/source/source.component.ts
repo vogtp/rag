@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { Source } from '../../../services/settings.service';
+import { SourceSystem } from '../../../services/settings.service.structs';
 
 @Component({
   selector: 'app-source',
@@ -25,5 +25,5 @@ import { Source } from '../../../services/settings.service';
   styleUrl: './source.component.css',
 })
 export class SourceComponent {
-  source = model<Source>();
+  source = model<SourceSystem>();
 }
