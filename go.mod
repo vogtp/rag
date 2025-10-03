@@ -7,9 +7,11 @@ require (
 	entgo.io/ent v0.14.5
 	github.com/99designs/gqlgen v0.17.68
 	github.com/JohannesKaufmann/html-to-markdown/v2 v2.2.2
+	github.com/OneOfOne/struct2ts v1.0.6
 	github.com/docker/docker v28.2.2+incompatible
 	github.com/docker/go-connections v0.5.0
 	github.com/gocolly/colly v1.2.0
+	github.com/gorilla/securecookie v1.1.2
 	github.com/graze/go-throttled v0.3.1
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/matoous/go-nanoid v1.5.1
@@ -34,7 +36,6 @@ require (
 	github.com/AssemblyAI/assemblyai-go-sdk v1.3.0 // indirect
 	github.com/JohannesKaufmann/dom v0.2.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
-	github.com/OneOfOne/struct2ts v1.0.6 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/agnivade/levenshtein v1.2.1 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
@@ -54,7 +55,6 @@ require (
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
-	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.18.1 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect

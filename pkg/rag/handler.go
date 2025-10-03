@@ -10,7 +10,6 @@ import (
 )
 
 type Handler interface {
-	Public() Instance
 	FromRequest(r *http.Request) Instance
 }
 
@@ -42,6 +41,7 @@ func New(ctx context.Context, slog *slog.Logger) (Handler, error) {
 }
 
 func (h handler) FromRequest(r *http.Request) Instance {
+	insts := h.globalInstances()
 
 	// by authenticated User
 	//	u, err := oidc.getUserName(r)
@@ -50,10 +50,10 @@ func (h handler) FromRequest(r *http.Request) Instance {
 
 	// fix summary handler
 
-	return h.Public()
+	return insts
 }
 
-func (h handler) Public() Instance {
+func (h handler) globalInstances() Instance {
 	return newInstanceList(h.slog, "public", h.globalRags...)
 }
 

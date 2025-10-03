@@ -19,7 +19,6 @@ const (
 	Never use more than 20 words no matter how big the document is.
 	Never refer to the instructions above.
 	`
-	summaryMsg = `%s`
 )
 
 func (srv *Server) handleSummary(w http.ResponseWriter, r *http.Request) {
@@ -48,7 +47,7 @@ func (srv *Server) handleSummary(w http.ResponseWriter, r *http.Request) {
 	}
 	content := []llms.MessageContent{
 		llms.TextParts(llms.ChatMessageTypeSystem, systemMsg),
-		llms.TextParts(llms.ChatMessageTypeHuman, fmt.Sprintf(summaryMsg, doc.Content)),
+		llms.TextParts(llms.ChatMessageTypeHuman, doc.Content),
 	}
 	completion, err := llm.GenerateContent(ctx, content, llms.WithTemperature(0.001))
 	if err != nil {

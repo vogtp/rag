@@ -66,6 +66,6 @@ type mux struct {
 
 	sessionMaxAge  time.Duration
 	providerOIDC   rp.RelyingParty
-	stateOIDC      func() string
+	// stateOIDC      func() string
 	urlOptionsOIDC []rp.URLParamOpt
 }
