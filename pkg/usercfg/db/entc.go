@@ -3,6 +3,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"entgo.io/contrib/entgql"
@@ -11,7 +12,7 @@ import (
 )
 
 func main() {
-
+	fmt.Println("Generating ENT types")
 	ex, err := entgql.NewExtension(entgql.WithSchemaGenerator(), entgql.WithSchemaPath("./schema/ent.graphql"), entgql.WithConfigPath("./graph/gqlgen.yml")) // Generate GQL schema from the Ent's schema.
 	//	entgql.WithSchemaGenerator(),
 	// Generate the filters to a separate schema
