@@ -26,7 +26,7 @@ export class CollectionsListComponent {
         this.collectionResponse = data;
       },
       error: (err) => {
-        console.error(err);
+        console.error('Load collection list from backend: ' + err);
         window.location.href = '/login?OrigPath=' + window.location.href;
       },
     });

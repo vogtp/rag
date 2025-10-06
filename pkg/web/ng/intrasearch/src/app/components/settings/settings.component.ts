@@ -54,7 +54,7 @@ export class SettingsComponent {
         this.cdRef.detectChanges();
       },
       error: (err) => {
-        console.error(err);
+        console.error("Load setting from backend: "+err);
         window.location.href = '/login?OrigPath=' + window.location.href;
       },
       complete: () => console.debug('request usersettings complete'),

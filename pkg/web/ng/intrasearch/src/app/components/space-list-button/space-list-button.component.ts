@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import {
   CollectionListResponse,
   CollectionListService,
@@ -32,10 +32,10 @@ export class SpaceListButtonComponent {
   loadCollections() {
     this.collectionService.getCollections().subscribe({
       next: (data) => {
-         this.collectionResponse = data;
+        this.collectionResponse = data;
       },
       error: (err) => {
-        console.error(err);
+        console.error('Load space list from backend: ' + err);
         window.location.href = '/login?OrigPath=' + window.location.href;
       },
     });

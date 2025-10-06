@@ -55,7 +55,7 @@ export class SearchComponent {
         this.search();
       },
       error: (err) => {
-        console.error(err);
+        console.error('Load search from backend: ' + err);
         window.location.href = '/login?OrigPath=' + window.location.href;
       },
       complete: () => console.debug('search request complete'),
