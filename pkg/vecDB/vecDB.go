@@ -100,17 +100,22 @@ func (v *VecDB) DeleteCollection(ctx context.Context, collectionName string) err
 }
 
 // ListCollections lists all colletions
-func (v *VecDB) ListCollections(ctx context.Context, cfg *cfg.RagConfig) ([]*chroma.Collection, error) {
+func (v *VecDB) ListAllCollections(ctx context.Context) ([]*chroma.Collection, error) {
+	return v.chroma.ListCollections(ctx)
+}
 
-	cols, err := v.chroma.ListCollections(ctx)
+// ListCollections lists all colletions
+func (v *VecDB) ListCollections(ctx context.Context, cfg cfg.RagConfig) ([]*chroma.Collection, error) {
+
+	if len(cfg.Vecdb.CollectionName) < 1 {
+		return nil, fmt.Errorf("no collection name given")
+
+	}
+	cols, err := v.ListAllCollections(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if cfg == nil || len(cfg.Vecdb.CollectionName) < 1 {
-		return cols, err
-
-	}
-	prefix := cfg.Vecdb.CollectionName
+	prefix := cfg.Vecdb.CollectionName + "-"
 	collections := make([]*chroma.Collection, 0, len(cols))
 	for _, col := range cols {
 		if !strings.HasPrefix(col.Name, prefix) {

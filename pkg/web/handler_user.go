@@ -47,7 +47,12 @@ func (srv *Server) saveUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("cannot save user setting: %v", err), http.StatusInternalServerError)
 		return
 	}
-	srv.schedulePeriodicVecDBUpdates(srv.srvCtx) //FIXME make more clever
+	go func() {
+		rag := srv.ragMgr.UserFromRequest(r)
+		if err := rag.Embbed(srv.srvCtx); err != nil {
+			srv.slog.Warn("Embed user rag", "err", err)
+		}
+	}()
 }
 
 func (srv *Server) loadUser(w http.ResponseWriter, r *http.Request) {

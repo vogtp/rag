@@ -9,6 +9,7 @@ import (
 	chroma "github.com/amikos-tech/chroma-go"
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/logger"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent"
 )
 
@@ -63,10 +64,12 @@ func newInstanceDBCol(ctx context.Context, slog *slog.Logger, col *ent.Collectio
 }
 
 func (i instanceDBCol) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
-	cfg := &cfg.RagConfig{
-		Vecdb: cfg.VecDbCfg{
-			CollectionName: i.collection.Name,
-		},
+	cfg := cfg.DefaultRagCfg()
+	cfg.Vecdb.CollectionName = i.collection.CollectionName
+	cols, err := i.vecDB.ListCollections(ctx, cfg)
+	if err != nil {
+		i.slog.Warn("No collection found collection instance", "collectionname", i.collection.Name, logger.Stacktrace())
+		return nil, fmt.Errorf("retrieving collection %s: %v", i.collection.Name, err)
 	}
-	return i.vecDB.ListCollections(ctx, cfg)
+	return cols, nil
 }

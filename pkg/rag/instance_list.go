@@ -100,7 +100,7 @@ func (i *instanceList) UpdateIntervall() time.Duration {
 func (i *instanceList) Embbed(ctx context.Context) error {
 	for _, r := range i.rags {
 		if err := r.Embbed(ctx); err != nil {
-			i.slog.Error("Cannot embed rag list member", "err", err, "rag.name", r.Name())
+			i.slog.Warn("Cannot embed rag list member", "err", err, "rag.name", r.Name())
 		}
 	}
 	return nil
@@ -111,7 +111,7 @@ func (i *instanceList) ListCollections(ctx context.Context) ([]*chroma.Collectio
 	for _, r := range i.rags {
 		c, err := r.ListCollections(ctx)
 		if err != nil {
-			i.slog.Error("Cannot list collections of rag list member", "err", err, "rag.name", r.Name())
+			i.slog.Warn("Cannot list collections of rag list member", "err", err, "rag.name", r.Name())
 		}
 		cols = append(cols, c...)
 	}
@@ -126,7 +126,7 @@ func (i *instanceList) SearchVecDB(ctx context.Context, slog *slog.Logger, colle
 	for _, r := range i.rags {
 		c, err := r.SearchVecDB(ctx, slog, collection, query, maxResults)
 		if err != nil {
-			i.slog.Error("Cannot search vecDV of rag list member", "err", err, "rag.name", r.Name())
+			i.slog.Warn("Cannot search vecDV of rag list member", "err", err, "rag.name", r.Name())
 		}
 		docs = append(docs, c...)
 	}

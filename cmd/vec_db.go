@@ -119,7 +119,7 @@ var vecDbRmCmd = &cobra.Command{
 			return fmt.Errorf("Failed to create client: %w", err)
 		}
 		if args[0] == "all" {
-			cols, err := client.ListCollections(ctx, nil)
+			cols, err := client.ListAllCollections(ctx)
 			if err != nil {
 				return err
 			}
@@ -152,7 +152,7 @@ var vecDbLsCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("failed to create client: %w", err)
 		}
-		cols, err := client.ListCollections(ctx, nil)
+		cols, err := client.ListAllCollections(ctx)
 		if err != nil {
 			return fmt.Errorf("cannot list collections: %w", err)
 		}

@@ -8,12 +8,8 @@ import (
 	"github.com/vogtp/rag/pkg/rag"
 )
 
-type getAllRager interface {
-	GetAllRags(context.Context) []rag.Instance
-}
-
 func (srv *Server) schedulePeriodicVecDBUpdates(ctx context.Context) {
-	ragger, ok := srv.ragMgr.(getAllRager)
+	ragger, ok := srv.ragMgr.(rag.GetAllRager)
 	if !ok {
 		panic("Cannot get all RAGs")
 	}

@@ -16,10 +16,15 @@ import (
 )
 
 type Handler interface {
-	FromRequest(r *http.Request) Instance
+	AllFromRequest(r *http.Request) Instance
+	UserFromRequest(r *http.Request) Instance
 }
-
 var _ (Handler) = (*handler)(nil)
+
+type GetAllRager interface {
+	GetAllRags(context.Context) []Instance
+}
+var _ (GetAllRager) = (*handler)(nil)
 
 type handler struct {
 	slog       *slog.Logger
@@ -65,16 +70,19 @@ func (h handler) GetAllRags(ctx context.Context) []Instance {
 	return rags
 }
 
-func (h handler) FromRequest(r *http.Request) Instance {
+func (h handler) AllFromRequest(r *http.Request) Instance {
 	rags := newInstanceList(h.slog, "global")
 
 	rags.Add(h.publicInstances())
+	rags.Add(h.UserFromRequest(r))
+	return rags
+}
 
-	// by authenticated User
+func (h handler) UserFromRequest(r *http.Request) Instance {
 	username := oidc.UserName(r)
-
 	// by Bearer Token
 	bt, _ := bearer.Get(r)
+	rags := newInstanceList(h.slog, fmt.Sprintf("%s|%s", username, bt))
 
 	if len(username) > 1 {
 		if u, err := h.usercfg.ByName(r.Context(), username); err == nil {

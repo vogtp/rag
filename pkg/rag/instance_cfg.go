@@ -72,7 +72,7 @@ func (i instanceCfg) LLM() string {
 
 func (i *instanceCfg) updateModelsFromChroma(ctx context.Context) error {
 
-	collections, err := i.vecDB.ListCollections(ctx, &i.config)
+	collections, err := i.vecDB.ListCollections(ctx, i.config)
 	if err != nil {
 		return fmt.Errorf("cannot list chroma collections: %w", err)
 	}
@@ -126,5 +126,5 @@ func (i instanceCfg) SearchVecDB(ctx context.Context, slog *slog.Logger, collect
 	return res[0].Documents, nil
 }
 func (i instanceCfg) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
-	return i.vecDB.ListCollections(ctx, &i.config)
+	return i.vecDB.ListCollections(ctx, i.config)
 }

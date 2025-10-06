@@ -8,5 +8,5 @@ import (
 
 // TODO fix summary handler
 func (srv *Server) rag(r *http.Request) rag.Instance {
-	return srv.ragMgr.FromRequest(r)
+	return srv.ragMgr.AllFromRequest(r)
 }
