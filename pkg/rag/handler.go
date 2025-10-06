@@ -55,7 +55,15 @@ func (h handler) publicInstances() *instanceList {
 // GetAllRags returns a slice of all instance without any authentical
 // for internal use only
 func (h handler) GetAllRags() []Instance {
-	return h.globalRags
+	ctx := context.TODO()
+	rags := make([]Instance, 0)
+	rags = append(rags, h.globalRags...)
+	usrs, err := h.usercfg.User.Query().All(ctx)
+	if err != nil {
+		h.slog.Warn("Cannot query users rags", "err", err)
+	}
+	rags = append(rags, h.getUserInstances(ctx, usrs...)...)
+	return rags
 }
 
 func (h handler) FromRequest(r *http.Request) Instance {
@@ -70,7 +78,7 @@ func (h handler) FromRequest(r *http.Request) Instance {
 	bt, _ := bearer.Get(r)
 
 	if len(username) > 1 {
-		if u, err := h.usercfg.ByName(r.Context(), username); err != nil {
+		if u, err := h.usercfg.ByName(r.Context(), username); err == nil {
 			rags.Add(h.getUserInstances(r.Context(), u)...)
 		} else {
 			h.slog.Warn("Cannot query user by name", "err", err, "username", username)
@@ -109,5 +117,14 @@ func (h handler) getUserInstances(ctx context.Context, usrs ...*ent.User) []Inst
 }
 
 func (h handler) getCollectionInstances(ctx context.Context, usrs ...*ent.Collection) []Instance {
-	return nil
+	rags := make([]Instance, 0)
+	for _, c := range usrs {
+		idc, err := newInstanceDBCol(ctx, h.slog, c)
+		if err != nil {
+			h.slog.Warn("Could not create rag instance from collection %q: %w", c.Name, err)
+			continue
+		}
+		rags = append(rags, idc)
+	}
+	return rags
 }

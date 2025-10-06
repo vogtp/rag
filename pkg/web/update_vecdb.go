@@ -22,7 +22,7 @@ func (srv *Server) schedulePeriodicVecDBUpdates(ctx context.Context) {
 		slog := srv.slog.With("rag", rag.Name(), "updateIntervall", updateIntervall.String())
 		if updateIntervall < cfg.MinVecDBUpdateIntervall {
 			slog.Warn("Not starting periodic vector DB updates since update intervall is too short")
-			return
+			continue
 		}
 		ticker := time.NewTicker(updateIntervall)
 		go func() {

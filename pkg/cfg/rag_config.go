@@ -36,22 +36,22 @@ const (
 type RagConfig struct {
 	Name       string        `yaml:"Name"`
 	APIToken   string        `yaml:"api_token"`
-	Model      modelCfg      `yaml:"model"`
-	Vecdb      vecDbCfg      `yaml:"vecdb"`
-	Confluence confluenceCfg `yaml:"confluence"`
+	Model      ModelCfg      `yaml:"model"`
+	Vecdb      VecDbCfg      `yaml:"vecdb"`
+	Confluence ConfluenceCfg `yaml:"confluence"`
 }
 
-type modelCfg struct {
+type ModelCfg struct {
 	Embedding string `yaml:"embedding"`
 	LLM       string `yaml:"llm"`
 }
 
-type vecDbCfg struct {
+type VecDbCfg struct {
 	UpdateIntervall string `yaml:"update_intervall"`
 	CollectionName  string `yaml:"collection_name"`
 }
 
-type confluenceCfg struct {
+type ConfluenceCfg struct {
 	Key     string   `yaml:"key"`
 	BaseURL string   `yaml:"baseURL"`
 	Spaces  []string `yaml:"spaces"`
@@ -92,15 +92,15 @@ func DefaultRagCfg() RagConfig {
 	if defaultRagCfg == nil {
 		defaultRagCfg = &RagConfig{
 			Name: "Default",
-			Model: modelCfg{
+			Model: ModelCfg{
 				Embedding: viper.GetString(ModelEmbedding),
 				LLM:       viper.GetString(ModelLLM),
 			},
-			Vecdb: vecDbCfg{
+			Vecdb: VecDbCfg{
 				CollectionName:  viper.GetString(VecDBColName),
 				UpdateIntervall: viper.GetString(VecDBUpdateIntervall),
 			},
-			Confluence: confluenceCfg{
+			Confluence: ConfluenceCfg{
 				Key:     viper.GetString(ConfluenceKey),
 				BaseURL: viper.GetString(ConfluenceBaseURL),
 				Spaces:  viper.GetStringSlice(ConfluenceSpaces),
