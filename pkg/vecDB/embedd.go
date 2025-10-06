@@ -101,6 +101,7 @@ func (v *VecDB) Embedd(ctx context.Context, config cfg.RagConfig, in <-chan Embe
 
 			metadata := []types.Option{
 				types.WithDocument(s),
+				types.WithID(d.IDMetaKey),
 				types.WithMetadata(MetaOrigDoc, d.Document),
 				types.WithMetadata(d.IDMetaKey, d.IDMetaValue),
 				types.WithMetadata(MetaIDKey, d.IDMetaKey),
