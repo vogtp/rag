@@ -54,8 +54,7 @@ func (h handler) publicInstances() *instanceList {
 
 // GetAllRags returns a slice of all instance without any authentical
 // for internal use only
-func (h handler) GetAllRags() []Instance {
-	ctx := context.TODO()
+func (h handler) GetAllRags(ctx context.Context) []Instance {
 	rags := make([]Instance, 0)
 	rags = append(rags, h.globalRags...)
 	usrs, err := h.usercfg.User.Query().All(ctx)

@@ -46,6 +46,7 @@ func (v *VecDB) Embedd(ctx context.Context, config cfg.RagConfig, in <-chan Embe
 
 	coll, err := v.CreateCollection(ctx, collectionName, map[string]interface{}{MetaIsRag: true, MetaCreated: time.Now().Unix})
 	if err != nil {
+		v.slog.Error("cannot create collection", "collectionName", collectionName, "err", err)
 		return 0, fmt.Errorf("failed to create collection: %v", err)
 	}
 	docUpdated := 0

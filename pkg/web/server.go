@@ -16,7 +16,8 @@ import (
 
 // Server is the struct holding the webserver
 type Server struct {
-	slog *slog.Logger
+	srvCtx context.Context
+	slog   *slog.Logger
 
 	baseURL string
 
@@ -45,6 +46,7 @@ func New(ctx context.Context, slog *slog.Logger) (*Server, error) {
 		return nil, err
 	}
 	srv := &Server{
+		srvCtx:     ctx,
 		slog:       slog,
 		ragMgr:     rags,
 		lastEmbedd: make(map[string]time.Time),

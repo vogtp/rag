@@ -9,7 +9,7 @@ import (
 )
 
 type getAllRager interface {
-	GetAllRags() []rag.Instance
+	GetAllRags(context.Context) []rag.Instance
 }
 
 func (srv *Server) schedulePeriodicVecDBUpdates(ctx context.Context) {
@@ -17,7 +17,7 @@ func (srv *Server) schedulePeriodicVecDBUpdates(ctx context.Context) {
 	if !ok {
 		panic("Cannot get all RAGs")
 	}
-	for _, rag := range ragger.GetAllRags() {
+	for _, rag := range ragger.GetAllRags(ctx) {
 		updateIntervall := rag.UpdateIntervall()
 		slog := srv.slog.With("rag", rag.Name(), "updateIntervall", updateIntervall.String())
 		if updateIntervall < cfg.MinVecDBUpdateIntervall {

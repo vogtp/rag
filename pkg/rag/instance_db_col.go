@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"strings"
 
+	chroma "github.com/amikos-tech/chroma-go"
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent"
@@ -15,9 +16,10 @@ var _ (Instance) = (*instanceDBCol)(nil)
 
 type instanceDBCol struct {
 	*instanceCfg
+	collection *ent.Collection
 }
 
-func newInstanceDBCol(ctx context.Context, slog *slog.Logger, col *ent.Collection) (Instance, error) {
+func newInstanceDBCol(ctx context.Context, slog *slog.Logger, col *ent.Collection) (*instanceDBCol, error) {
 	srcs, err := col.Sources(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("get source system from collection %q: %w", col.Name, err)
@@ -49,5 +51,22 @@ func newInstanceDBCol(ctx context.Context, slog *slog.Logger, col *ent.Collectio
 			Spaces:  spaces,
 		},
 	}
-	return newInstanceCfg(ctx, slog, ucfg)
+	ic, err := newInstanceCfg(ctx, slog, ucfg)
+	if err != nil {
+		return nil, err
+	}
+	i := &instanceDBCol{
+		instanceCfg: ic,
+		collection:  col,
+	}
+	return i, nil
+}
+
+func (i instanceDBCol) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
+	cfg := &cfg.RagConfig{
+		Vecdb: cfg.VecDbCfg{
+			CollectionName: i.collection.Name,
+		},
+	}
+	return i.vecDB.ListCollections(ctx, cfg)
 }

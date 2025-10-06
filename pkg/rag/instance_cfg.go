@@ -29,9 +29,9 @@ type instanceCfg struct {
 	bearerAuth bearer.Auth
 }
 
-func newInstanceCfg(ctx context.Context, slog *slog.Logger, config cfg.RagConfig) (Instance, error) {
+func newInstanceCfg(ctx context.Context, slog *slog.Logger, config cfg.RagConfig) (*instanceCfg, error) {
 	m := instanceCfg{
-		slog:       slog,
+		slog:       slog.With("rag.name", config.Name, "collection.name", config.Vecdb.CollectionName),
 		config:     config,
 		bearerAuth: bearer.TokenAuth(config.APIToken),
 		models: []Model{
@@ -81,11 +81,11 @@ func (i *instanceCfg) updateModelsFromChroma(ctx context.Context) error {
 	for _, c := range collections {
 		i.models = append(i.models, VectorStoreModel{Name: c.Name, vecDB: i.vecDB, Collection: c.Name, LLMName: model, config: i.config, bearerAuth: i.bearerAuth})
 	}
-	i.slog.Info("Models raw ", "models", i.models)
+	i.slog.Debug("Models raw ", "models", i.models)
 	slices.SortFunc(i.models, func(a, b Model) int { return strings.Compare(a.GetName(), b.GetName()) })
-	i.slog.Info("Models sort", "models", i.models)
+	i.slog.Debug("Models sort", "models", i.models)
 	i.models = slices.CompactFunc(i.models, func(a, b Model) bool { return strings.EqualFold(a.GetName(), b.GetName()) })
-	i.slog.Info("Models comp", "models", i.models)
+	i.slog.Debug("Models comp", "models", i.models)
 	return nil
 }
 
