@@ -101,14 +101,16 @@ func (v *VecDB) DeleteCollection(ctx context.Context, collectionName string) err
 
 // ListCollections lists all colletions
 func (v *VecDB) ListCollections(ctx context.Context, cfg *cfg.RagConfig) ([]*chroma.Collection, error) {
-	prefix := ""
-	if cfg != nil {
-		prefix = cfg.Vecdb.CollectionName
-	}
+
 	cols, err := v.chroma.ListCollections(ctx)
 	if err != nil {
 		return nil, err
 	}
+	if cfg == nil || len(cfg.Vecdb.CollectionName) < 1 {
+		return cols, err
+
+	}
+	prefix := cfg.Vecdb.CollectionName
 	collections := make([]*chroma.Collection, 0, len(cols))
 	for _, col := range cols {
 		if !strings.HasPrefix(col.Name, prefix) {
