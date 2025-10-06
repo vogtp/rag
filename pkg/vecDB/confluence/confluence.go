@@ -157,7 +157,7 @@ func (c *confluence) querySpace(ctx context.Context, spaceKey string) {
 				continue
 			}
 			if time.Since(doc.Modified) > maxPageAge {
-				slog.Warn("Document is to old", "age", time.Since(doc.Modified).String(), "lastModify", doc.Modified.String(), "maxAge", maxPageAge.String())
+				slog.Info("Document is to old", "age", time.Since(doc.Modified).String(), "lastModify", doc.Modified.String(), "maxAge", maxPageAge.String())
 				continue
 			}
 
