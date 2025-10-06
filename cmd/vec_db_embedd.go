@@ -40,7 +40,7 @@ var vecDbEmbbedPathCmd = &cobra.Command{
 		dcfg.Vecdb.CollectionName = collectionName
 		client, err := vecdb.New(ctx, slog.Default(), dcfg, vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
 		if err != nil {
-			return fmt.Errorf("Failed to create vector DB: %w", err)
+			return fmt.Errorf("create vector DB: %w", err)
 		}
 
 		_, err = client.Embedd(ctx, dcfg, filesystem.Generate(ctx, path))

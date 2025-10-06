@@ -14,7 +14,7 @@ import (
 )
 
 func Generate(ctx context.Context, path string) chan vecdb.EmbeddDocument {
-	out := make(chan vecdb.EmbeddDocument, 3)
+	out := make(chan vecdb.EmbeddDocument, 1)
 	go walkPath(ctx, out, path)
 	return out
 }

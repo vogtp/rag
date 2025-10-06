@@ -83,7 +83,7 @@ func (v *VecDB) GetEmbeddingFunc() (types.EmbeddingFunction, error) {
 		ollamaEmbedd.WithModel(embeddings.EmbeddingModel(v.embeddingsModel)),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating ollama embedding function: %w", err)
+		return nil, fmt.Errorf("creating ollama embedding %q function: %w", v.embeddingsModel, err)
 	}
 	wrapper := embeddingFunctionWrapper{embedFunc}
 	v.embedFunc = wrapper

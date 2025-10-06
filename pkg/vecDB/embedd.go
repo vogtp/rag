@@ -41,7 +41,7 @@ func (v *VecDB) Embedd(ctx context.Context, config cfg.RagConfig, in <-chan Embe
 	slog.Warn("Starting embedding")
 	embedFunc, err := v.GetEmbeddingFunc()
 	if err != nil {
-		return 0, fmt.Errorf("error creating ollama embedding function: %w", err)
+		return 0, err
 	}
 
 	coll, err := v.CreateCollection(ctx, collectionName, map[string]interface{}{MetaIsRag: true, MetaCreated: time.Now().Unix})

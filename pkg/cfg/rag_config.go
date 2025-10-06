@@ -82,27 +82,30 @@ func GetRagConfig() ([]RagConfig, error) {
 	return ragCfg, nil
 }
 
-var defaultRagCfg = RagConfig{
-	Name: "Default",
-	Model: modelCfg{
-		Embedding: viper.GetString(ModelEmbedding),
-		LLM:       viper.GetString(ModelLLM),
-	},
-	Vecdb: vecDbCfg{
-		CollectionName:  viper.GetString(VecDBColName),
-		UpdateIntervall: viper.GetString(VecDBUpdateIntervall),
-	},
-	Confluence: confluenceCfg{
-		Key:     viper.GetString(ConfluenceKey),
-		BaseURL: viper.GetString(ConfluenceBaseURL),
-		Spaces:  viper.GetStringSlice(ConfluenceSpaces),
-	},
-}
+var defaultRagCfg *RagConfig
 
 func RagCfgFIXME() RagConfig {
 	return DefaultRagCfg()
 }
 
 func DefaultRagCfg() RagConfig {
-	return defaultRagCfg
+	if defaultRagCfg == nil {
+		defaultRagCfg = &RagConfig{
+			Name: "Default",
+			Model: modelCfg{
+				Embedding: viper.GetString(ModelEmbedding),
+				LLM:       viper.GetString(ModelLLM),
+			},
+			Vecdb: vecDbCfg{
+				CollectionName:  viper.GetString(VecDBColName),
+				UpdateIntervall: viper.GetString(VecDBUpdateIntervall),
+			},
+			Confluence: confluenceCfg{
+				Key:     viper.GetString(ConfluenceKey),
+				BaseURL: viper.GetString(ConfluenceBaseURL),
+				Spaces:  viper.GetStringSlice(ConfluenceSpaces),
+			},
+		}
+	}
+	return *defaultRagCfg
 }
