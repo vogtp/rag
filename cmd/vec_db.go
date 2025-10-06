@@ -3,8 +3,11 @@ package cmd
 import (
 	"fmt"
 	"log/slog"
+	"slices"
+	"strings"
 	"time"
 
+	chromago "github.com/amikos-tech/chroma-go"
 	"github.com/spf13/cobra"
 	"github.com/vogtp/rag/pkg/cfg"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
@@ -153,6 +156,7 @@ var vecDbLsCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("cannot list collections: %w", err)
 		}
+		slices.SortFunc(cols, func(a, b *chromago.Collection) int { return strings.Compare(a.Name, b.Name) })
 		for _, c := range cols {
 			fmt.Printf("%s\n", c.Name)
 		}
