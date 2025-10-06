@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/spf13/viper"
+	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/sourcesystem"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/user"
@@ -29,7 +31,7 @@ func (db *DB) GetUserQuery(ctx context.Context) *ent.UserQuery {
 }
 func (db *DB) CreateUser(ctx context.Context, name string) (*ent.User, error) {
 	uc := db.User.Create().SetName(name)
-	conflDefault, err := db.SourceSystem.Create().SetName("Intranet").SetURL("https://intranet.unibas.ch/").SetType(sourcesystem.TypeConfluence).Save(ctx)
+	conflDefault, err := db.SourceSystem.Create().SetName("Intranet").SetURL(viper.GetString(cfg.ConfluenceBaseURL)).SetType(sourcesystem.TypeConfluence).Save(ctx)
 	if err != nil {
 		return nil, err
 	}
