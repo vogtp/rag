@@ -9,7 +9,7 @@ type ctxVal string
 
 var loggerCtxKey ctxVal = "logger"
 
-func WithLogger(ctx context.Context, logger *slog.Logger) context.Context {
+func ToContext(ctx context.Context, logger *slog.Logger) context.Context {
 	return context.WithValue(ctx, loggerCtxKey, logger)
 }
 
