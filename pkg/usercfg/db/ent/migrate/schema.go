@@ -13,7 +13,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "api_key", Type: field.TypeString, Nullable: true},
-		{Name: "collection_name", Type: field.TypeString, Nullable: true},
+		{Name: "collection_name", Type: field.TypeString, Unique: true, Nullable: true},
 		{Name: "user_collections", Type: field.TypeInt, Nullable: true},
 	}
 	// CollectionsTable holds the schema information for the "collections" table.
