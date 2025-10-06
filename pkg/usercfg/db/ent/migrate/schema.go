@@ -13,6 +13,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "api_key", Type: field.TypeString, Nullable: true},
+		{Name: "collection_name", Type: field.TypeString, Nullable: true},
 		{Name: "user_collections", Type: field.TypeInt, Nullable: true},
 	}
 	// CollectionsTable holds the schema information for the "collections" table.
@@ -23,7 +24,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "collections_users_Collections",
-				Columns:    []*schema.Column{CollectionsColumns[3]},
+				Columns:    []*schema.Column{CollectionsColumns[4]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -57,6 +58,7 @@ var (
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "api_key", Type: field.TypeString, Nullable: true},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{

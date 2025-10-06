@@ -14,6 +14,7 @@ func (Collection) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("Name"),
 		field.String("APIKey").Optional(),
+		field.String("collectionName").Optional(), // internal name of the vecDB collection
 	}
 }
 

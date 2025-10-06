@@ -58,6 +58,11 @@ func Name(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldName, v))
 }
 
+// APIKey applies equality check predicate on the "APIKey" field. It's identical to APIKeyEQ.
+func APIKey(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldAPIKey, v))
+}
+
 // NameEQ applies the EQ predicate on the "Name" field.
 func NameEQ(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldName, v))
@@ -121,6 +126,81 @@ func NameEqualFold(v string) predicate.User {
 // NameContainsFold applies the ContainsFold predicate on the "Name" field.
 func NameContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldName, v))
+}
+
+// APIKeyEQ applies the EQ predicate on the "APIKey" field.
+func APIKeyEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldAPIKey, v))
+}
+
+// APIKeyNEQ applies the NEQ predicate on the "APIKey" field.
+func APIKeyNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldAPIKey, v))
+}
+
+// APIKeyIn applies the In predicate on the "APIKey" field.
+func APIKeyIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldAPIKey, vs...))
+}
+
+// APIKeyNotIn applies the NotIn predicate on the "APIKey" field.
+func APIKeyNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldAPIKey, vs...))
+}
+
+// APIKeyGT applies the GT predicate on the "APIKey" field.
+func APIKeyGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldAPIKey, v))
+}
+
+// APIKeyGTE applies the GTE predicate on the "APIKey" field.
+func APIKeyGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldAPIKey, v))
+}
+
+// APIKeyLT applies the LT predicate on the "APIKey" field.
+func APIKeyLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldAPIKey, v))
+}
+
+// APIKeyLTE applies the LTE predicate on the "APIKey" field.
+func APIKeyLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldAPIKey, v))
+}
+
+// APIKeyContains applies the Contains predicate on the "APIKey" field.
+func APIKeyContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldAPIKey, v))
+}
+
+// APIKeyHasPrefix applies the HasPrefix predicate on the "APIKey" field.
+func APIKeyHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldAPIKey, v))
+}
+
+// APIKeyHasSuffix applies the HasSuffix predicate on the "APIKey" field.
+func APIKeyHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldAPIKey, v))
+}
+
+// APIKeyIsNil applies the IsNil predicate on the "APIKey" field.
+func APIKeyIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldAPIKey))
+}
+
+// APIKeyNotNil applies the NotNil predicate on the "APIKey" field.
+func APIKeyNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldAPIKey))
+}
+
+// APIKeyEqualFold applies the EqualFold predicate on the "APIKey" field.
+func APIKeyEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldAPIKey, v))
+}
+
+// APIKeyContainsFold applies the ContainsFold predicate on the "APIKey" field.
+func APIKeyContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldAPIKey, v))
 }
 
 // HasCollections applies the HasEdge predicate on the "Collections" edge.

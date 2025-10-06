@@ -16,6 +16,8 @@ const (
 	FieldName = "name"
 	// FieldAPIKey holds the string denoting the apikey field in the database.
 	FieldAPIKey = "api_key"
+	// FieldCollectionName holds the string denoting the collectionname field in the database.
+	FieldCollectionName = "collection_name"
 	// EdgeSources holds the string denoting the sources edge name in mutations.
 	EdgeSources = "Sources"
 	// Table holds the table name of the collection in the database.
@@ -34,6 +36,7 @@ var Columns = []string{
 	FieldID,
 	FieldName,
 	FieldAPIKey,
+	FieldCollectionName,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "collections"
@@ -73,6 +76,11 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByAPIKey orders the results by the APIKey field.
 func ByAPIKey(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAPIKey, opts...).ToFunc()
+}
+
+// ByCollectionName orders the results by the collectionName field.
+func ByCollectionName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCollectionName, opts...).ToFunc()
 }
 
 // BySourcesCount orders the results by Sources count.

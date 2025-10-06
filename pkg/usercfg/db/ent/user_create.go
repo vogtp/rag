@@ -28,6 +28,20 @@ func (_c *UserCreate) SetName(v string) *UserCreate {
 	return _c
 }
 
+// SetAPIKey sets the "APIKey" field.
+func (_c *UserCreate) SetAPIKey(v string) *UserCreate {
+	_c.mutation.SetAPIKey(v)
+	return _c
+}
+
+// SetNillableAPIKey sets the "APIKey" field if the given value is not nil.
+func (_c *UserCreate) SetNillableAPIKey(v *string) *UserCreate {
+	if v != nil {
+		_c.SetAPIKey(*v)
+	}
+	return _c
+}
+
 // AddCollectionIDs adds the "Collections" edge to the Collection entity by IDs.
 func (_c *UserCreate) AddCollectionIDs(ids ...int) *UserCreate {
 	_c.mutation.AddCollectionIDs(ids...)
@@ -111,6 +125,10 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
+	if value, ok := _c.mutation.APIKey(); ok {
+		_spec.SetField(user.FieldAPIKey, field.TypeString, value)
+		_node.APIKey = value
+	}
 	if nodes := _c.mutation.CollectionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -191,6 +209,24 @@ func (u *UserUpsert) UpdateName() *UserUpsert {
 	return u
 }
 
+// SetAPIKey sets the "APIKey" field.
+func (u *UserUpsert) SetAPIKey(v string) *UserUpsert {
+	u.Set(user.FieldAPIKey, v)
+	return u
+}
+
+// UpdateAPIKey sets the "APIKey" field to the value that was provided on create.
+func (u *UserUpsert) UpdateAPIKey() *UserUpsert {
+	u.SetExcluded(user.FieldAPIKey)
+	return u
+}
+
+// ClearAPIKey clears the value of the "APIKey" field.
+func (u *UserUpsert) ClearAPIKey() *UserUpsert {
+	u.SetNull(user.FieldAPIKey)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -242,6 +278,27 @@ func (u *UserUpsertOne) SetName(v string) *UserUpsertOne {
 func (u *UserUpsertOne) UpdateName() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetAPIKey sets the "APIKey" field.
+func (u *UserUpsertOne) SetAPIKey(v string) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetAPIKey(v)
+	})
+}
+
+// UpdateAPIKey sets the "APIKey" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateAPIKey() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateAPIKey()
+	})
+}
+
+// ClearAPIKey clears the value of the "APIKey" field.
+func (u *UserUpsertOne) ClearAPIKey() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearAPIKey()
 	})
 }
 
@@ -459,6 +516,27 @@ func (u *UserUpsertBulk) SetName(v string) *UserUpsertBulk {
 func (u *UserUpsertBulk) UpdateName() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetAPIKey sets the "APIKey" field.
+func (u *UserUpsertBulk) SetAPIKey(v string) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetAPIKey(v)
+	})
+}
+
+// UpdateAPIKey sets the "APIKey" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateAPIKey() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateAPIKey()
+	})
+}
+
+// ClearAPIKey clears the value of the "APIKey" field.
+func (u *UserUpsertBulk) ClearAPIKey() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearAPIKey()
 	})
 }
 

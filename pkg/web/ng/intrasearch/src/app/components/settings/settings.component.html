@@ -1,7 +1,10 @@
-<p>
-    <mat-form-field>
+<p><mat-form-field>
         <mat-label>User</mat-label>
         <input matInput readonly [(ngModel)]="userSettings!.Name">
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>API Key</mat-label>
+        <input matInput [(ngModel)]="userSettings!.APIKey">
     </mat-form-field>
 </p>
 

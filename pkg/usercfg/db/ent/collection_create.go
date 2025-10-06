@@ -42,6 +42,20 @@ func (_c *CollectionCreate) SetNillableAPIKey(v *string) *CollectionCreate {
 	return _c
 }
 
+// SetCollectionName sets the "collectionName" field.
+func (_c *CollectionCreate) SetCollectionName(v string) *CollectionCreate {
+	_c.mutation.SetCollectionName(v)
+	return _c
+}
+
+// SetNillableCollectionName sets the "collectionName" field if the given value is not nil.
+func (_c *CollectionCreate) SetNillableCollectionName(v *string) *CollectionCreate {
+	if v != nil {
+		_c.SetCollectionName(*v)
+	}
+	return _c
+}
+
 // AddSourceIDs adds the "Sources" edge to the SourceSystem entity by IDs.
 func (_c *CollectionCreate) AddSourceIDs(ids ...int) *CollectionCreate {
 	_c.mutation.AddSourceIDs(ids...)
@@ -128,6 +142,10 @@ func (_c *CollectionCreate) createSpec() (*Collection, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.APIKey(); ok {
 		_spec.SetField(collection.FieldAPIKey, field.TypeString, value)
 		_node.APIKey = value
+	}
+	if value, ok := _c.mutation.CollectionName(); ok {
+		_spec.SetField(collection.FieldCollectionName, field.TypeString, value)
+		_node.CollectionName = value
 	}
 	if nodes := _c.mutation.SourcesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -227,6 +245,24 @@ func (u *CollectionUpsert) ClearAPIKey() *CollectionUpsert {
 	return u
 }
 
+// SetCollectionName sets the "collectionName" field.
+func (u *CollectionUpsert) SetCollectionName(v string) *CollectionUpsert {
+	u.Set(collection.FieldCollectionName, v)
+	return u
+}
+
+// UpdateCollectionName sets the "collectionName" field to the value that was provided on create.
+func (u *CollectionUpsert) UpdateCollectionName() *CollectionUpsert {
+	u.SetExcluded(collection.FieldCollectionName)
+	return u
+}
+
+// ClearCollectionName clears the value of the "collectionName" field.
+func (u *CollectionUpsert) ClearCollectionName() *CollectionUpsert {
+	u.SetNull(collection.FieldCollectionName)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -299,6 +335,27 @@ func (u *CollectionUpsertOne) UpdateAPIKey() *CollectionUpsertOne {
 func (u *CollectionUpsertOne) ClearAPIKey() *CollectionUpsertOne {
 	return u.Update(func(s *CollectionUpsert) {
 		s.ClearAPIKey()
+	})
+}
+
+// SetCollectionName sets the "collectionName" field.
+func (u *CollectionUpsertOne) SetCollectionName(v string) *CollectionUpsertOne {
+	return u.Update(func(s *CollectionUpsert) {
+		s.SetCollectionName(v)
+	})
+}
+
+// UpdateCollectionName sets the "collectionName" field to the value that was provided on create.
+func (u *CollectionUpsertOne) UpdateCollectionName() *CollectionUpsertOne {
+	return u.Update(func(s *CollectionUpsert) {
+		s.UpdateCollectionName()
+	})
+}
+
+// ClearCollectionName clears the value of the "collectionName" field.
+func (u *CollectionUpsertOne) ClearCollectionName() *CollectionUpsertOne {
+	return u.Update(func(s *CollectionUpsert) {
+		s.ClearCollectionName()
 	})
 }
 
@@ -537,6 +594,27 @@ func (u *CollectionUpsertBulk) UpdateAPIKey() *CollectionUpsertBulk {
 func (u *CollectionUpsertBulk) ClearAPIKey() *CollectionUpsertBulk {
 	return u.Update(func(s *CollectionUpsert) {
 		s.ClearAPIKey()
+	})
+}
+
+// SetCollectionName sets the "collectionName" field.
+func (u *CollectionUpsertBulk) SetCollectionName(v string) *CollectionUpsertBulk {
+	return u.Update(func(s *CollectionUpsert) {
+		s.SetCollectionName(v)
+	})
+}
+
+// UpdateCollectionName sets the "collectionName" field to the value that was provided on create.
+func (u *CollectionUpsertBulk) UpdateCollectionName() *CollectionUpsertBulk {
+	return u.Update(func(s *CollectionUpsert) {
+		s.UpdateCollectionName()
+	})
+}
+
+// ClearCollectionName clears the value of the "collectionName" field.
+func (u *CollectionUpsertBulk) ClearCollectionName() *CollectionUpsertBulk {
+	return u.Update(func(s *CollectionUpsert) {
+		s.ClearCollectionName()
 	})
 }
 

@@ -93,7 +93,7 @@ func (db *DB) SaveUser(ctx context.Context, usr *ent.User) (err error) {
 			col = tx.Collection.Create().SaveX(ctx)
 			userUp.AddCollections(col)
 		}
-		colUp := col.Update().SetCollection(c)
+		colUp := col.Update().SetCollection(c).SetCollectionName(fmt.Sprintf("%s-%s", usr.Name, c.Name))
 		srcsDB, err := col.Sources(ctx)
 		if err != nil {
 			return err

@@ -20,6 +20,8 @@ type Collection struct {
 	Name string `json:"Name,omitempty"`
 	// APIKey holds the value of the "APIKey" field.
 	APIKey string `json:"APIKey,omitempty"`
+	// CollectionName holds the value of the "collectionName" field.
+	CollectionName string `json:"collectionName,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CollectionQuery when eager-loading is set.
 	Edges            CollectionEdges `json:"edges"`
@@ -56,7 +58,7 @@ func (*Collection) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case collection.FieldID:
 			values[i] = new(sql.NullInt64)
-		case collection.FieldName, collection.FieldAPIKey:
+		case collection.FieldName, collection.FieldAPIKey, collection.FieldCollectionName:
 			values[i] = new(sql.NullString)
 		case collection.ForeignKeys[0]: // user_collections
 			values[i] = new(sql.NullInt64)
@@ -92,6 +94,12 @@ func (_m *Collection) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field APIKey", values[i])
 			} else if value.Valid {
 				_m.APIKey = value.String
+			}
+		case collection.FieldCollectionName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field collectionName", values[i])
+			} else if value.Valid {
+				_m.CollectionName = value.String
 			}
 		case collection.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -146,6 +154,9 @@ func (_m *Collection) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("APIKey=")
 	builder.WriteString(_m.APIKey)
+	builder.WriteString(", ")
+	builder.WriteString("collectionName=")
+	builder.WriteString(_m.CollectionName)
 	builder.WriteByte(')')
 	return builder.String()
 }

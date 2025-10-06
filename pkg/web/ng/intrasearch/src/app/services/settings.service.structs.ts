@@ -100,6 +100,7 @@ class Collection {
 	id: number;
 	Name: string;
 	APIKey: string;
+	collectionName: string;
 	edges: CollectionEdges;
 
 	constructor(data?: any) {
@@ -107,6 +108,7 @@ class Collection {
 		this.id = ('id' in d) ? d.id as number : 0;
 		this.Name = ('Name' in d) ? d.Name as string : '';
 		this.APIKey = ('APIKey' in d) ? d.APIKey as string : '';
+		this.collectionName = ('collectionName' in d) ? d.collectionName as string : '';
 		this.edges = new CollectionEdges(d.edges);
 	}
 
@@ -136,12 +138,14 @@ class UserEdges {
 class User {
 	id: number;
 	Name: string;
+	APIKey: string;
 	edges: UserEdges;
 
 	constructor(data?: any) {
 		const d: any = (data && typeof data === 'object') ? ToObject(data) : {};
 		this.id = ('id' in d) ? d.id as number : 0;
 		this.Name = ('Name' in d) ? d.Name as string : '';
+		this.APIKey = ('APIKey' in d) ? d.APIKey as string : '';
 		this.edges = new UserEdges(d.edges);
 	}
 

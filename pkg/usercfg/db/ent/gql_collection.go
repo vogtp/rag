@@ -55,6 +55,11 @@ func (_q *CollectionQuery) collectField(ctx context.Context, oneNode bool, opCtx
 				selectedFields = append(selectedFields, collection.FieldAPIKey)
 				fieldSeen[collection.FieldAPIKey] = struct{}{}
 			}
+		case "collectionname":
+			if _, ok := fieldSeen[collection.FieldCollectionName]; !ok {
+				selectedFields = append(selectedFields, collection.FieldCollectionName)
+				fieldSeen[collection.FieldCollectionName] = struct{}{}
+			}
 		case "id":
 		case "__typename":
 		default:
@@ -215,6 +220,11 @@ func (_q *UserQuery) collectField(ctx context.Context, oneNode bool, opCtx *grap
 			if _, ok := fieldSeen[user.FieldName]; !ok {
 				selectedFields = append(selectedFields, user.FieldName)
 				fieldSeen[user.FieldName] = struct{}{}
+			}
+		case "apikey":
+			if _, ok := fieldSeen[user.FieldAPIKey]; !ok {
+				selectedFields = append(selectedFields, user.FieldAPIKey)
+				fieldSeen[user.FieldAPIKey] = struct{}{}
 			}
 		case "id":
 		case "__typename":

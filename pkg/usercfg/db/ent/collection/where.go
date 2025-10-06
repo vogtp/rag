@@ -63,6 +63,11 @@ func APIKey(v string) predicate.Collection {
 	return predicate.Collection(sql.FieldEQ(FieldAPIKey, v))
 }
 
+// CollectionName applies equality check predicate on the "collectionName" field. It's identical to CollectionNameEQ.
+func CollectionName(v string) predicate.Collection {
+	return predicate.Collection(sql.FieldEQ(FieldCollectionName, v))
+}
+
 // NameEQ applies the EQ predicate on the "Name" field.
 func NameEQ(v string) predicate.Collection {
 	return predicate.Collection(sql.FieldEQ(FieldName, v))
@@ -201,6 +206,81 @@ func APIKeyEqualFold(v string) predicate.Collection {
 // APIKeyContainsFold applies the ContainsFold predicate on the "APIKey" field.
 func APIKeyContainsFold(v string) predicate.Collection {
 	return predicate.Collection(sql.FieldContainsFold(FieldAPIKey, v))
+}
+
+// CollectionNameEQ applies the EQ predicate on the "collectionName" field.
+func CollectionNameEQ(v string) predicate.Collection {
+	return predicate.Collection(sql.FieldEQ(FieldCollectionName, v))
+}
+
+// CollectionNameNEQ applies the NEQ predicate on the "collectionName" field.
+func CollectionNameNEQ(v string) predicate.Collection {
+	return predicate.Collection(sql.FieldNEQ(FieldCollectionName, v))
+}
+
+// CollectionNameIn applies the In predicate on the "collectionName" field.
+func CollectionNameIn(vs ...string) predicate.Collection {
+	return predicate.Collection(sql.FieldIn(FieldCollectionName, vs...))
+}
+
+// CollectionNameNotIn applies the NotIn predicate on the "collectionName" field.
+func CollectionNameNotIn(vs ...string) predicate.Collection {
+	return predicate.Collection(sql.FieldNotIn(FieldCollectionName, vs...))
+}
+
+// CollectionNameGT applies the GT predicate on the "collectionName" field.
+func CollectionNameGT(v string) predicate.Collection {
+	return predicate.Collection(sql.FieldGT(FieldCollectionName, v))
+}
+
+// CollectionNameGTE applies the GTE predicate on the "collectionName" field.
+func CollectionNameGTE(v string) predicate.Collection {
+	return predicate.Collection(sql.FieldGTE(FieldCollectionName, v))
+}
+
+// CollectionNameLT applies the LT predicate on the "collectionName" field.
+func CollectionNameLT(v string) predicate.Collection {
+	return predicate.Collection(sql.FieldLT(FieldCollectionName, v))
+}
+
+// CollectionNameLTE applies the LTE predicate on the "collectionName" field.
+func CollectionNameLTE(v string) predicate.Collection {
+	return predicate.Collection(sql.FieldLTE(FieldCollectionName, v))
+}
+
+// CollectionNameContains applies the Contains predicate on the "collectionName" field.
+func CollectionNameContains(v string) predicate.Collection {
+	return predicate.Collection(sql.FieldContains(FieldCollectionName, v))
+}
+
+// CollectionNameHasPrefix applies the HasPrefix predicate on the "collectionName" field.
+func CollectionNameHasPrefix(v string) predicate.Collection {
+	return predicate.Collection(sql.FieldHasPrefix(FieldCollectionName, v))
+}
+
+// CollectionNameHasSuffix applies the HasSuffix predicate on the "collectionName" field.
+func CollectionNameHasSuffix(v string) predicate.Collection {
+	return predicate.Collection(sql.FieldHasSuffix(FieldCollectionName, v))
+}
+
+// CollectionNameIsNil applies the IsNil predicate on the "collectionName" field.
+func CollectionNameIsNil() predicate.Collection {
+	return predicate.Collection(sql.FieldIsNull(FieldCollectionName))
+}
+
+// CollectionNameNotNil applies the NotNil predicate on the "collectionName" field.
+func CollectionNameNotNil() predicate.Collection {
+	return predicate.Collection(sql.FieldNotNull(FieldCollectionName))
+}
+
+// CollectionNameEqualFold applies the EqualFold predicate on the "collectionName" field.
+func CollectionNameEqualFold(v string) predicate.Collection {
+	return predicate.Collection(sql.FieldEqualFold(FieldCollectionName, v))
+}
+
+// CollectionNameContainsFold applies the ContainsFold predicate on the "collectionName" field.
+func CollectionNameContainsFold(v string) predicate.Collection {
+	return predicate.Collection(sql.FieldContainsFold(FieldCollectionName, v))
 }
 
 // HasSources applies the HasEdge predicate on the "Sources" edge.

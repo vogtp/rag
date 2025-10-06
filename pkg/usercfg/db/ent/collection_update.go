@@ -62,6 +62,26 @@ func (_u *CollectionUpdate) ClearAPIKey() *CollectionUpdate {
 	return _u
 }
 
+// SetCollectionName sets the "collectionName" field.
+func (_u *CollectionUpdate) SetCollectionName(v string) *CollectionUpdate {
+	_u.mutation.SetCollectionName(v)
+	return _u
+}
+
+// SetNillableCollectionName sets the "collectionName" field if the given value is not nil.
+func (_u *CollectionUpdate) SetNillableCollectionName(v *string) *CollectionUpdate {
+	if v != nil {
+		_u.SetCollectionName(*v)
+	}
+	return _u
+}
+
+// ClearCollectionName clears the value of the "collectionName" field.
+func (_u *CollectionUpdate) ClearCollectionName() *CollectionUpdate {
+	_u.mutation.ClearCollectionName()
+	return _u
+}
+
 // AddSourceIDs adds the "Sources" edge to the SourceSystem entity by IDs.
 func (_u *CollectionUpdate) AddSourceIDs(ids ...int) *CollectionUpdate {
 	_u.mutation.AddSourceIDs(ids...)
@@ -147,6 +167,12 @@ func (_u *CollectionUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	}
 	if _u.mutation.APIKeyCleared() {
 		_spec.ClearField(collection.FieldAPIKey, field.TypeString)
+	}
+	if value, ok := _u.mutation.CollectionName(); ok {
+		_spec.SetField(collection.FieldCollectionName, field.TypeString, value)
+	}
+	if _u.mutation.CollectionNameCleared() {
+		_spec.ClearField(collection.FieldCollectionName, field.TypeString)
 	}
 	if _u.mutation.SourcesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -244,6 +270,26 @@ func (_u *CollectionUpdateOne) SetNillableAPIKey(v *string) *CollectionUpdateOne
 // ClearAPIKey clears the value of the "APIKey" field.
 func (_u *CollectionUpdateOne) ClearAPIKey() *CollectionUpdateOne {
 	_u.mutation.ClearAPIKey()
+	return _u
+}
+
+// SetCollectionName sets the "collectionName" field.
+func (_u *CollectionUpdateOne) SetCollectionName(v string) *CollectionUpdateOne {
+	_u.mutation.SetCollectionName(v)
+	return _u
+}
+
+// SetNillableCollectionName sets the "collectionName" field if the given value is not nil.
+func (_u *CollectionUpdateOne) SetNillableCollectionName(v *string) *CollectionUpdateOne {
+	if v != nil {
+		_u.SetCollectionName(*v)
+	}
+	return _u
+}
+
+// ClearCollectionName clears the value of the "collectionName" field.
+func (_u *CollectionUpdateOne) ClearCollectionName() *CollectionUpdateOne {
+	_u.mutation.ClearCollectionName()
 	return _u
 }
 
@@ -362,6 +408,12 @@ func (_u *CollectionUpdateOne) sqlSave(ctx context.Context) (_node *Collection, 
 	}
 	if _u.mutation.APIKeyCleared() {
 		_spec.ClearField(collection.FieldAPIKey, field.TypeString)
+	}
+	if value, ok := _u.mutation.CollectionName(); ok {
+		_spec.SetField(collection.FieldCollectionName, field.TypeString, value)
+	}
+	if _u.mutation.CollectionNameCleared() {
+		_spec.ClearField(collection.FieldCollectionName, field.TypeString)
 	}
 	if _u.mutation.SourcesCleared() {
 		edge := &sqlgraph.EdgeSpec{
