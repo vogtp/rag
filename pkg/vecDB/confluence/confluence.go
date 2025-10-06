@@ -103,7 +103,7 @@ func (c *confluence) querySpace(ctx context.Context, spaceKey string) {
 	start := 0
 	total := 0
 	retryCnt := 0
-	retryMax := 10
+	retryMax := 3
 	retryDelay := 500 * time.Millisecond
 	for {
 		slogPage := slogSpace.With(slog.Group("paging", "start", start, "limit", c.queryLimit))
