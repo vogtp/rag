@@ -6,7 +6,6 @@ import (
 	"log/slog"
 
 	"github.com/spf13/cobra"
-	"github.com/vogtp/rag/pkg/rag"
 	"github.com/vogtp/rag/pkg/vecDB/chroma"
 	"github.com/vogtp/rag/pkg/web"
 )
@@ -38,12 +37,7 @@ func startWeb(ctx context.Context) error {
 		return fmt.Errorf("start chroma: %w", err)
 	}
 
-	rags, err := rag.New(ctx, slog)
-	if err != nil {
-		return err
-	}
-
-	api, err := web.New(ctx, slog, rags)
+	api, err := web.New(ctx, slog)
 	if err != nil {
 		return fmt.Errorf("start http server: %w", err)
 	}

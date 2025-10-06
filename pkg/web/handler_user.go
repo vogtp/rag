@@ -26,9 +26,9 @@ func (srv *Server) handleUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (srv *Server) saveUser(w http.ResponseWriter, r *http.Request) {
-	userName, err := oidc.UserName(r)
+	userName := oidc.UserName(r)
 	if len(userName) < 1 {
-		http.Error(w, fmt.Sprintf("User not found: %v", err), http.StatusUnauthorized)
+		http.Error(w, "No authenticated user found", http.StatusUnauthorized)
 		return
 
 	}
@@ -50,9 +50,9 @@ func (srv *Server) saveUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (srv *Server) loadUser(w http.ResponseWriter, r *http.Request) {
-	userName, err := oidc.UserName(r)
+	userName := oidc.UserName(r)
 	if len(userName) < 1 {
-		http.Error(w, fmt.Sprintf("User not found: %v", err), http.StatusUnauthorized)
+		http.Error(w, "No authenticated user found", http.StatusUnauthorized)
 		return
 
 	}

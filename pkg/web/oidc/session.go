@@ -74,15 +74,10 @@ func ClearSession(w http.ResponseWriter, r *http.Request) {
 	cookieHandler.DeleteCookie(w, sessionCookieName)
 }
 
-func UserName(r *http.Request) (string, error) {
+func UserName(r *http.Request) string {
 	sess, err := GetSession(r)
 	if err != nil {
-		return "", err
+		slog.Info("Cannot get session to get username", "err", err)
 	}
-	userName := sess.UserName
-	if len(userName) < 1 {
-		return "", fmt.Errorf("Username is empty")
-
-	}
-	return userName, nil
+	return sess.UserName
 }

@@ -48,7 +48,7 @@ func (srv *Server) chatCompletionHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	slog = slog.With("model", req.Model, "stream", req.Stream)
-	ragModel, err := srv.rag.FromRequest(r).Model(req.Model)
+	ragModel, err := srv.rag(r).Model(req.Model)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return

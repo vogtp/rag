@@ -11,53 +11,30 @@ import (
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
-	"github.com/vogtp/rag/pkg/web/bearer"
 )
 
-type Instance interface {
-	Name() string
+var _ (Instance) = (*instanceUser)(nil)
 
-	Model(name string) (Model, error)
-	Models(ctx context.Context) []Model
-
-	LLM() string
-
-	UpdateIntervall() time.Duration
-	Embbed(ctx context.Context) error
-	ListCollections(ctx context.Context) ([]*chroma.Collection, error)
-	SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error)
-
-	bearer.Auth
-}
-
-var _ (Instance) = (*instanceList)(nil)
-
-type instanceList struct {
+type instanceUser struct {
 	slog *slog.Logger
 	name string
 	rags []Instance
 }
 
-func newInstanceList(slog *slog.Logger, name string, rags ...Instance) *instanceList {
-	if rags == nil {
-		rags = make([]Instance, 0)
-	}
-	return &instanceList{
+func newinstanceUser(slog *slog.Logger, name string, rags ...Instance) *instanceUser {
+	//usercfg.
+	return &instanceUser{
 		slog: slog,
 		name: name,
 		rags: rags,
 	}
 }
 
-func (i *instanceList) Add(rags ...Instance) {
-	i.rags = append(i.rags, rags...)
-}
-
-func (i *instanceList) Name() string {
+func (i *instanceUser) Name() string {
 	return i.name
 }
 
-func (i *instanceList) Model(name string) (m Model, err error) {
+func (i *instanceUser) Model(name string) (m Model, err error) {
 	for _, r := range i.rags {
 		m, err = r.Model(name)
 		if m != nil {
@@ -67,7 +44,7 @@ func (i *instanceList) Model(name string) (m Model, err error) {
 	return nil, err
 }
 
-func (i *instanceList) Models(ctx context.Context) []Model {
+func (i *instanceUser) Models(ctx context.Context) []Model {
 	m := make([]Model, 0)
 	for _, r := range i.rags {
 		m = append(m, r.Models(ctx)...)
@@ -75,7 +52,7 @@ func (i *instanceList) Models(ctx context.Context) []Model {
 	return m
 }
 
-func (i *instanceList) LLM() string {
+func (i *instanceUser) LLM() string {
 	for _, r := range i.rags {
 		llm := r.LLM()
 		if len(llm) > 0 {
@@ -85,7 +62,7 @@ func (i *instanceList) LLM() string {
 	return viper.GetString(cfg.ModelLLM)
 }
 
-func (i *instanceList) UpdateIntervall() time.Duration {
+func (i *instanceUser) UpdateIntervall() time.Duration {
 	d := cfg.DefaultVecDBUpdateIntervall
 	for _, r := range i.rags {
 		intervall := r.UpdateIntervall()
@@ -97,7 +74,7 @@ func (i *instanceList) UpdateIntervall() time.Duration {
 	return d
 }
 
-func (i *instanceList) Embbed(ctx context.Context) error {
+func (i *instanceUser) Embbed(ctx context.Context) error {
 	for _, r := range i.rags {
 		if err := r.Embbed(ctx); err != nil {
 			i.slog.Error("Cannot embed rag list member", "err", err, "rag.name", r.Name())
@@ -106,7 +83,7 @@ func (i *instanceList) Embbed(ctx context.Context) error {
 	return nil
 }
 
-func (i *instanceList) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
+func (i *instanceUser) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
 	cols := make([]*chroma.Collection, 0)
 	for _, r := range i.rags {
 		c, err := r.ListCollections(ctx)
@@ -121,7 +98,7 @@ func (i *instanceList) ListCollections(ctx context.Context) ([]*chroma.Collectio
 	return cols, nil
 }
 
-func (i *instanceList) SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error) {
+func (i *instanceUser) SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error) {
 	docs := make([]vecdb.QueryDocument, 0)
 	for _, r := range i.rags {
 		c, err := r.SearchVecDB(ctx, slog, collection, query, maxResults)
@@ -136,7 +113,7 @@ func (i *instanceList) SearchVecDB(ctx context.Context, slog *slog.Logger, colle
 	return docs, nil
 }
 
-func (i *instanceList) Authorise(w http.ResponseWriter, r *http.Request) bool {
+func (i *instanceUser) Authorise(w http.ResponseWriter, r *http.Request) bool {
 	for _, rag := range i.rags {
 		if rag.Authorise(w, r) {
 			return true
