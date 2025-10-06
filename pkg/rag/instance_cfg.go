@@ -112,6 +112,9 @@ func (i instanceCfg) Model(name string) (Model, error) {
 	return nil, fmt.Errorf("model %s not found", name)
 }
 func (i instanceCfg) Embbed(ctx context.Context) error {
+	if len(i.config.Vecdb.CollectionName) < 1 {
+		return nil
+	}
 	return confluence.Embed(ctx, i.slog, i.config)
 }
 
