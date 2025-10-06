@@ -25,6 +25,7 @@ var webStartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "Start RAG web server",
 	//Aliases: []string{"w", "rag", "r"},
+	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return startWeb(cmd.Context())
 	},
