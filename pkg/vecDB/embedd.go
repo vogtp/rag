@@ -49,6 +49,7 @@ func (v *VecDB) Embedd(ctx context.Context, config cfg.RagConfig, in <-chan Embe
 		v.slog.Error("cannot create collection", "collectionName", collectionName, "err", err)
 		return 0, fmt.Errorf("failed to create collection: %v", err)
 	}
+	coll.Metadata[MetaUpdated] = time.Now()
 	docUpdated := 0
 	history := emeddHistory{
 		slog:                 slog,
