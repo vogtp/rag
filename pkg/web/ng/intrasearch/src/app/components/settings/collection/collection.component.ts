@@ -9,7 +9,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTreeModule } from '@angular/material/tree';
-import { Collection } from '../../../services/settings.service.structs';
+import {
+  Collection,
+  SourceSystem,
+} from '../../../services/settings.service.structs';
 import { SourceComponent } from '../source/source.component';
 
 @Component({
@@ -36,6 +39,12 @@ import { SourceComponent } from '../source/source.component';
 })
 export class CollectionComponent {
   collection = model<Collection>();
-  //@Input({ required: true }) collection: Collection | undefined;
-  // @Output() collectionChange = new EventEmitter<Collection>();
+
+  addSource() {
+    console.log('Add source');
+    let src = new SourceSystem();
+    src.Name = 'New Source';
+    let col = this.collection();
+    col?.edges.Sources?.push(src);
+  }
 }

@@ -13,7 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { SettingsService } from '../../services/settings.service';
-import { Collection, User } from '../../services/settings.service.structs';
+import { Collection, SourceSystem, User } from '../../services/settings.service.structs';
 import { CollectionComponent } from './collection/collection.component';
 
 @Component({
@@ -54,7 +54,7 @@ export class SettingsComponent {
         this.cdRef.detectChanges();
       },
       error: (err) => {
-        console.error("Load setting from backend: "+err);
+        console.error('Load setting from backend: ' + err);
         window.location.href = '/login?OrigPath=' + window.location.href;
       },
       complete: () => console.debug('request usersettings complete'),
@@ -67,6 +67,15 @@ export class SettingsComponent {
 
   onSaveClick() {
     this.settingsService.saveUserSetting(this.userSettings!);
+  }
+
+  addCollection() {
+    let col = new Collection();
+    col.Name = 'New Collection (please change)';
+    // let src = new SourceSystem();
+    // src.Name = "New Source (please change)" 
+    // col.edges.Sources?.push(src)
+    this.userSettings?.edges.Collections?.push(col);
   }
 
   debug() {

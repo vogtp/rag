@@ -2,8 +2,9 @@
   <header>
     <mat-toolbar>
       <app-space-list-button />
+      <!-- <app-space-list-button /> -->
       <span class="toolbar-spacer"></span>
-      <span>Intranet Search</span>
+      <span>Intrasearch</span>
       <!-- <a routerLink="/list" routerLinkActive="active" class="toolbar-link" ariaCurrentWhenActive="page">
        <button>Intranet Spaces</button> 
       </a> -->
@@ -16,7 +17,16 @@
   </header>
 
   <main>
-    <router-outlet></router-outlet>
+    <!-- <mat-tab-group>
+      <mat-tab label="Search"> -->
+        <router-outlet />
+      <!-- </mat-tab>
+      <mat-tab label="Chat">
+        <deep-chat></deep-chat>
+      </mat-tab>
+
+    </mat-tab-group> -->
+
   </main>
 
   <footer>
