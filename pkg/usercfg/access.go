@@ -18,7 +18,8 @@ const (
 
 type DB struct {
 	*ent.Client
-	slog *slog.Logger
+	srvCtx context.Context
+	slog   *slog.Logger
 }
 
 func New(ctx context.Context, slog *slog.Logger, driverName string, dataSourceName string) (*DB, error) {
@@ -33,6 +34,7 @@ func New(ctx context.Context, slog *slog.Logger, driverName string, dataSourceNa
 		return nil, fmt.Errorf("creating schema resources: %v", err)
 	}
 	dbClient := &DB{
+		srvCtx: ctx,
 		slog:   slog,
 		Client: entClient,
 	}

@@ -47,13 +47,13 @@ func (srv *Server) saveUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("cannot save user setting: %v", err), http.StatusInternalServerError)
 		return
 	}
-	go func() {
-		srv.slog.Warn("Updating user rag after config saved", "user", userName, "ctx.err", srv.srvCtx.Err())
-		rag := srv.ragMgr.UserFromRequest(srv.srvCtx, r)
-		if err := rag.Embbed(srv.srvCtx); err != nil {
-			srv.slog.Warn("Failed embed user rag", "err", err, "user", userName)
-		}
-	}()
+	// go func() {
+	// 	srv.slog.Warn("Updating user rag after config saved", "user", userName, "ctx.err", srv.srvCtx.Err())
+	// 	rag := srv.ragMgr.UserFromRequest(srv.srvCtx, r)
+	// 	if err := rag.Embbed(srv.srvCtx); err != nil {
+	// 		srv.slog.Warn("Failed embed user rag", "err", err, "user", userName)
+	// 	}
+	// }()
 }
 
 func (srv *Server) loadUser(w http.ResponseWriter, r *http.Request) {
