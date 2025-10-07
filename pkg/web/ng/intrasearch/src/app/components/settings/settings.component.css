@@ -1,15 +1,4 @@
-button {
-    display: flex;
-    align-items: center;
-    border: 10px solid transparent;
-    border-radius: 7px;
-    background: #eee;
-}
 
-button:hover {
-    background: #e1e1e1;
-    border: 10px solid #d0d0d0;
-}
 
 p {
     margin: 0;

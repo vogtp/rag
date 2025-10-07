@@ -11,3 +11,22 @@ body {
     overflow: hidden;
 }
 
+button {
+    display: flex;
+    align-items: center;
+    border: 10px solid transparent;
+    border-radius: 7px;
+    background: #eee;
+}
+
+button:hover {
+    background: #e1e1e1;
+    border: 10px solid #d0d0d0;
+}
+
+mat-form-field {
+    padding-left: 7px;
+    padding-right: 7px;
+    padding-top: 3px;
+    padding-bottom: 1px;
+}
