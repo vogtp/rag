@@ -118,9 +118,12 @@ func (db *DB) SaveUser(ctx context.Context, usr *ent.User) (err error) {
 			return fmt.Errorf("update col %q of user %q: %w", c.Name, usr.Name, err)
 		}
 	}
-	if err := userUp.Exec(ctx); err != nil {
+	dbUsr, err := userUp.Save(ctx)
+	if err != nil {
 		return fmt.Errorf("update user %q: %w", usr.Name, err)
 	}
-
+	if err := db.CleanupUserCollections(ctx, dbUsr); err != nil {
+		db.slog.Warn("Cannot cleanup user collections", "username", usr.Name, "err", err)
+	}
 	return nil
 }

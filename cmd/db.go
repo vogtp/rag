@@ -15,14 +15,24 @@ import (
 
 func addDB() {
 	rootCmd.AddCommand(dbCmd)
+	dbCmd.AddCommand(dbUserCmd)
 	dbCmd.AddCommand(dbAddCmd)
+	dbCmd.AddCommand(dbCleanupCmd)
 	dbCmd.AddCommand(dbTestCmd)
 }
 
 var dbCmd = &cobra.Command{
-	Use:   "db",
-	Short: "manage the  DB",
-
+	Use:     "db",
+	Short:   "manage the DB",
+	Aliases: []string{},
+	Long:    ``,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return cmd.Usage()
+	},
+}
+var dbUserCmd = &cobra.Command{
+	Use:          "user",
+	Short:        "list users",
 	Aliases:      []string{},
 	Long:         ``,
 	SilenceUsage: true,
@@ -32,7 +42,7 @@ var dbCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		users, err := db.All(ctx)
+		users, err := db.GetUserQuery(ctx).All(ctx)
 		if err != nil {
 			return err
 		}
@@ -57,6 +67,38 @@ var dbCmd = &cobra.Command{
 			// fmt.Print(string(b))
 		}
 		fmt.Printf("Count:\n Users: %v\n Collections: %v\n", len(users), colCnt)
+		return nil
+	},
+}
+var dbCleanupCmd = &cobra.Command{
+	Use:   "cleanup [username]",
+	Short: "cleanup old collections from DB",
+
+	Aliases:      []string{},
+	Long:         ``,
+	SilenceUsage: true,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
+		db, err := usercfg.New(cmd.Context(), logger.New(), usercfg.Dialect, usercfg.DBFileName)
+		if err != nil {
+			return err
+		}
+		if len(args) > 0 {
+			usr, err := db.GetUserQuery(ctx).Where(user.Name(args[0])).First(ctx)
+			if err != nil {
+				return err
+			}
+			return db.CleanupUserCollections(ctx, usr)
+		}
+		usrs, err := db.GetUserQuery(ctx).All(ctx)
+		if err != nil {
+			return err
+		}
+		for _, usr := range usrs {
+			if err := db.CleanupUserCollections(ctx, usr); err != nil {
+				return err
+			}
+		}
 		return nil
 	},
 }
