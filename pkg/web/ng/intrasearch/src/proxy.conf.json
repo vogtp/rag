@@ -14,5 +14,9 @@
   "/login": {
     "target": "http://localhost:4444",
     "secure": false
+  },
+  "/api": {
+    "target": "http://localhost:4444",
+    "secure": false
   }
 }
