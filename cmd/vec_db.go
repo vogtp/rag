@@ -141,7 +141,7 @@ var vecDbRmCmd = &cobra.Command{
 }
 
 var vecDbLsCmd = &cobra.Command{
-	Use:   "ls",
+	Use:   "ls [count]",
 	Short: "List all collection",
 
 	Aliases: []string{"list", "show"},
@@ -152,13 +152,24 @@ var vecDbLsCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("failed to create client: %w", err)
 		}
+		count := len(args) > 0 && args[0] == "count"
+
 		cols, err := client.ListAllCollections(ctx)
 		if err != nil {
 			return fmt.Errorf("cannot list collections: %w", err)
 		}
 		slices.SortFunc(cols, func(a, b *chromago.Collection) int { return strings.Compare(a.Name, b.Name) })
 		for _, c := range cols {
-			fmt.Printf("%s\n", c.Name)
+			if !count {
+				fmt.Printf("%s\n", c.Name)
+				continue
+			}
+			res, err := c.GetWithOptions(ctx)
+			if err != nil {
+				fmt.Printf("%s (no docs found: %v)\n", c.Name, err)
+				continue
+			}
+			fmt.Printf("%s (%v)\n", c.Name, len(res.Documents))
 		}
 		return nil
 	},
