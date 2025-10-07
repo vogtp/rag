@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+    "github.com/rs/cors"
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/rag"
@@ -98,7 +99,7 @@ func (srv *Server) Run(ctx context.Context) error {
 	}
 
 	srv.slog.Warn("Listen for incoming requests")
-	srv.httpSrv.Handler = srv.mux
+	srv.httpSrv.Handler = cors.Default().Handler(srv.mux )
 	go srv.closeOnCtxDone(ctx)
 	return srv.httpSrv.ListenAndServe()
 }

@@ -16,6 +16,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/matoous/go-nanoid v1.5.1
 	github.com/ollama/ollama v0.3.14
+	github.com/rs/cors v1.11.1
 	github.com/sashabaranov/go-openai v1.32.1
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5

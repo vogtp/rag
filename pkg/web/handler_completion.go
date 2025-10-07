@@ -40,7 +40,7 @@ func (srv *Server) completionHandler(w http.ResponseWriter, r *http.Request) {
 func (srv *Server) chatCompletionHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	slog := srv.slog.With("url", r.URL.String(), "remote", r.RemoteAddr)
-	slog.Warn("chatCompletion request")
+	slog.Info("chatCompletion request")
 	var req openai.ChatCompletionRequest
 	start := time.Now()
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

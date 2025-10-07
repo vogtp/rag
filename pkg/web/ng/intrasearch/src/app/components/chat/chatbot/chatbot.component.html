@@ -1,0 +1,56 @@
+<div #bodyChatbotContainer class="body">
+
+
+  @for (chat of listOfMessages ; track chat; let index=$index )
+  {
+  <div class="chat-container-message"
+    [ngStyle]="{'flex-direction': index === 0 || index % 2 === 0 ? 'row' : 'row-reverse'}">
+    <!-- <img [src]="getIcon(index)" class="svg-container" alt="" 
+        [ngClass]="index === 0 || index % 2 === 0 ? 'chatbot-icon' : 'user-icon' " > -->
+    @if(index == 0)
+    {
+    <p class="chatbot-text chat-message">{{chat.content}}</p>
+    }@else {
+    @if (index % 2 == 0) {
+    <p libTyping [text]="chat.content" [ngClass]="errorResponse ? 'chat-error' : 'chat-message' "
+      [nativeContainer]="bodyChatbotContainer" class="chatbot-text">
+      {{chat.content}}
+    </p>
+    } @else {
+    <p class="chatbot-text user-message">{{chat.content}}</p>
+    }
+
+    }
+  </div>
+  }
+
+  @if(waitingResponse)
+  {
+  <sbb-loading-indicator mode="small"></sbb-loading-indicator>
+  <div class="chat-container-message">
+    <div class="spinner">
+      <div class="bounce1"></div>
+      <div class="bounce2"></div>
+      <div class="bounce3"></div>
+    </div>
+  </div>
+  }
+
+</div>
+
+<hr class="horizontal-line">
+<div class="footer">
+  <mat-form-field id="pInputText">
+    <mat-label>Write here your message...</mat-label>
+    <input matInput pInputText [(ngModel)]="inputText" (keydown.enter)="onSendForm()" [disabled]="waitingResponse">
+  </mat-form-field>
+  <!-- <input type="text" matInput pInputText placeholder="Write here your message..." [disabled]="waitingResponse"
+    [(ngModel)]="inputText" (keydown.enter)="onSendForm()" /> -->
+
+
+
+  <div class="send-icon-container" [class.disabled-icon]="!inputText" (click)="onSendForm()">
+    <i class="pi pi-send"></i>
+  </div>
+
+</div>

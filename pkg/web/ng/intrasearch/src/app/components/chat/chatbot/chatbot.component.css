@@ -1,0 +1,161 @@
+.footer {
+  height: fit-content;
+  display: inline-flex;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+.body {
+  height: 75%;
+  width: 90%;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  row-gap: 1.5rem;
+}
+
+/* width */
+.body::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+.body::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+
+/* Handle */
+.body::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+}
+
+.spinner {
+  margin-left: 20px;
+  display: flex;
+  column-gap: 15px;
+  height: 100%;
+  align-items: center;
+}
+
+.spinner>div {
+  width: 12px;
+  height: 12px;
+  border-radius: 100%;
+  display: inline-block;
+  -webkit-animation: sk-bouncedelay 1.7s infinite ease-in-out both;
+  animation: sk-bouncedelay 1.47 infinite ease-in-out both;
+}
+
+.spinner .bounce1 {
+  -webkit-animation-delay: -0.64s;
+  animation-delay: -0.64s;
+}
+
+.spinner .bounce2 {
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+
+.horizontal-line {
+  width: calc(100% - 2rem);
+  transform: translateY(10px);
+}
+
+.chat-container-message {
+  display: flex;
+  align-items: flex-start;
+  column-gap: 10px;
+}
+
+.chatbot-text {
+  /* color: var(--teal-700);
+  background-color: white; */
+  border-radius: 10px;
+  /* border: 1px solid var(--bg-chatbot-icon-container); */
+  text-align: justify;
+  font-size: small;
+  font-weight: 500;
+  width: calc(100% - 80px);
+  margin: 0;
+  padding: 0.5rem 0.8rem;
+  min-height: 100%;
+}
+
+.footer {
+  height: fit-content;
+  display: inline-flex;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+.send-icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-color: var(--surface-700);
+  color: white;
+  height: 100%;
+  aspect-ratio: 1/1;
+  cursor: pointer;
+}
+
+.send-icon-container:hover {
+  border: 1px solid var(--bg-header-chatbot-box-message);
+}
+
+.disabled-icon {
+  color: white;
+  cursor: not-allowed;
+  background-color: var(--surface-700);
+  opacity: 0.6;
+}
+
+@-webkit-keyframes sk-bouncedelay {
+
+  0%,
+  80%,
+  100% {
+    -webkit-transform: scale(0)
+  }
+
+  40% {
+    -webkit-transform: scale(1.0)
+  }
+}
+
+@keyframes sk-bouncedelay {
+
+  0%,
+  80%,
+  100% {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+
+  40% {
+    -webkit-transform: scale(1.0);
+    transform: scale(1.0);
+  }
+}
+
+@keyframes onEnter {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes onLeave {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
