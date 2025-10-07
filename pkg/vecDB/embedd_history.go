@@ -8,6 +8,11 @@ import (
 	"time"
 )
 
+const (
+	historyCacheDirName = ".embedd_history"
+	historyCacheFilePrefix = ".embedd_history"
+)
+
 type emeddHistory struct {
 	slog                 *slog.Logger
 	collectionName       string
@@ -53,6 +58,9 @@ func (eh *emeddHistory) init() error {
 	if eh.slog == nil {
 		eh.slog = slog.Default()
 	}
+	if err:=os.MkdirAll(historyCacheDirName, os.ModePerm); err != nil {
+		slog.Error("cannot create history cache dir", "err",err,"HistoryCacheDirName",historyCacheDirName)
+	}
 	interval := eh.vecDBUpdateIntervall
 	if interval > 24*time.Hour || interval < time.Hour {
 		interval = time.Hour
@@ -67,7 +75,7 @@ func (eh emeddHistory) key(d *EmbeddDocument) string {
 }
 
 func (eh emeddHistory) filename() string {
-	return fmt.Sprintf(".embedd_history_%s.json", eh.collectionName)
+	return fmt.Sprintf("%s/%s_%s.json",historyCacheDirName,historyCacheFilePrefix, eh.collectionName)
 }
 
 func (eh *emeddHistory) load() error {
