@@ -7,24 +7,31 @@ import (
 	"os"
 
 	"github.com/OneOfOne/struct2ts"
+	"github.com/sashabaranov/go-openai"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent"
 )
 
 func main() {
+	generate("./intrasearch/src/app/services/settings.service.structs.ts", ent.User{})
+	generate("./intrasearch/src/app/components/chat/interfaces/openai.structs.ts", openai.ChatCompletionResponse{}, openai.ChatCompletionRequest{})
+}
+func generate(fileName string, types ...any) {
 	s2ts := struct2ts.New(&struct2ts.Options{
 		// NoConstructor:    true,
 		// NoToObject:       true,
 		// NoHelpers:        true,
 	})
-	fileName := "./intrasearch/src/app/services/settings.service.structs.ts"
-	fmt.Printf("Generation TS structs for User in %s\n", fileName)
 	f, err := os.Create(fileName)
 	if err != nil {
 		fmt.Println(err)
-		return
+		os.Exit(1)
 	}
 	defer f.Close()
-	s2ts.Add(ent.User{})
+	fmt.Printf("Generation TS structs in %s\n", fileName)
+	for _, t := range types {
+		fmt.Printf("  %T\n", t)
+		s2ts.Add(t)
+	}
 	if err := s2ts.RenderTo(f); err != nil {
 		fmt.Printf("Cannot render ts structs: %v", err)
 	}

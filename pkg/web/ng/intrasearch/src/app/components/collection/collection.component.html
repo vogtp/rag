@@ -1,0 +1,9 @@
+<mat-tab-group>
+    <mat-tab label="Search">
+        <app-search [collection]="collection"></app-search>
+    </mat-tab>
+
+    <mat-tab label="Chat">
+        <app-chatbot [basePath]="basePath" [model]="collection" />
+    </mat-tab>
+</mat-tab-group>

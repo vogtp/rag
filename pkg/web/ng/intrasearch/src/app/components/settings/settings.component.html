@@ -27,11 +27,10 @@
 <mat-tab-group>
     <div *ngFor="let cols of collections()!; let i = index">
         <mat-tab label="{{collections()![i]!.Name }}">
-            <app-collection [(collection)]="collections()![i]!" /> 
+            <app-collection [(collection)]="collections()![i]!" />
         </mat-tab>
     </div>
 </mat-tab-group>
-
 
 <!-- 
 <button (click)=" onSaveClick()" matFab extended aria-label="Save Settings">

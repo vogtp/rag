@@ -13,7 +13,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { SettingsService } from '../../services/settings.service';
-import { Collection, SourceSystem, User } from '../../services/settings.service.structs';
+import { Collection, User } from '../../services/settings.service.structs';
+import { ChatbotComponent } from '../chat/chatbot.component';
+import { ChatbotIcons } from '../chat/interfaces/library.interface';
 import { CollectionComponent } from './collection/collection.component';
 
 @Component({
@@ -26,7 +28,6 @@ import { CollectionComponent } from './collection/collection.component';
     MatInputModule,
     MatSelectModule,
     MatIconModule,
-    FormsModule,
     ReactiveFormsModule,
     CollectionComponent,
     NgFor,
@@ -40,6 +41,13 @@ export class SettingsComponent {
   userSettings: User | undefined;
   collections = model<Collection[]>();
   //userSettings = model<UserSettings>();
+
+  icons: ChatbotIcons = {
+    chatbotIcon: '../assets/icons/chatbot.svg',
+    userIcon: '../assets/icons/user.svg',
+  };
+  basePath: string = 'http://localhost:4444/api/chat/completions';
+  model: string = 'gpt-oss';
 
   constructor(
     private settingsService: SettingsService,
@@ -73,7 +81,7 @@ export class SettingsComponent {
     let col = new Collection();
     col.Name = 'New Collection (please change)';
     // let src = new SourceSystem();
-    // src.Name = "New Source (please change)" 
+    // src.Name = "New Source (please change)"
     // col.edges.Sources?.push(src)
     this.userSettings?.edges.Collections?.push(col);
   }
