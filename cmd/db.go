@@ -40,16 +40,12 @@ var dbCmd = &cobra.Command{
 		fmt.Println("User list:")
 		for _, u := range users {
 			//u.Edges.Confluence
-			cols, err := u.Collections(ctx)
-			if err != nil {
-				fmt.Println(err)
-			}
-			u.QueryCollections()
+			cols := u.Edges.Collections
 			fmt.Printf(" %s\n", u.Name)
 			if len(cols) > 0 {
 				fmt.Print("   ")
 				for _, c := range cols {
-					fmt.Printf("%s ", c.Name)
+					fmt.Printf("%s (%s)", c.Name, c.Edges.Sources[0].Parts)
 					colCnt++
 				}
 				fmt.Println()
