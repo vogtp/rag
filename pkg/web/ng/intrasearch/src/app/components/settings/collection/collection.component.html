@@ -13,6 +13,8 @@
         <mat-form-field>
             <mat-label>API Key (for chatbots)</mat-label>
             <input matInput [(ngModel)]="collection()!.APIKey">
+            <mat-hint>This key can be used to acces this collection with a chat ui at the <a
+                    href="/api">endpoint</a>.</mat-hint>
         </mat-form-field>
         <mat-card appearance="outlined">
             <mat-card-header>

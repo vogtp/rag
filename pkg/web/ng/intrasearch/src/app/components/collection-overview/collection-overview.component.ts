@@ -13,5 +13,5 @@ import { SearchComponent } from '../search/search.component';
 export class CollectionOverviewComponent {
   @Input() collection: string = 'intranet-all';
 
-  basePath: string = 'http://localhost:4444/api/chat/completions';
+  basePath: string = '/api/chat/completions';
 }
