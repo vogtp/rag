@@ -17,13 +17,15 @@ import (
 
 type Handler interface {
 	AllFromRequest(r *http.Request) Instance
-	UserFromRequest(r *http.Request) Instance
+	UserFromRequest(ctx context.Context, r *http.Request) Instance
 }
+
 var _ (Handler) = (*handler)(nil)
 
 type GetAllRager interface {
 	GetAllRags(context.Context) []Instance
 }
+
 var _ (GetAllRager) = (*handler)(nil)
 
 type handler struct {
@@ -74,32 +76,32 @@ func (h handler) AllFromRequest(r *http.Request) Instance {
 	rags := newInstanceList(h.slog, "global")
 
 	rags.Add(h.publicInstances())
-	rags.Add(h.UserFromRequest(r))
+	rags.Add(h.UserFromRequest(r.Context(), r))
 	return rags
 }
 
-func (h handler) UserFromRequest(r *http.Request) Instance {
+func (h handler) UserFromRequest(ctx context.Context, r *http.Request) Instance {
 	username := oidc.UserName(r)
 	// by Bearer Token
 	bt, _ := bearer.Get(r)
 	rags := newInstanceList(h.slog, fmt.Sprintf("%s|%s", username, bt))
 
 	if len(username) > 1 {
-		if u, err := h.usercfg.ByName(r.Context(), username); err == nil {
-			rags.Add(h.getUserInstances(r.Context(), u)...)
+		if u, err := h.usercfg.ByName(ctx, username); err == nil {
+			rags.Add(h.getUserInstances(ctx, u)...)
 		} else {
 			h.slog.Warn("Cannot query user by name", "err", err, "username", username)
 		}
 	}
 
 	if len(bt) > 1 {
-		if usrs, err := h.usercfg.GetUserQuery(r.Context()).Where(user.APIKey(bt)).All(r.Context()); err != nil {
-			rags.Add(h.getUserInstances(r.Context(), usrs...)...)
+		if usrs, err := h.usercfg.GetUserQuery(ctx).Where(user.APIKey(bt)).All(ctx); err != nil {
+			rags.Add(h.getUserInstances(ctx, usrs...)...)
 		} else {
 			h.slog.Warn("Cannot query users by api key", "err", err, "apikey", bt)
 		}
-		if cols, err := h.usercfg.Collection.Query().Where(collection.APIKey(bt)).All(r.Context()); err != nil {
-			rags.Add(h.getCollectionInstances(r.Context(), cols...)...)
+		if cols, err := h.usercfg.Collection.Query().Where(collection.APIKey(bt)).All(ctx); err != nil {
+			rags.Add(h.getCollectionInstances(ctx, cols...)...)
 		} else {
 			h.slog.Warn("Cannot query collections by api key", "err", err, "apikey", bt)
 		}
