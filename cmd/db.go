@@ -36,23 +36,31 @@ var dbCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
+		colCnt := 0
 		fmt.Println("User list:")
 		for _, u := range users {
 			//u.Edges.Confluence
-			c, err := u.Collections(ctx)
+			cols, err := u.Collections(ctx)
 			if err != nil {
 				fmt.Println(err)
 			}
 			u.QueryCollections()
-			fmt.Printf(" %v\n", u)
-			fmt.Printf(" %v\n", c)
-			b, err := json.MarshalIndent(u, "", "  ")
-			if err != nil {
-				fmt.Println(err)
+			fmt.Printf(" %s\n", u.Name)
+			if len(cols) > 0 {
+				fmt.Print("   ")
+				for _, c := range cols {
+					fmt.Printf("%s ", c.Name)
+					colCnt++
+				}
+				fmt.Println()
 			}
-			fmt.Print(string(b))
+			// b, err := json.MarshalIndent(u, "", "  ")
+			// if err != nil {
+			// 	fmt.Println(err)
+			// }
+			// fmt.Print(string(b))
 		}
-		fmt.Printf("Count: %v\n", len(users))
+		fmt.Printf("Count:\n Users: %v\n Collections: %v\n", len(users), colCnt)
 		return nil
 	},
 }
