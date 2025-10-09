@@ -10,9 +10,15 @@ GO_CMD=go
 
 # Branch specific config
 BRANCH=$(shell git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
-
-host=its-a-hack.its.unibas.ch
-user=vogtp
+# prod -> main branch
+host_main=its-a-hack.its.unibas.ch
+user_main=vogtp
+path_main=/srv/intrasearch
+# qa
+host_qm=its-a-hack.its.unibas.ch
+user_qm=vogtp
+path_qm=/srv/rag
+# dev is localhost
 
 .PHONY: run
 run: generate ng-build
@@ -20,8 +26,7 @@ run: generate ng-build
 
 .PHONY: build
 build: generate ng-build
-	$(GO_CMD) build $(build_date) -tags prod -o ./build/ . 
-	mv ./build/rag ./build/ragctl
+	$(GO_CMD) build $(build_date) -tags prod -o ./build/ragctl . 
 
 .PHONY: generate
 generate:
@@ -40,14 +45,14 @@ remote-stop: remote-stop-rag
 
 .PHONY: remote-stop-%
 remote-stop-%:
-	ssh root@$(host) systemctl stop $*
+	ssh root@$(host_$(BRANCH)) systemctl stop $*
 
 .PHONY: remote-start
 remote-start: remote-start-rag
 
 .PHONY: remote-start-%
 remote-start-%:
-	ssh root@$(host) systemctl start $*
+	ssh root@$(host_$(BRANCH)) systemctl start $*
 
 .PHONY: remote-restart
 remote-restart:	remote-stop-rag remote-start-rag
@@ -55,19 +60,19 @@ remote-restart:	remote-stop-rag remote-start-rag
 
 .PHONY: remote-copy
 remote-copy: 
-	scp ./build/ragctl $(user)@$(host):srv/rag/
+	scp ./build/ragctl $(user_$(BRANCH))@$(host_$(BRANCH)):$(path_$(BRANCH))
 
 .PHONY: deploy-config
 deploy-config: 
-	scp ignore_ragctl_intranet.yml $(user)@$(host):srv/rag/
+	scp ignore_ragctl_intranet.yml $(user_$(BRANCH))@$(host_$(BRANCH)):$(path_$(BRANCH))
 
 .PHONY: deploy
 deploy: build remote-stop-rag remote-copy remote-start-rag remote-autocomplete
 
 .PHONY: remote-autocomplete
 remote-autocomplete:
-	ssh $(user)@$(host) "srv/rag/ragctl completion bash > ~/.rag.autocomplete"
-	ssh $(user)@$(host) "chmod +x ~/.rag.autocomplete"
+	ssh $(user_$(BRANCH))@$(host_$(BRANCH)) "$(path_$(BRANCH))ragctl completion bash > ~/.rag.autocomplete"
+	ssh $(user_$(BRANCH))@$(host_$(BRANCH)) "chmod +x ~/.rag.autocomplete"
 	
 .PHONY: pprof-run
 pprof-run: build
