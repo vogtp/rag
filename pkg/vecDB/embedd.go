@@ -7,6 +7,7 @@ import (
 
 	"github.com/amikos-tech/chroma-go/types"
 	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/logger"
 )
 
 const (
@@ -38,7 +39,7 @@ func (v *VecDB) Embedd(ctx context.Context, config cfg.RagConfig, in <-chan Embe
 	collectionName := config.Vecdb.CollectionName
 	slog := v.slog.With("collection", collectionName)
 	slogBase := slog
-	slog.Warn("Starting embedding")
+	slog.Warn("Starting embedding", logger.Stacktrace())
 	embedFunc, err := v.GetEmbeddingFunc()
 	if err != nil {
 		return 0, err
@@ -102,7 +103,7 @@ func (v *VecDB) Embedd(ctx context.Context, config cfg.RagConfig, in <-chan Embe
 
 			metadata := []types.Option{
 				types.WithDocument(s),
-				types.WithID(d.IDMetaKey),
+				types.WithID(d.IDMetaValue),
 				types.WithMetadata(MetaOrigDoc, d.Document),
 				types.WithMetadata(d.IDMetaKey, d.IDMetaValue),
 				types.WithMetadata(MetaIDKey, d.IDMetaKey),

@@ -10,7 +10,7 @@ import (
 
 const (
 	historyCacheDirName = ".embedd_history"
-	historyCacheFilePrefix = ".embedd_history"
+	historyCacheFilePrefix = ""
 )
 
 type emeddHistory struct {
