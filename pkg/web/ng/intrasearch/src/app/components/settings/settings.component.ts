@@ -1,17 +1,25 @@
 import { NgFor } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  inject,
   model,
 } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  MatBottomSheet,
+  MatBottomSheetModule,
+  MatBottomSheetRef,
+} from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
+import { SbbLoadingIndicatorModule } from '@sbb-esta/angular/loading-indicator';
 import { SettingsService } from '../../services/settings.service';
 import { Collection, User } from '../../services/settings.service.structs';
 import { ChatbotIcons } from '../chat/interfaces/library.interface';
@@ -31,6 +39,8 @@ import { CollectionComponent } from './collection/collection.component';
     CollectionComponent,
     NgFor,
     MatTabsModule,
+    SbbLoadingIndicatorModule,
+    MatBottomSheetModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './settings.component.html',
@@ -39,7 +49,9 @@ import { CollectionComponent } from './collection/collection.component';
 export class SettingsComponent {
   userSettings: User | undefined;
   collections = model<Collection[]>();
-  //userSettings = model<UserSettings>();
+  waitingResponse: boolean = false;
+
+  respMsg: string = '';
 
   icons: ChatbotIcons = {
     chatbotIcon: '../assets/icons/chatbot.svg',
@@ -54,6 +66,7 @@ export class SettingsComponent {
   ) {}
 
   loadSettings() {
+    this.waitingResponse = true;
     this.settingsService.getUserSetting().subscribe({
       next: (data) => {
         this.userSettings = data;
@@ -62,11 +75,13 @@ export class SettingsComponent {
       },
       error: (err) => {
         console.error('Load setting from backend: ' + err);
+        this.waitingResponse = false;
         window.location.href = '/login?OrigPath=' + window.location.href;
       },
       complete: () => {
         console.debug('request usersettings complete');
-        window.location.reload();
+        //window.location.reload();
+        this.waitingResponse = false;
       },
     });
   }
@@ -74,9 +89,28 @@ export class SettingsComponent {
   ngOnInit() {
     this.loadSettings();
   }
-
+  private _bottomSheet = inject(MatBottomSheet);
   onSaveClick() {
-    this.settingsService.saveUserSetting(this.userSettings!);
+    this.waitingResponse = true;
+    this.respMsg = '';
+    this.settingsService.saveUserSetting(this.userSettings!).subscribe({
+      error: (err) => {
+        if (err instanceof HttpErrorResponse) {
+          this.respMsg = err.error + ' (' + err.statusText + ')';
+        } else {
+          this.respMsg = err;
+        }
+        console.error(err);
+        this.waitingResponse = false;
+      },
+      complete: () => {
+        this._bottomSheet.open(BottomSheetOverviewExampleSheet);
+        console.info('save complete');
+        this.respMsg = 'Save success full';
+        this.waitingResponse = false;
+        // window.location.reload();
+      },
+    });
   }
 
   addCollection() {
@@ -90,5 +124,20 @@ export class SettingsComponent {
 
   debug() {
     console.log(this.userSettings);
+  }
+}
+
+@Component({
+  template: '<div (click)="click()">Settings Saved</div>',
+  imports: [],
+})
+export class BottomSheetOverviewExampleSheet {
+  private _bottomSheetRef =
+    inject<MatBottomSheetRef<BottomSheetOverviewExampleSheet>>(
+      MatBottomSheetRef
+    );
+
+  click(): void {
+    this._bottomSheetRef.dismiss();
   }
 }

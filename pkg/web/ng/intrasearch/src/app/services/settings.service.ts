@@ -17,11 +17,7 @@ export class SettingsService {
     let url = userSettingsURL;
     // url = 'http://localhost:4444' + userSettingsURL;
     console.log('Sending usersettings save put: ' + url);
-    this.http.put(url, us, { headers: httpHeaders }).subscribe({
-      next: (v) => console.log(v),
-      error: (e) => console.error(e),
-      complete: () => console.info('complete'),
-    });
+    return this.http.put(url, us, { headers: httpHeaders });
   }
 
   constructor(private http: HttpClient) {}

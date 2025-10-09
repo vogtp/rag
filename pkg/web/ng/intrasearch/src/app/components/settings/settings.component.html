@@ -7,7 +7,8 @@
     <mat-form-field id="userAPIKey">
         <mat-label>API Key (for chatbots)</mat-label>
         <input matInput [(ngModel)]="userSettings!.APIKey">
-        <mat-hint>This key can be used to acces the users collection with a chat ui at the <a href="/api">endpoint</a>.</mat-hint>
+        <mat-hint>This key can be used to acces the users collection with a chat ui at the <a
+                href="/api">endpoint</a>.</mat-hint>
     </mat-form-field>
 </div>
 
@@ -22,7 +23,9 @@
     <!-- <button (click)="addCollection()">
         Add Collection
     </button> -->
-
+         <sbb-loading-indicator *ngIf="!waitingResponse" mode="small"></sbb-loading-indicator>
+        {{ respMsg }}
+   
 </div>
 
 <mat-tab-group>

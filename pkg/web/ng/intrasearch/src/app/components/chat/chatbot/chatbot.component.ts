@@ -12,7 +12,6 @@ import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { SbbLoadingIndicatorModule } from '@sbb-esta/angular/loading-indicator';
 import { RemarkModule } from 'ngx-remark';
-import { TypingDirective } from '../directives/typing.directive';
 import {
   ChatCompletionMessage,
   ChatCompletionRequest,
@@ -25,7 +24,6 @@ import {
   imports: [
     NgStyle,
     NgClass,
-    TypingDirective,
     FormsModule,
     MatInputModule,
     SbbLoadingIndicatorModule,
@@ -44,9 +42,7 @@ export class ChatbotViewComponent {
   inputText: string | undefined;
   waitingResponse: boolean = false;
   errorResponse: boolean = false;
-  listOfMessages: ChatCompletionMessage[] = [
-    //   { role: 'assistant', content: this.welcomeMessage },
-  ];
+  listOfMessages: ChatCompletionMessage[] = [  ];
 
   constructor(private http: HttpClient) {}
 
@@ -57,12 +53,12 @@ export class ChatbotViewComponent {
   onSendForm(): void {
     console.log('Chat input: ' + this.inputText);
     if (this.inputText != undefined) {
+      this.waitingResponse = true;
       let msg: ChatCompletionMessage = new ChatCompletionMessage();
       msg.role = 'user';
       msg.content = <string>this.inputText;
       this.listOfMessages.push(msg);
       this.inputText = undefined;
-      this.waitingResponse = true;
       //Remove the welcome message
       let request: ChatCompletionRequest = new ChatCompletionRequest();
       request.model = this.model;
