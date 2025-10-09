@@ -12,7 +12,12 @@ import (
 // schedulePeriodicVecDBUpdates starts periodic vec db updates
 // must be started as goroutine
 func (srv *Server) schedulePeriodicVecDBUpdates(ctx context.Context) {
-	time.Sleep(viper.GetDuration(cfg.VecDBUpdateDelay))
+	delay := viper.GetDuration(cfg.VecDBUpdateDelay)
+	if delay > 23*time.Hour {
+		srv.slog.Warn("Not doing periodic updates since delay is langer than 23h", "delay", delay.String())
+		return
+	}
+	time.Sleep(delay)
 	ragger, ok := srv.ragMgr.(rag.GetAllRager)
 	if !ok {
 		panic("Cannot get all RAGs")
