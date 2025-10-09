@@ -14,7 +14,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { SettingsService } from '../../services/settings.service';
 import { Collection, User } from '../../services/settings.service.structs';
-import { ChatbotComponent } from '../chat/chatbot.component';
 import { ChatbotIcons } from '../chat/interfaces/library.interface';
 import { CollectionComponent } from './collection/collection.component';
 
@@ -65,7 +64,10 @@ export class SettingsComponent {
         console.error('Load setting from backend: ' + err);
         window.location.href = '/login?OrigPath=' + window.location.href;
       },
-      complete: () => console.debug('request usersettings complete'),
+      complete: () => {
+        console.debug('request usersettings complete');
+        window.location.reload();
+      },
     });
   }
 
