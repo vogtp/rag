@@ -23,6 +23,10 @@ func Embed(ctx context.Context, slog *slog.Logger, config cfg.RagConfig) error {
 	}
 
 	for _, space := range config.Confluence.Spaces {
+		space = strings.TrimSpace(space)
+		if len(space) < 1 {
+			continue
+		}
 		c, err := GetDocuments(ctx, slog, config, space)
 		if err != nil {
 			return err
