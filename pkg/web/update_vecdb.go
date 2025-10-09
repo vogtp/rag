@@ -4,11 +4,15 @@ import (
 	"context"
 	"time"
 
+	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/rag"
 )
 
+// schedulePeriodicVecDBUpdates starts periodic vec db updates
+// must be started as goroutine
 func (srv *Server) schedulePeriodicVecDBUpdates(ctx context.Context) {
+	time.Sleep(viper.GetDuration(cfg.VecDBUpdateDelay))
 	ragger, ok := srv.ragMgr.(rag.GetAllRager)
 	if !ok {
 		panic("Cannot get all RAGs")
