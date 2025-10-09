@@ -124,7 +124,7 @@ func (c *confluence) querySpace(ctx context.Context, spaceKey string) {
 				slogPage.Error("Max Retries reached, cannot get confluence content...", "err", err, "start_index", start, "retryCnt", retryCnt, "retryMax", retryMax, "retryDelay", retryDelay)
 				return
 			}
-			slogPage.Warn("Cannot get confluence content...", "err", err, "start_index", start, "retryCnt", retryCnt, "retryMax", retryMax, "retryDelay", retryDelay)
+			slogPage.Warn("Cannot get confluence content... retrying...", "err", err, "start_index", start, "retryCnt", retryCnt, "retryMax", retryMax, "retryDelay", retryDelay)
 			time.Sleep(retryDelay * time.Duration(retryCnt))
 			continue
 		}
