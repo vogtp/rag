@@ -42,7 +42,9 @@ func (db *DB) CleanupUserCollections(ctx context.Context, usr *ent.User) error {
 			continue
 		}
 		slog.Info("Removing unused user collection", "collection", col.Name)
-		vecDb.DeleteCollection(ctx, col.Name)
+		if err := vecDb.DeleteCollection(ctx, col.Name); err != nil {
+			slog.Warn("Cannot delete collection", "collection", col.Name)
+		}
 	}
 	return nil
 }
