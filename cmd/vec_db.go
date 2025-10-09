@@ -164,12 +164,17 @@ var vecDbLsCmd = &cobra.Command{
 				fmt.Printf("%s\n", c.Name)
 				continue
 			}
+			updated := ""
+			if up, ok := c.Metadata[vecdb.MetaUpdated]; ok {
+				updated = fmt.Sprintf("[Updated: %v]", up)
+			}
+
 			res, err := c.GetWithOptions(ctx)
 			if err != nil {
-				fmt.Printf("%s (no docs found: %v)\n", c.Name, err)
+				fmt.Printf("%s (no docs found: %v) (%s)\n", c.Name, err, updated)
 				continue
 			}
-			fmt.Printf("%s (%v)\n", c.Name, len(res.Documents))
+			fmt.Printf("%s (%v) %s\n", c.Name, len(res.Documents), updated)
 		}
 		return nil
 	},
