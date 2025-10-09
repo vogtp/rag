@@ -3,6 +3,7 @@ package vecdb
 import (
 	"context"
 	"fmt"
+	sl "log/slog"
 	"time"
 
 	"github.com/amikos-tech/chroma-go/types"
@@ -58,7 +59,7 @@ func (v *VecDB) Embedd(ctx context.Context, config cfg.RagConfig, in <-chan Embe
 		vecDBUpdateIntervall: config.VecDBUpdateIntervall(),
 	}
 	for d := range in {
-		slog = slogBase.With(fmt.Sprintf("MetaKey<%s>", d.IDMetaKey), d.IDMetaValue)
+		slog = slogBase.With(sl.Group("RecordID", sl.String(d.IDMetaKey, d.IDMetaValue)))
 		if !history.shouldEmbedd(&d) {
 			continue
 		}
