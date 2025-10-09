@@ -91,6 +91,7 @@ export class SettingsComponent {
   }
   private _bottomSheet = inject(MatBottomSheet);
   onSaveClick() {
+    this._bottomSheet.open(SavingFeedbackBottomSheed);
     this.waitingResponse = true;
     this.respMsg = '';
     this.settingsService.saveUserSetting(this.userSettings!).subscribe({
@@ -104,7 +105,8 @@ export class SettingsComponent {
         this.waitingResponse = false;
       },
       complete: () => {
-        this._bottomSheet.open(BottomSheetOverviewExampleSheet);
+        this._bottomSheet.dismiss(SavingFeedbackBottomSheed);
+        this._bottomSheet.open(SavedFeedbackBottomSheed);
         console.info('save complete');
         this.respMsg = 'Save success full';
         this.waitingResponse = false;
@@ -128,14 +130,18 @@ export class SettingsComponent {
 }
 
 @Component({
+  template: 'Saving Settings...',
+  imports: [],
+})
+export class SavingFeedbackBottomSheed {}
+
+@Component({
   template: '<div (click)="click()">Settings Saved</div>',
   imports: [],
 })
-export class BottomSheetOverviewExampleSheet {
+export class SavedFeedbackBottomSheed {
   private _bottomSheetRef =
-    inject<MatBottomSheetRef<BottomSheetOverviewExampleSheet>>(
-      MatBottomSheetRef
-    );
+    inject<MatBottomSheetRef<SavedFeedbackBottomSheed>>(MatBottomSheetRef);
 
   click(): void {
     this._bottomSheetRef.dismiss();
