@@ -161,7 +161,10 @@ func (m VectorStoreModel) GenerateContent(ctx context.Context, messages []llms.M
 	}
 
 	resp, err := llm.GenerateContent(ctx, messages, llms.WithStreamingFunc(streamingFunc))
-	return resp.Choices[0].Content, err
+	if err != nil {
+		return "", err
+	}
+	return resp.Choices[0].Content, nil
 	// // chains.NewLLMChain(llm, prompts.NewChatPromptTemplate())
 	// c := chains.NewConversationalRetrievalQAFromLLM(llm, rec, mem)
 	// // input["question"] = text
