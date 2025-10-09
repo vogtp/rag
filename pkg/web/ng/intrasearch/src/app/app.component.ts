@@ -6,6 +6,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterOutlet } from '@angular/router';
 import { SettingsButtonComponent } from './components/settings-button/settings-button.component';
 import { SpaceListButtonComponent } from './components/space-list-button/space-list-button.component';
+import { version } from './go.transfer';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -23,4 +24,5 @@ import { SpaceListButtonComponent } from './components/space-list-button/space-l
 })
 export class AppComponent {
   title = 'intrasearch';
+  version = version;
 }
