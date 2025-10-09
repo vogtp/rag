@@ -7,13 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	vecdb "github.com/vogtp/rag/pkg/vecDB"
 )
-
-type queryDoc struct {
-	*vecdb.QueryDocument
-	UUID uuid.UUID
-}
 
 func (srv *Server) vecDBsearch(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
