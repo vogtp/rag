@@ -11,6 +11,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { SbbLoadingIndicatorModule } from '@sbb-esta/angular/loading-indicator';
+import { RemarkModule } from 'ngx-remark';
 import { TypingDirective } from '../directives/typing.directive';
 import {
   ChatCompletionMessage,
@@ -28,6 +29,7 @@ import {
     FormsModule,
     MatInputModule,
     SbbLoadingIndicatorModule,
+    RemarkModule,
   ],
   templateUrl: './chatbot.component.html',
   styleUrl: './chatbot.component.css',
