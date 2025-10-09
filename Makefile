@@ -13,11 +13,11 @@ BRANCH=$(shell git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
 # prod -> main branch
 host_main=its-a-hack.its.unibas.ch
 user_main=vogtp
-path_main=/srv/intrasearch
+path_main=/srv/intrasearch/
 # qa
 host_qm=its-a-hack.its.unibas.ch
 user_qm=vogtp
-path_qm=/srv/rag
+path_qm=/srv/rag/
 # dev is localhost
 
 .PHONY: run
