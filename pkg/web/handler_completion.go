@@ -86,6 +86,7 @@ func (srv *Server) chatCompletionHandler(w http.ResponseWriter, r *http.Request)
 	}
 	content, err := ragModel.GenerateContent(ctx, msgs, 0.001, func(ctx context.Context, chunk []byte) error { return nil })
 	if err != nil {
+		slog.Warn("Internal server error: Cannot generate content", "err", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -116,6 +117,7 @@ func (srv *Server) chatCompletionHandler(w http.ResponseWriter, r *http.Request)
 	//slog.Debug("Answer", "content", content, "response", resp)
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		slog.Warn("Internal server error: encode chat response", "err", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

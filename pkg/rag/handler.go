@@ -16,8 +16,8 @@ import (
 )
 
 type Handler interface {
-	AllFromRequest(r *http.Request) Instance
-	UserFromRequest(ctx context.Context, r *http.Request) Instance
+	AllFromRequest(r *http.Request) (Instance, error)
+	UserFromRequest(ctx context.Context, r *http.Request) (Instance, error)
 }
 
 var _ (Handler) = (*handler)(nil)
@@ -72,16 +72,18 @@ func (h handler) GetAllRags(ctx context.Context) []Instance {
 	return rags
 }
 
-func (h handler) AllFromRequest(r *http.Request) Instance {
+func (h handler) AllFromRequest(r *http.Request) (Instance, error) {
 	rags := newInstanceList(h.slog, "global")
 
 	rags.Add(h.publicInstances())
-	rags.Add(h.UserFromRequest(r.Context(), r))
-	return rags
+	u, err := h.UserFromRequest(r.Context(), r)
+	rags.Add(u)
+	return rags, err
 }
 
-func (h handler) UserFromRequest(ctx context.Context, r *http.Request) Instance {
-	username := oidc.UserName(r)
+func (h handler) UserFromRequest(ctx context.Context, r *http.Request) (Instance, error) {
+	username, err := oidc.UserName(r)
+	
 	// by Bearer Token
 	bt, _ := bearer.Get(r)
 	rags := newInstanceList(h.slog, fmt.Sprintf("%s|%s", username, bt))
@@ -107,7 +109,7 @@ func (h handler) UserFromRequest(ctx context.Context, r *http.Request) Instance 
 		}
 	}
 
-	return rags
+	return rags, err
 }
 
 func (h handler) getUserInstances(ctx context.Context, usrs ...*ent.User) []Instance {

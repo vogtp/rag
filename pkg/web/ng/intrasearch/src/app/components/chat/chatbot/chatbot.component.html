@@ -7,21 +7,15 @@
     [ngStyle]="{'flex-direction': index === 0 || index % 2 === 0 ? 'row' : 'row-reverse'}">
     <!-- <img [src]="getIcon(index)" class="svg-container" alt="" 
         [ngClass]="index === 0 || index % 2 === 0 ? 'chatbot-icon' : 'user-icon' " > -->
-    @if(index == 0)
-    {
-    <p class="chatbot-text user-message">{{chat.content}}</p>
+    @if(chat.role === "user"){
+    <remark class="chatbot-text user-message" markdown="{{chat.content}}" />
     }@else {
-    @if (index % 2 == 0) {
-    <p libTyping [text]="chat.content" [ngClass]="errorResponse ? 'chat-error' : 'chat-message' "
-      [nativeContainer]="bodyChatbotContainer" class="chatbot-text user-message">
-      {{chat.content}}
-    </p>
-    } @else {
-    <remark class="chatbot-text assistant-message" markdown="{{chat.content}}" />
-    
-    }
+
+    <remark  [ngClass]="errorResponse ? 'chat-error' : 'chat-message' "
+       class="chatbot-text assistant-message" markdown="{{chat.content}}" />
 
     }
+
   </div>
   }
 
