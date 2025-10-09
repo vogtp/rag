@@ -1,5 +1,7 @@
-<div style="display: grid">
+<div style="padding: 7px;">
     User: {{userSettings!.Name}}
+</div>
+<div>
     <!-- <mat-form-field>
         <mat-label>User</mat-label>
         <input matInput readonly [(ngModel)]="userSettings!.Name">
@@ -12,7 +14,7 @@
     </mat-form-field>
 </div>
 
-<div style="display: flex">
+<div style="padding: 7px;">
 
     <!-- <button (click)="debug()">
         Debug
@@ -23,9 +25,6 @@
     <!-- <button (click)="addCollection()">
         Add Collection
     </button> -->
-         <sbb-loading-indicator *ngIf="!waitingResponse" mode="small"></sbb-loading-indicator>
-        {{ respMsg }}
-   
 </div>
 
 <mat-tab-group>
