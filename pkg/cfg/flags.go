@@ -16,6 +16,7 @@ const (
 	// WebListen set the address the webserver should listen on
 	WebListen = "web.listen"
 
+
 	// HTTPProxy enables SOCKS5 proxies for http requests
 	HTTPProxy = "http.proxy"
 
@@ -56,6 +57,8 @@ const (
 	ConfluenceMaxAge = "confluence.maxAge"
 	//VecDBUpdateIntervall is the intervall the vectorDB is updated
 	VecDBUpdateIntervall = "vecdb.update_intervall"
+	//VecDBUpdateDelay is the delay before the vectorDB update is started
+	VecDBUpdateDelay = "vecdb.update_delay"
 	//VecDBColName is the name prefix of the vectorDB collections
 	VecDBColName = "vecdb.collection_name"
 
@@ -103,6 +106,7 @@ func init() {
 	pflag.StringSlice(ConfluenceSpaces, nil, "The confluence spaces to scrap")
 	pflag.Duration(ConfluenceMaxAge, DefaultConfluenceMaxAge, "The maximum age a confluence page can have to be included in")
 	pflag.Duration(VecDBUpdateIntervall, DefaultVecDBUpdateIntervall, "the intervall the vectorDB is updated")
+	pflag.Duration(VecDBUpdateDelay, time.Minute, " the delay before the vectorDB update is started")
 	pflag.String(VecDBColName, "go-rag", "the name prefix of the vectorDB collections")
 	pflag.String(chromaUrl, chromaDefaultURL, "the URL where chroma can be reached")
 	pflag.String(ChromaContainerPort, chromaDefaultPort, "the port chroma should be started on (0: disable)")
