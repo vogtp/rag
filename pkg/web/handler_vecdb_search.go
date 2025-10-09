@@ -13,6 +13,7 @@ func (srv *Server) vecDBsearch(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	collection := r.PathValue("collection")
 	if err := r.ParseForm(); err != nil {
+		srv.slog.Warn("Internal server error: parse http form ", "err", err)
 		srv.Error(w, r, err.Error(), http.StatusInternalServerError)
 		return
 	}

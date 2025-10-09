@@ -3,6 +3,7 @@ package oidc
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 )
 
@@ -24,6 +25,7 @@ func (om *mux) oidcErrorHandler(w http.ResponseWriter, r *http.Request, errorTyp
 	err := json.NewEncoder(w).Encode(&info)
 
 	if err != nil {
+		slog.Warn("Internal server error: oidc decode info struct", "err", err)
 		http.Error(w, fmt.Sprintf("oidcErrorHandler cannot marshal json: %v", err), http.StatusInternalServerError)
 		return
 	}

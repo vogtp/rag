@@ -1,5 +1,5 @@
 import { NgClass, NgStyle } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
   ElementRef,
@@ -41,9 +41,6 @@ export class ChatbotViewComponent {
   @Input({ required: true }) basePath!: string;
   @Input({ required: true }) model!: string;
   @Output() closeChatbot = new EventEmitter<void>();
-
-  readonly welcomeMessage: string = 'How can I help you?';
-  readonly errorMessage: string = 'Something went wront. Please try later';
   inputText: string | undefined;
   waitingResponse: boolean = false;
   errorResponse: boolean = false;
@@ -83,12 +80,18 @@ export class ChatbotViewComponent {
           }
         },
         error: (err: any) => {
+          console.log('Chat response error:' + err);
+          console.log(err);
           this.waitingResponse = false;
           this.errorResponse = true;
           let msg: ChatCompletionMessage = new ChatCompletionMessage();
           msg.role = 'assistant';
-          msg.content = <string>this.errorMessage + ': ' + err;
-          this.listOfMessages.push();
+          if (err instanceof HttpErrorResponse) {
+            msg.content = err.error + ' (' + err.statusText + ')';
+          } else {
+            msg.content = err;
+          }
+          this.listOfMessages.push(msg);
         },
       });
     }
