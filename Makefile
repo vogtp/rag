@@ -3,7 +3,7 @@
 SHELL := /bin/bash
 
 curdate=$(shell date --iso-8601='minutes')
-build_date = -ldflags "-X  github.com/vogtp/rag/pkg/cfg.BuildInfo=$(curdate)"
+build_flags = -ldflags "-X  github.com/vogtp/rag/pkg/cfg.BuildInfo=$(curdate)"
 
 # GO_CMD=CGO_ENABLED=0 go
 GO_CMD=go
@@ -33,7 +33,7 @@ run: generate ng-build
 
 .PHONY: build
 build: generate ng-build
-	$(GO_CMD) build $(build_date) -tags prod -o ./build/ragctl . 
+	$(GO_CMD) build $(build_flags) -tags prod -o ./build/ragctl . 
 
 .PHONY: generate
 generate:
@@ -67,7 +67,7 @@ remote-restart:	remote-stop-$(service) remote-start-$(service)
 
 .PHONY: remote-copy
 remote-copy: 
-	scp ./build/ragctl $(host):$(path_)
+	scp ./build/ragctl $(host):$(path)
 
 .PHONY: remote-copy-config
 remote-copy-config: 
