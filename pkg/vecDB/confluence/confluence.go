@@ -18,13 +18,13 @@ import (
 )
 
 // GetDocuments retrives confluence spaces and generates vecdb.EmbeddDocuments
-func GetDocuments(ctx context.Context, slog *slog.Logger, config cfg.RagConfig, spaces ...string) (chan vecdb.EmbeddDocument, error) {
+func GetDocuments(ctx context.Context, slog *slog.Logger, config cfg.RagConfig, spaces ...string) (chan *vecdb.EmbeddDocument, error) {
 	baseURL := config.Confluence.BaseURL
 	baseURL = strings.TrimRight(baseURL, "/")
 	conf := confluence{
 		slog:       slog.With("confluence_url", baseURL),
 		baseURL:    baseURL,
-		out:        make(chan vecdb.EmbeddDocument, 10),
+		out:        make(chan *vecdb.EmbeddDocument, 10),
 		accessKey:  config.Confluence.Key,
 		rateLimit:  rate.Limit(0.4),
 		queryLimit: 100,
@@ -44,7 +44,7 @@ func GetDocuments(ctx context.Context, slog *slog.Logger, config cfg.RagConfig, 
 type confluence struct {
 	slog       *slog.Logger
 	baseURL    string
-	out        chan vecdb.EmbeddDocument
+	out        chan *vecdb.EmbeddDocument
 	api        *conflu.API
 	accessKey  string
 	rateLimit  rate.Limit
@@ -162,7 +162,7 @@ func (c *confluence) querySpace(ctx context.Context, spaceKey string) {
 			}
 
 			doc.MetaData["confluence_space"] = spaceKey
-			c.out <- doc
+			c.out <- &doc
 			for _, pl := range pdfLinks {
 				docs, err := pdf.SplitFromLink(ctx, pl)
 				if err != nil {
@@ -170,7 +170,7 @@ func (c *confluence) querySpace(ctx context.Context, spaceKey string) {
 					continue
 				}
 				for _, d := range docs {
-					c.out <- d
+					c.out <- &d
 				}
 			}
 		}

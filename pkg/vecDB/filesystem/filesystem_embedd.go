@@ -13,13 +13,13 @@ import (
 	"github.com/vogtp/rag/pkg/vecDB/pdf"
 )
 
-func Generate(ctx context.Context, path string) chan vecdb.EmbeddDocument {
-	out := make(chan vecdb.EmbeddDocument, 1)
+func Generate(ctx context.Context, path string) chan *vecdb.EmbeddDocument {
+	out := make(chan *vecdb.EmbeddDocument, 1)
 	go walkPath(ctx, out, path)
 	return out
 }
 
-func walkPath(ctx context.Context, out chan vecdb.EmbeddDocument, path string) {
+func walkPath(ctx context.Context, out chan *vecdb.EmbeddDocument, path string) {
 	defer close(out)
 
 	err := filepath.WalkDir(path, func(path string, d fs.DirEntry, err error) error {
@@ -54,7 +54,7 @@ func walkPath(ctx context.Context, out chan vecdb.EmbeddDocument, path string) {
 				return nil
 			}
 			for _, d := range docs {
-				out <- d
+				out <- &d
 			}
 			slog.Info("Added PDF")
 			return nil
@@ -71,7 +71,7 @@ func walkPath(ctx context.Context, out chan vecdb.EmbeddDocument, path string) {
 			return err
 		}
 		doc.Document = string(txt)
-		out <- doc
+		out <- &doc
 		return nil
 	})
 	if err != nil {
