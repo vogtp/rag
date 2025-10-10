@@ -5,6 +5,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/OneOfOne/struct2ts"
 	"github.com/sashabaranov/go-openai"
@@ -15,7 +16,9 @@ import (
 func main() {
 	generate("./intrasearch/src/app/services/settings.service.structs.ts", ent.User{})
 	generate("./intrasearch/src/app/components/chat/interfaces/openai.structs.ts", openai.ChatCompletionResponse{}, openai.ChatCompletionRequest{})
-	injectStrings("./intrasearch/src/app/go.transfer.ts", "version", cfg.Version)
+	version := fmt.Sprintf("%v.%v.%v (%v)", cfg.VersionMajor, cfg.VersionMinor, cfg.VersionPatch, time.Now().Format("2006-01-02T15:04:05"))
+
+	injectStrings("./intrasearch/src/app/go.transfer.ts", "version", version)
 }
 func generate(fileName string, types ...any) {
 	s2ts := struct2ts.New(&struct2ts.Options{
