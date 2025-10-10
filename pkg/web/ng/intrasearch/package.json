@@ -21,11 +21,10 @@
     "@angular/platform-browser-dynamic": "^19.1.0",
     "@angular/router": "^19.1.0",
     "@sbb-esta/angular": "^19.1.6",
-    "katex": "^0.16.23",
-    "ngx-remark": "^0.2.0",
-    "remark": "^15.0.1",
+    "marked": "^16.4.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
+    "unified": "^11.0.5",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {

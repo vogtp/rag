@@ -1,11 +1,11 @@
-.body {
+.container {
   flex-grow: 1;
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 2em;
   border: 5px;
-  height: 95%;
-  width: 98%;
+  height: 100%;
+  width: 100%;
 }
 
 .footer {
@@ -80,7 +80,7 @@
   font-weight: 500;
   background-color: aliceblue;
   border-color: rgb(30, 156, 156);
-  
+
   margin: 5px;
   padding: 0.5rem 0.8rem;
   min-height: 100%;

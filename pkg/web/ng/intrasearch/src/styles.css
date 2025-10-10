@@ -9,12 +9,15 @@ body {
 body {
     font-family: Roboto, "Helvetica Neue", sans-serif;
     overflow: hidden;
+    margin: 0;
+    background: var(--mat-sys-surface);
+    color: var(--mat-sys-on-surface);
 }
 
 button {
     display: flex;
     align-items: center;
-    border: 10px solid transparent;
+    border: 7px solid transparent;
     border-radius: 7px;
     background: #eee;
 }
@@ -22,11 +25,4 @@ button {
 button:hover {
     background: #e1e1e1;
     border: 10px solid #d0d0d0;
-}
-
-mat-form-field {
-    padding-left: 7px;
-    padding-right: 7px;
-    padding-top: 3px;
-    padding-bottom: 1px;
 }

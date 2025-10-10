@@ -36,7 +36,7 @@ func parseTime(t string) (time.Time, error) {
 	return time.Parse(timeFormat, t)
 }
 
-func (v *VecDB) Embedd(ctx context.Context, config cfg.RagConfig, in <-chan EmbeddDocument) (int, error) {
+func (v *VecDB) Embedd(ctx context.Context, config cfg.RagConfig, in <-chan *EmbeddDocument) (int, error) {
 	collectionName := config.Vecdb.CollectionName
 	slog := v.slog.With("collection", collectionName)
 	slogBase := slog
@@ -60,7 +60,7 @@ func (v *VecDB) Embedd(ctx context.Context, config cfg.RagConfig, in <-chan Embe
 	}
 	for d := range in {
 		slog = slogBase.With(sl.Group("RecordID", sl.String(d.IDMetaKey, d.IDMetaValue)))
-		if !history.shouldEmbedd(&d) {
+		if !history.shouldEmbedd(d) {
 			continue
 		}
 		res, err := coll.Get(ctx, map[string]interface{}{d.IDMetaKey: d.IDMetaValue}, nil, nil, nil)
@@ -141,7 +141,7 @@ func (v *VecDB) Embedd(ctx context.Context, config cfg.RagConfig, in <-chan Embe
 				continue
 			}
 		}
-		history.reqisterEmedded(&d)
+		history.reqisterEmedded(d)
 		docUpdated++
 	}
 
