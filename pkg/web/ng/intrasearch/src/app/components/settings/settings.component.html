@@ -22,13 +22,14 @@
     <button (click)="onSaveClick()">
         Save
     </button>
-    <!-- <button (click)="addCollection()">
+    <button (click)="addCollection()">
         Add Collection
-    </button> -->
+    </button>
+    {{ respMsg }}
 </div>
 
 <mat-tab-group>
-    <div *ngFor="let cols of collections()!; let i = index">
+    <div *ngFor="let cols of collections()!; track cols;let i = index">
         <mat-tab label="{{collections()![i]!.Name }}">
             <app-collection [(collection)]="collections()![i]!" />
         </mat-tab>
