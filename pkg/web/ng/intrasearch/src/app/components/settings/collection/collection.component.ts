@@ -44,7 +44,7 @@ export class CollectionComponent {
     console.log('Add source');
     let src = new SourceSystem();
     src.Name = 'New Source';
-    let col = this.collection();
-    col?.edges.Sources?.push(src);
+    this.collection()?.edges.Sources?.push(src);
+    console.log(this.collection());
   }
 }

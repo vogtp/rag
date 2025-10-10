@@ -8,11 +8,11 @@
     <!-- <img [src]="getIcon(index)" class="svg-container" alt="" 
         [ngClass]="index === 0 || index % 2 === 0 ? 'chatbot-icon' : 'user-icon' " > -->
     @if(chat.role === "user"){
-    <remark class="chatbot-text user-message" markdown="{{chat.content}}" />
+    <app-markdown class="chatbot-text user-message" markdown="{{chat.content}}" />
     }@else {
 
-    <remark  [ngClass]="errorResponse ? 'chat-error' : 'chat-message' "
-       class="chatbot-text assistant-message" markdown="{{chat.content}}" />
+    <app-markdown [ngClass]="errorResponse ? 'chat-error' : 'chat-message' " class="chatbot-text assistant-message"
+      markdown="{{chat.content}}" />
 
     }
 

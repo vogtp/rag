@@ -11,7 +11,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { SbbLoadingIndicatorModule } from '@sbb-esta/angular/loading-indicator';
-import { RemarkModule } from 'ngx-remark';
+import { MarkdownComponent } from '../../markdown/markdown.component';
 import {
   ChatCompletionMessage,
   ChatCompletionRequest,
@@ -27,7 +27,7 @@ import {
     FormsModule,
     MatInputModule,
     SbbLoadingIndicatorModule,
-    RemarkModule,
+    MarkdownComponent,
   ],
   templateUrl: './chatbot.component.html',
   styleUrl: './chatbot.component.css',
@@ -42,7 +42,7 @@ export class ChatbotViewComponent {
   inputText: string | undefined;
   waitingResponse: boolean = false;
   errorResponse: boolean = false;
-  listOfMessages: ChatCompletionMessage[] = [  ];
+  listOfMessages: ChatCompletionMessage[] = [];
 
   constructor(private http: HttpClient) {}
 
