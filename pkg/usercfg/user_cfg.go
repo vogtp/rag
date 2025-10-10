@@ -92,7 +92,7 @@ func (db *DB) SaveUser(ctx context.Context, usr *ent.User) (err error) {
 
 		col, ok := colsMap[c.ID]
 		if !ok {
-			col = tx.Collection.Create().SaveX(ctx)
+			col = tx.Collection.Create().SetCollection(c).SaveX(ctx)
 			userUp.AddCollections(col)
 		}
 		colUp := col.Update().SetCollection(c).SetCollectionName(fmt.Sprintf("%s-%s", usr.Name, chroma.FixCollectionName(c.Name)))
@@ -107,7 +107,7 @@ func (db *DB) SaveUser(ctx context.Context, usr *ent.User) (err error) {
 		for _, s := range c.Edges.Sources {
 			src, ok := srcMap[s.ID]
 			if !ok {
-				src = tx.SourceSystem.Create().SaveX(ctx)
+				src = tx.SourceSystem.Create().SetSourceSystem(s).SaveX(ctx)
 				colUp.AddSources(src)
 			}
 			if err := src.Update().SetSourceSystem(s).Exec(ctx); err != nil {
