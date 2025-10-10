@@ -8,12 +8,14 @@ import (
 
 	"github.com/OneOfOne/struct2ts"
 	"github.com/sashabaranov/go-openai"
+	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent"
 )
 
 func main() {
 	generate("./intrasearch/src/app/services/settings.service.structs.ts", ent.User{})
 	generate("./intrasearch/src/app/components/chat/interfaces/openai.structs.ts", openai.ChatCompletionResponse{}, openai.ChatCompletionRequest{})
+	injectStrings("./intrasearch/src/app/go.transfer.ts", "version", cfg.Version)
 }
 func generate(fileName string, types ...any) {
 	s2ts := struct2ts.New(&struct2ts.Options{
@@ -36,4 +38,18 @@ func generate(fileName string, types ...any) {
 		fmt.Printf("Cannot render ts structs: %v", err)
 	}
 	//s2ts.RenderTo(os.Stdout)
+}
+
+func injectStrings(fileName string, strs ...string) {
+	f, err := os.Create(fileName)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	defer f.Close()
+	fmt.Printf("Inject go strings to TS in %s\n", fileName)
+	for i := 0; i < len(strs); i += 2 {
+		fmt.Printf("  %s\n", strs[i])
+		fmt.Fprintf(f, `export const %s: string = "%s"`, strs[i], strs[i+1])
+	}
 }

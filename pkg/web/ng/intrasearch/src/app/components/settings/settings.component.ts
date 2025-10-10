@@ -4,11 +4,13 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  Inject,
   inject,
   model,
 } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
+  MAT_BOTTOM_SHEET_DATA,
   MatBottomSheet,
   MatBottomSheetModule,
   MatBottomSheetRef,
@@ -21,8 +23,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { SbbLoadingIndicatorModule } from '@sbb-esta/angular/loading-indicator';
 import { SettingsService } from '../../services/settings.service';
-import { Collection, User } from '../../services/settings.service.structs';
-import { ChatbotIcons } from '../chat/interfaces/library.interface';
+import {
+  Collection,
+  SourceSystem,
+  User,
+} from '../../services/settings.service.structs';
 import { CollectionComponent } from './collection/collection.component';
 
 @Component({
@@ -52,13 +57,6 @@ export class SettingsComponent {
   waitingResponse: boolean = false;
 
   respMsg: string = '';
-
-  icons: ChatbotIcons = {
-    chatbotIcon: '../assets/icons/chatbot.svg',
-    userIcon: '../assets/icons/user.svg',
-  };
-  basePath: string = 'http://localhost:4444/api/chat/completions';
-  model: string = 'gpt-oss';
 
   constructor(
     private settingsService: SettingsService,
@@ -91,7 +89,9 @@ export class SettingsComponent {
   }
   private _bottomSheet = inject(MatBottomSheet);
   onSaveClick() {
-    this._bottomSheet.open(SavingFeedbackBottomSheed);
+    this._bottomSheet.open(UserMsgBottomSheed, {
+      data: { message: 'Saving settings' },
+    });
     this.waitingResponse = true;
     this.respMsg = '';
     this.settingsService.saveUserSetting(this.userSettings!).subscribe({
@@ -101,12 +101,16 @@ export class SettingsComponent {
         } else {
           this.respMsg = err;
         }
+        this._bottomSheet.open(UserMsgBottomSheed, {
+          data: { message: this.respMsg },
+        });
         console.error(err);
         this.waitingResponse = false;
       },
       complete: () => {
-        this._bottomSheet.dismiss(SavingFeedbackBottomSheed);
-        this._bottomSheet.open(SavedFeedbackBottomSheed);
+        this._bottomSheet.open(UserMsgBottomSheed, {
+          data: { message: 'Saved settings' },
+        });
         console.info('save complete');
         this.respMsg = 'Save success full';
         this.waitingResponse = false;
@@ -118,10 +122,19 @@ export class SettingsComponent {
   addCollection() {
     let col = new Collection();
     col.Name = 'New Collection (please change)';
+    let src = new SourceSystem();
+    src.Name = 'New Source (please change)';
+    let s = this.userSettings!.edges.Collections![0].edges.Sources![0];
+    src.URL = s.URL;
+    src.Type = s.Type;
+    src.Name = s.Name;
+    col.edges.Sources = new Array<SourceSystem>();
+    col.edges.Sources.push(src);
+    console.log(col);
     // let src = new SourceSystem();
     // src.Name = "New Source (please change)"
     // col.edges.Sources?.push(src)
-    this.userSettings?.edges.Collections?.push(col);
+    this.userSettings?.edges.Collections?.unshift(col);
   }
 
   debug() {
@@ -130,20 +143,18 @@ export class SettingsComponent {
 }
 
 @Component({
-  template: 'Saving Settings...',
+  template: '<div (click)="click($event)">{{data.message}}</div>',
   imports: [],
 })
-export class SavingFeedbackBottomSheed {}
-
-@Component({
-  template: '<div (click)="click()">Settings Saved</div>',
-  imports: [],
-})
-export class SavedFeedbackBottomSheed {
+export class UserMsgBottomSheed {
+  constructor(
+    @Inject(MAT_BOTTOM_SHEET_DATA) public data: { message: string }
+  ) {}
   private _bottomSheetRef =
-    inject<MatBottomSheetRef<SavedFeedbackBottomSheed>>(MatBottomSheetRef);
+    inject<MatBottomSheetRef<UserMsgBottomSheed>>(MatBottomSheetRef);
 
-  click(): void {
+  click(event: MouseEvent): void {
     this._bottomSheetRef.dismiss();
+    event.preventDefault();
   }
 }

@@ -61,7 +61,7 @@ func Embed(ctx context.Context, slog *slog.Logger, config cfg.RagConfig) error {
 	return nil
 }
 
-func embedd(ctx context.Context, client *vecdb.VecDB, config cfg.RagConfig, c chan vecdb.EmbeddDocument) error {
+func embedd(ctx context.Context, client *vecdb.VecDB, config cfg.RagConfig, c chan *vecdb.EmbeddDocument) error {
 	wg.Add(1)
 	defer wg.Done()
 	slog := slog.With("collection", config.Vecdb.CollectionName)
@@ -79,9 +79,9 @@ func embedd(ctx context.Context, client *vecdb.VecDB, config cfg.RagConfig, c ch
 	return nil
 }
 
-func fanOut(in chan vecdb.EmbeddDocument) (chan vecdb.EmbeddDocument, chan vecdb.EmbeddDocument) {
-	o1 := make(chan vecdb.EmbeddDocument)
-	o2 := make(chan vecdb.EmbeddDocument)
+func fanOut(in chan *vecdb.EmbeddDocument) (chan *vecdb.EmbeddDocument, chan *vecdb.EmbeddDocument) {
+	o1 := make(chan *vecdb.EmbeddDocument)
+	o2 := make(chan *vecdb.EmbeddDocument)
 	go func() {
 		defer close(o1)
 		defer close(o2)

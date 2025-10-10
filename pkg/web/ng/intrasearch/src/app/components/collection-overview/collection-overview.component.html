@@ -1,9 +1,11 @@
-<mat-tab-group>
-    <mat-tab label="Search">
-        <app-search [collection]="collection"></app-search>
-    </mat-tab>
+<div class="container">
+    <mat-tab-group class="container">
+        <mat-tab label="Search">
+            <app-search [collection]="collection"></app-search>
+        </mat-tab>
 
-    <mat-tab label="Chat">
-        <app-chatbot [basePath]="basePath" [model]="collection" />
-    </mat-tab>
-</mat-tab-group>
+        <mat-tab label="Chat" class="container">
+            <app-chatbot [basePath]="basePath" [model]="collection" class="container" />
+        </mat-tab>
+    </mat-tab-group>
+</div>
