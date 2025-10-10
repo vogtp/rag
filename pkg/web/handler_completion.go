@@ -86,7 +86,7 @@ func (srv *Server) chatCompletionHandler(w http.ResponseWriter, r *http.Request)
 	}
 	content, err := ragModel.GenerateContent(ctx, msgs, 0.001, func(ctx context.Context, chunk []byte) error { return nil })
 	if err != nil {
-		slog.Warn("Internal server error: Cannot generate content", "err", err)
+		slog.Warn("Internal server error: Cannot generate content", "err", err, "ragModel", ragModel)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
