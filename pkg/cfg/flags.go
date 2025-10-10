@@ -83,7 +83,7 @@ const (
 
 var (
 	// DefaultConfluenceMaxAge is the max age of a confluence page to be included
-	DefaultConfluenceMaxAge = 7 * 356 * 24 * time.Hour
+	DefaultConfluenceMaxAge = 7 * 365 * 24 * time.Hour
 )
 
 func init() {
