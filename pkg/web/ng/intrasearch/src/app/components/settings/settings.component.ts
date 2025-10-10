@@ -124,6 +124,10 @@ export class SettingsComponent {
     col.Name = 'New Collection (please change)';
     let src = new SourceSystem();
     src.Name = 'New Source (please change)';
+    let s = this.userSettings!.edges.Collections![0].edges.Sources![0];
+    src.URL = s.URL;
+    src.Type = s.Type;
+    src.Name = s.Name;
     col.edges.Sources = new Array<SourceSystem>();
     col.edges.Sources.push(src);
     console.log(col);
