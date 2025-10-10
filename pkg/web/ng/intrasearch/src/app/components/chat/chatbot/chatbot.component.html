@@ -1,49 +1,51 @@
-<div #bodyChatbotContainer class="body">
+<div class="container">
+  <div #bodyChatbotContainer class="body">
 
 
-  @for (chat of listOfMessages ; track chat; let index=$index )
-  {
-  <div class="chat-container-message"
-    [ngStyle]="{'flex-direction': index === 0 || index % 2 === 0 ? 'row' : 'row-reverse'}">
-    <!-- <img [src]="getIcon(index)" class="svg-container" alt="" 
+    @for (chat of listOfMessages ; track chat; let index=$index )
+    {
+    <div class="chat-container-message"
+      [ngStyle]="{'flex-direction': index === 0 || index % 2 === 0 ? 'row' : 'row-reverse'}">
+      <!-- <img [src]="getIcon(index)" class="svg-container" alt="" 
         [ngClass]="index === 0 || index % 2 === 0 ? 'chatbot-icon' : 'user-icon' " > -->
-    @if(chat.role === "user"){
-    <app-markdown class="chatbot-text user-message" markdown="{{chat.content}}" />
-    }@else {
+      @if(chat.role === "user"){
+      <app-markdown class="chatbot-text user-message" markdown="{{chat.content}}" />
+      }@else {
 
-    <app-markdown [ngClass]="errorResponse ? 'chat-error' : 'chat-message' " class="chatbot-text assistant-message"
-      markdown="{{chat.content}}" />
+      <app-markdown [ngClass]="errorResponse ? 'chat-error' : 'chat-message' " class="chatbot-text assistant-message"
+        markdown="{{chat.content}}" />
 
+      }
+
+    </div>
+    }
+
+    @if(waitingResponse)
+    {
+    <sbb-loading-indicator mode="small"></sbb-loading-indicator>
+    <div class="chat-container-message">
+      <div class="spinner">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+      </div>
+    </div>
     }
 
   </div>
-  }
 
-  @if(waitingResponse)
-  {
-  <sbb-loading-indicator mode="small"></sbb-loading-indicator>
-  <div class="chat-container-message">
-    <div class="spinner">
-      <div class="bounce1"></div>
-      <div class="bounce2"></div>
-      <div class="bounce3"></div>
-    </div>
-  </div>
-  }
-
-</div>
-
-<hr class="horizontal-line">
-<div class="footer">
-  <mat-form-field id="pInputText" style="width: 100%;">
-    <mat-label>Talk with {{model}}</mat-label>
-    <input matInput pInputText [(ngModel)]="inputText" (keydown.enter)="onSendForm()" [disabled]="waitingResponse">
-  </mat-form-field>
-  <!-- <input type="text" matInput pInputText placeholder="Write here your message..." [disabled]="waitingResponse"
+  <hr class="horizontal-line">
+  <div class="footer">
+    <mat-form-field id="pInputText" style="width: 100%;">
+      <mat-label>Talk with {{model}}</mat-label>
+      <input matInput pInputText [(ngModel)]="inputText" (keydown.enter)="onSendForm()" [disabled]="waitingResponse">
+    </mat-form-field>
+    <!-- <input type="text" matInput pInputText placeholder="Write here your message..." [disabled]="waitingResponse"
     [(ngModel)]="inputText" (keydown.enter)="onSendForm()" /> -->
 
-  <div class="send-icon-container" [class.disabled-icon]="!inputText" (click)="onSendForm()">
-    <i class="pi pi-send"></i>
-  </div>
+    <div class="send-icon-container" [class.disabled-icon]="!inputText" (click)="onSendForm()">
+      <i class="pi pi-send"></i>
+    </div>
 
+  </div>
 </div>
