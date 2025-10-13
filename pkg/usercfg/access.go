@@ -8,7 +8,7 @@ import (
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql/schema"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent"
-	_ "github.com/xiaoqidun/entps" // needed to acces sqlite
+	//_ "github.com/xiaoqidun/entps" // needed to acces sqlite
 )
 
 const (

@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/vogtp/rag/pkg/logger"
 	"github.com/vogtp/rag/pkg/usercfg"
+	"github.com/vogtp/rag/pkg/usercfg/db"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/sourcesystem"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/user"
@@ -15,6 +16,7 @@ import (
 
 func addDB() {
 	rootCmd.AddCommand(dbCmd)
+	dbCmd.AddCommand(dbGormCmd)
 	dbCmd.AddCommand(dbUserCmd)
 	dbCmd.AddCommand(dbAddCmd)
 	dbCmd.AddCommand(dbCleanupCmd)
@@ -30,6 +32,7 @@ var dbCmd = &cobra.Command{
 		return cmd.Usage()
 	},
 }
+
 var dbUserCmd = &cobra.Command{
 	Use:          "user",
 	Short:        "list users",
@@ -70,6 +73,30 @@ var dbUserCmd = &cobra.Command{
 		return nil
 	},
 }
+
+var dbGormCmd = &cobra.Command{
+	Use:          "gorm",
+	Short:        "list users",
+	Aliases:      []string{},
+	Long:         ``,
+	SilenceUsage: true,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
+		dbEnt, err := usercfg.New(cmd.Context(), logger.New(), usercfg.Dialect, usercfg.DBFileName)
+		if err != nil {
+			return err
+		}
+		usrs, err := dbEnt.GetUserQuery(ctx).All(ctx)
+		if err != nil {
+			return err
+		}
+		for _, u := range usrs {
+			fmt.Println(u.Name)
+		}
+		return db.InitGorm()
+	},
+}
+
 var dbCleanupCmd = &cobra.Command{
 	Use:   "cleanup [username]",
 	Short: "cleanup old collections from DB",
