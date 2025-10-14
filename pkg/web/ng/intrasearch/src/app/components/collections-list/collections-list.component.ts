@@ -29,6 +29,7 @@ export class CollectionsListComponent {
       error: (err) => {
         console.error('Load collection list from backend: ' + err);
         if (err === undefined) {
+          window.location.href = '/login?OrigPath=' + window.location.href;
           return;
         }
         console.log('Load collection list Http status: ' + err.status);

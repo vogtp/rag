@@ -38,6 +38,7 @@ export class SpaceListButtonComponent {
       error: (err) => {
         console.error('Load space list from backend: ' + err);
         if (err === undefined) {
+          window.location.href = '/login?OrigPath=' + window.location.href;
           return
         }
           console.log('Load space list Http status: ' + err.status);
