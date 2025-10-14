@@ -25,7 +25,7 @@ type DB struct {
 	slog   *slog.Logger
 }
 
-func NewENT(ctx context.Context, slog *slog.Logger, driverName string, dataSourceName string) (*DB, error) {
+func newENT(ctx context.Context, slog *slog.Logger, driverName string, dataSourceName string) (*DB, error) {
 	if driverName == dialect.SQLite {
 		dataSourceName = fmt.Sprintf("file:%s?&cache=shared&_fk=1", dataSourceName)
 	}

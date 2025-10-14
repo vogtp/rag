@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 
-	"entgo.io/ent/dialect"
 	"github.com/spf13/cobra"
 	"github.com/vogtp/rag/pkg/logger"
 	"github.com/vogtp/rag/pkg/usercfg"
@@ -34,47 +33,18 @@ var dbUserCmd = &cobra.Command{
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
-		////////////////// ENT
-		entDB, err := usercfg.NewENT(cmd.Context(), logger.New(), dialect.SQLite, "rag.sqlite")
-		if err != nil {
-			return err
-		}
-		usersEnt, err := entDB.GetUserQuery(ctx).All(ctx)
-		if err != nil {
-			return err
-		}
-		colCnt := 0
-		fmt.Println("User list ENT:")
-		for _, u := range usersEnt {
-			//u.Edges.Confluence
-			cols := u.Edges.Collections
-			fmt.Printf(" %s\n", u.Name)
-			if len(cols) > 0 {
-				for _, c := range cols {
-					fmt.Printf("   %s (%s)\n", c.Name, c.Edges.Sources[0].Parts)
-					colCnt++
-				}
-			}
-			// b, err := json.MarshalIndent(u, "", "  ")
-			// if err != nil {
-			// 	fmt.Println(err)
-			// }
-			// fmt.Print(string(b))
-		}
-		fmt.Printf("Count:\n Users: %v\n Collections: %v\n", len(usersEnt), colCnt)
-		//////////////////// GROM
 		db, err := usercfg.Create(ctx, logger.New())
 		if err != nil {
 			return err
 		}
-		colCnt = 0
+		colCnt := 0
 		fmt.Println("User list:")
 		users, err := db.Users(ctx)
 		if err != nil {
 			return err
 		}
 		for _, u := range users {
-			fmt.Printf(" %s\n", u.Name)
+			fmt.Printf(" * %s\n", u.Name)
 			if len(u.Collections) > 0 {
 				for _, c := range u.Collections {
 					fmt.Printf("   %s (%s)\n", c.DisplayName, c.Source.Parts)
