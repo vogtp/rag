@@ -2,7 +2,6 @@ package usercfg
 
 import (
 	"context"
-	"strings"
 
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
@@ -15,18 +14,7 @@ func (db *DB) CleanupUserCollections(ctx context.Context, usr *ent.User) error {
 	slog.Info("Cleanup user collecions")
 	colMap := make(map[string]bool)
 	for _, col := range usr.Edges.Collections {
-		for _, src := range col.Edges.Sources {
-			spaces := strings.Split(src.Parts, ",")
-			if len(spaces) < 1 {
-				spaces = strings.Split(src.Parts, " ")
-			}
-			spaces = append(spaces, "all")
-			colMap[col.CollectionName] = true
-			// for _, s := range spaces {
-			// 	colName := strings.ToLower(fmt.Sprintf("%s-%s-%s", usr.Name, col.Name, s))
-			// 	colMap[colName] = true
-			// }
-		}
+		colMap[col.CollectionName] = true
 	}
 	vecDb, err := vecdb.New(ctx, slog, viper.GetString(cfg.ModelEmbedding))
 	if err != nil {
@@ -41,7 +29,7 @@ func (db *DB) CleanupUserCollections(ctx context.Context, usr *ent.User) error {
 		return nil
 	}
 	for _, col := range cols {
-		if colMap[strings.ToLower(col.Name)] {
+		if colMap[col.Name] {
 			continue
 		}
 		slog.Info("Removing unused user collection", "collection", col.Name)
