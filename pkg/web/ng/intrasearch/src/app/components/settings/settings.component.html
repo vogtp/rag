@@ -15,29 +15,33 @@
 </div>
 
 <div style="padding: 7px; padding-top: 20px; display: flex;">
-
     <!-- <button (click)="debug()">
         Debug
     </button> -->
-    <button (click)="onSaveClick()">
+    <button  style="margin-right: 14px;" (click)="onSaveClick()">
         Save
     </button>
     <button (click)="addCollection()">
         Add Collection
     </button>
-    {{ respMsg }}
 </div>
 
 <mat-tab-group>
-    <div *ngFor="let cols of collections()!; track cols;let i = index">
+    <div *ngFor="let cols of collections()!; let i = index">
         <mat-tab label="{{collections()![i]!.Name }}">
             <app-collection [(collection)]="collections()![i]!" />
         </mat-tab>
     </div>
 </mat-tab-group>
 
-<!-- 
-<button (click)=" onSaveClick()" matFab extended aria-label="Save Settings">
-            <mat-icon>save</mat-icon>
-            Save Settings
-            </button> -->
+<div style="padding: 7px; padding-top: 20px; display: flex;">
+    <!-- <button (click)="debug()">
+        Debug
+    </button> -->
+    <button style="margin-right: 14px;" (click)="onSaveClick()">
+        Save
+    </button>
+    <button (click)="addCollection()">
+        Add Collection
+    </button>
+</div>
