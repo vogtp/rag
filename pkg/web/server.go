@@ -26,7 +26,6 @@ type Server struct {
 	mux     *http.ServeMux
 	oidcMux oidc.Mux
 
-	usercfgEnt *usercfg.DB
 	usercfg    *usercfg.DataBase
 
 	ragMgr     rag.Handler
@@ -36,18 +35,12 @@ type Server struct {
 
 // New creates a new webserver
 func New(ctx context.Context, slog *slog.Logger) (*Server, error) {
-	// if len(rags) == 0 {
-	// 	return nil, fmt.Errorf("no RAGs passed")
-	// }
-	userCfgEnt, err := usercfg.NewENT(ctx, slog, usercfg.Dialect, usercfg.DBFileName)
-	if err != nil {
-		return nil, err
-	}
+	
 	userCfg, err := usercfg.Create(ctx, slog)
 	if err != nil {
 		return nil, err
 	}
-	rags, err := rag.New(ctx, slog, userCfgEnt)
+	rags, err := rag.New(ctx, slog, userCfg)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +50,6 @@ func New(ctx context.Context, slog *slog.Logger) (*Server, error) {
 		ragMgr:     rags,
 		lastEmbedd: make(map[string]time.Time),
 		docCache:   newDocCache(),
-		usercfgEnt: userCfgEnt,
 		usercfg:    userCfg,
 	}
 	srv.httpSrv = &http.Server{

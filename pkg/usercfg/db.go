@@ -117,8 +117,14 @@ func (d *DataBase) Add(ctx context.Context, u *User) error {
 	return nil
 }
 
+var nilQuery = func(db gorm.PreloadBuilder) error { return nil }
+
 func (d *DataBase) usr() gorm.ChainInterface[User] {
-	return gorm.G[User](d.db).Preload("Collections.Source", func(db gorm.PreloadBuilder) error { return nil })
+	return gorm.G[User](d.db).Preload("Collections.Source", nilQuery)
+}
+
+func (d *DataBase) col() gorm.ChainInterface[Collection] {
+	return gorm.G[Collection](d.db).Preload("Source", nilQuery)
 }
 
 func (d *DataBase) Users(ctx context.Context) ([]User, error) {
@@ -128,4 +134,14 @@ func (d *DataBase) Users(ctx context.Context) ([]User, error) {
 func (d *DataBase) User(ctx context.Context, name string) (*User, error) {
 	u, err := d.usr().Where("name = ?", name).First(ctx)
 	return &u, err
+}
+
+func (d *DataBase) UserByAPIKey(ctx context.Context, key string) ([]User, error) {
+	usrs, err := d.usr().Where("APIKey = ?", key).Find(ctx)
+	return usrs, err
+}
+
+func (d *DataBase) CollectionByAPIKey(ctx context.Context, key string) ([]Collection, error) {
+	cols, err := d.col().Where("APIKey = ?", key).Find(ctx)
+	return cols, err
 }

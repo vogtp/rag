@@ -8,9 +8,6 @@ import (
 
 	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/usercfg"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent/collection"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent/user"
 	"github.com/vogtp/rag/pkg/web/bearer"
 	"github.com/vogtp/rag/pkg/web/oidc"
 )
@@ -30,11 +27,11 @@ var _ (GetAllRager) = (*handler)(nil)
 
 type handler struct {
 	slog       *slog.Logger
-	usercfg    *usercfg.DB
+	usercfg    *usercfg.DataBase
 	globalRags []Instance
 }
 
-func New(ctx context.Context, slog *slog.Logger, usercfg *usercfg.DB) (Handler, error) {
+func New(ctx context.Context, slog *slog.Logger, usercfg *usercfg.DataBase) (Handler, error) {
 	ragCfgs, err := cfg.GetRagConfig()
 	if err != nil {
 		return nil, fmt.Errorf("read RAG config: %w", err)
@@ -64,7 +61,7 @@ func (h handler) publicInstances() *instanceList {
 func (h handler) GetAllRags(ctx context.Context) []Instance {
 	rags := make([]Instance, 0)
 	rags = append(rags, h.globalRags...)
-	usrs, err := h.usercfg.User.Query().All(ctx)
+	usrs, err := h.usercfg.Users(ctx)
 	if err != nil {
 		h.slog.Warn("Cannot query users rags", "err", err)
 	}
@@ -83,26 +80,26 @@ func (h handler) AllFromRequest(r *http.Request) (Instance, error) {
 
 func (h handler) UserFromRequest(ctx context.Context, r *http.Request) (Instance, error) {
 	username, err := oidc.UserName(r)
-	
+
 	// by Bearer Token
 	bt, _ := bearer.Get(r)
 	rags := newInstanceList(h.slog, fmt.Sprintf("%s|%s", username, bt))
 
 	if len(username) > 1 {
-		if u, err := h.usercfg.ByName(ctx, username); err == nil {
-			rags.Add(h.getUserInstances(ctx, u)...)
+		if u, err := h.usercfg.User(ctx, username); err == nil {
+			rags.Add(h.getUserInstances(ctx, *u)...)
 		} else {
 			h.slog.Warn("Cannot query user by name", "err", err, "username", username)
 		}
 	}
 
 	if len(bt) > 1 {
-		if usrs, err := h.usercfg.GetUserQuery(ctx).Where(user.APIKey(bt)).All(ctx); err != nil {
+		if usrs, err := h.usercfg.UserByAPIKey(ctx, bt); err != nil {
 			rags.Add(h.getUserInstances(ctx, usrs...)...)
 		} else {
 			h.slog.Warn("Cannot query users by api key", "err", err, "apikey", bt)
 		}
-		if cols, err := h.usercfg.Collection.Query().Where(collection.APIKey(bt)).All(ctx); err != nil {
+		if cols, err := h.usercfg.CollectionByAPIKey(ctx, bt); err != nil {
 			rags.Add(h.getCollectionInstances(ctx, cols...)...)
 		} else {
 			h.slog.Warn("Cannot query collections by api key", "err", err, "apikey", bt)
@@ -112,27 +109,20 @@ func (h handler) UserFromRequest(ctx context.Context, r *http.Request) (Instance
 	return rags, err
 }
 
-func (h handler) getUserInstances(ctx context.Context, usrs ...*ent.User) []Instance {
+func (h handler) getUserInstances(ctx context.Context, usrs ...usercfg.User) []Instance {
 	rags := make([]Instance, 0)
 	for _, u := range usrs {
-		if u == nil {
-			continue
-		}
-		cols, err := u.Collections(ctx)
-		if err != nil {
-			h.slog.Warn("Cannot get collections from user", "err", err, "username", u.Name)
-		}
-		rags = append(rags, h.getCollectionInstances(ctx, cols...)...)
+		rags = append(rags, h.getCollectionInstances(ctx, u.Collections...)...)
 	}
 	return rags
 }
 
-func (h handler) getCollectionInstances(ctx context.Context, usrs ...*ent.Collection) []Instance {
+func (h handler) getCollectionInstances(ctx context.Context, usrs ...usercfg.Collection) []Instance {
 	rags := make([]Instance, 0)
 	for _, c := range usrs {
-		idc, err := newInstanceDBCol(ctx, h.slog, c)
+		idc, err := newInstanceDBCol(ctx, h.slog, &c)
 		if err != nil {
-			h.slog.Warn("Could not create rag instance from collection %q: %w", c.Name, err)
+			h.slog.Warn("Could not create rag instance from collection %q: %w", c.DisplayName, err)
 			continue
 		}
 		rags = append(rags, idc)

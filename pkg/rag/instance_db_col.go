@@ -10,7 +10,7 @@ import (
 	chroma "github.com/amikos-tech/chroma-go"
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent"
+	"github.com/vogtp/rag/pkg/usercfg"
 	"github.com/vogtp/rag/pkg/vecDB/confluence"
 )
 
@@ -19,20 +19,13 @@ var _ (cfg.RagConfig) = (*instanceDBCol)(nil)
 
 type instanceDBCol struct {
 	*instanceCfg
-	collection *ent.Collection
+	collection *usercfg.Collection
 
 	muEmbed sync.Mutex
 }
 
-func newInstanceDBCol(ctx context.Context, slog *slog.Logger, col *ent.Collection) (*instanceDBCol, error) {
-	srcs, err := col.Sources(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("get source system from collection %q: %w", col.Name, err)
-	}
-	if len(srcs) < 1 || srcs[0] == nil {
-		return nil, fmt.Errorf("no source system from collection %q found", col.Name)
-	}
-	src := srcs[0]
+func newInstanceDBCol(ctx context.Context, slog *slog.Logger, col *usercfg.Collection) (*instanceDBCol, error) {
+	src := col.Source
 	spaces := strings.Split(src.Parts, ",")
 	if len(spaces) < 1 {
 		spaces = strings.Split(src.Parts, " ")
@@ -41,7 +34,7 @@ func newInstanceDBCol(ctx context.Context, slog *slog.Logger, col *ent.Collectio
 		return nil, fmt.Errorf("no spaces found: %q", src.Parts)
 	}
 	ucfg := cfg.RagConfigInteral{
-		NameInt: col.Name,
+		NameInt: col.DisplayName,
 		ModelInt: cfg.ModelCfg{
 			Embedding: viper.GetString(cfg.ModelEmbedding),
 			LLM:       viper.GetString(cfg.ModelLLM),
@@ -71,7 +64,7 @@ func (i *instanceDBCol) CollectionName() string {
 	return i.collection.CollectionName
 }
 
-func (i *instanceDBCol) Embbed(ctx context.Context) error {	
+func (i *instanceDBCol) Embbed(ctx context.Context) error {
 	if !i.muEmbed.TryLock() {
 		return fmt.Errorf("Embedding (%q) already running!", i.config.Name())
 	}
