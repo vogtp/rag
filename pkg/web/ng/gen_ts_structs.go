@@ -10,11 +10,11 @@ import (
 	"github.com/OneOfOne/struct2ts"
 	"github.com/sashabaranov/go-openai"
 	"github.com/vogtp/rag/pkg/cfg"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent"
+	"github.com/vogtp/rag/pkg/usercfg"
 )
 
 func main() {
-	generate("./intrasearch/src/app/services/settings.service.structs.ts", ent.User{})
+	generate("./intrasearch/src/app/services/user.structs.ts", usercfg.User{})
 	generate("./intrasearch/src/app/components/chat/interfaces/openai.structs.ts", openai.ChatCompletionResponse{}, openai.ChatCompletionRequest{})
 	version := fmt.Sprintf("%v.%v.%v (%v)", cfg.VersionMajor, cfg.VersionMinor, cfg.VersionPatch, time.Now().Format("2006-01-02T15:04:05"))
 

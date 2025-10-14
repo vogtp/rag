@@ -122,7 +122,7 @@ func (db *DB) SaveUser(ctx context.Context, usr *ent.User) (err error) {
 	if err != nil {
 		return fmt.Errorf("update user %q: %w", usr.Name, err)
 	}
-	if err := db.CleanupUserCollections(ctx, dbUsr); err != nil {
+	if err := db.CleanupUserCollectionsEnt(ctx, dbUsr); err != nil {
 		db.slog.Warn("Cannot cleanup user collections", "username", usr.Name, "err", err)
 	}
 	return nil

@@ -23,7 +23,8 @@ func (srv *Server) routes() error {
 	srv.oidcMux.HandleFunc("/vecdb/", srv.vecDBlist)
 	srv.oidcMux.HandleFunc("/vecdb/{collection}", srv.vecDBsearch)
 	srv.oidcMux.HandleFunc("/summary/{uuid}", srv.handleSummary)
-	srv.oidcMux.HandleFunc("/user/", srv.handleUser)
+	srv.oidcMux.HandleFunc("/user/", srv.handleUserEnt)
+	srv.oidcMux.HandleFunc("/user_new/", srv.handleUser)
 
 	// srv.oidcMux.Handle("/graphql/", usercfg.HttpHandler())
 	// srv.oidcMux.Handle("/graphiql/", playground.Handler("RAG", "/graphql/"))

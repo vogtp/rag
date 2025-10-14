@@ -5,15 +5,14 @@ import (
 
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 )
 
-func (db *DB) CleanupUserCollections(ctx context.Context, usr *ent.User) error {
-	slog := db.slog.With("cleanup", usr.Name)
+func (d *DataBase) CleanupUserCollections(ctx context.Context, usr *User) error {
+	slog := d.slog.With("cleanup", usr.Name)
 	slog.Info("Cleanup user collecions")
 	colMap := make(map[string]bool)
-	for _, col := range usr.Edges.Collections {
+	for _, col := range usr.Collections {
 		colMap[col.CollectionName] = true
 	}
 	vecDb, err := vecdb.New(ctx, slog, viper.GetString(cfg.ModelEmbedding))

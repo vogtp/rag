@@ -7,6 +7,7 @@ import (
 
 	slogGorm "github.com/orandin/slog-gorm"
 	"github.com/vogtp/rag/pkg/logger"
+	"github.com/vogtp/rag/pkg/vecDB/chroma"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -62,7 +63,8 @@ func (u *User) SetAPIKey(k string) *User {
 }
 
 type DataBase struct {
-	db *gorm.DB
+	db   *gorm.DB
+	slog *slog.Logger
 }
 
 var dbInstance *DataBase
@@ -79,16 +81,15 @@ func Create(ctx context.Context, sl *slog.Logger) (*DataBase, error) {
 		logOpts = append(logOpts, slogGorm.SetLogLevel(slogGorm.DefaultLogType, logger.Level()))
 	}
 	gormSlog := slogGorm.New(logOpts...)
-	db, err := gorm.Open(sqlite.Open(dbName), &gorm.Config{
-		Logger: gormSlog,
-	})
+	backend := sqlite.Open(fmt.Sprintf("file:%s?&cache=shared&_fk=1", dbName))
+	db, err := gorm.Open(backend, &gorm.Config{Logger: gormSlog})
 	if err != nil {
 		return nil, fmt.Errorf("create db: %w", err)
 	}
 	if err := db.AutoMigrate(&User{}, &Collection{}, &SourceSystem{}); err != nil {
 		return nil, fmt.Errorf("automigration DB: %w", err)
 	}
-	return &DataBase{db: db}, nil
+	return &DataBase{db: db, slog: sl}, nil
 }
 
 func (d *DataBase) Add(ctx context.Context, u *User) error {
@@ -96,6 +97,9 @@ func (d *DataBase) Add(ctx context.Context, u *User) error {
 	if eu, err := d.User(ctx, u.Name); err == nil && eu != nil {
 		u.ID = eu.ID
 		for i, c := range u.Collections {
+			if len(c.CollectionName) < len(c.DisplayName) {
+				c.CollectionName = fmt.Sprintf("%s-%s", u.Name, chroma.FixCollectionName(c.DisplayName))
+			}
 			if ec := eu.Collection(c.CollectionName); ec != nil {
 				c.ID = ec.ID
 				c.Source.ID = ec.Source.ID
@@ -105,6 +109,9 @@ func (d *DataBase) Add(ctx context.Context, u *User) error {
 	}
 	if err := d.db.Clauses(clause.OnConflict{UpdateAll: true}).Create(u).Error; err != nil {
 		return fmt.Errorf("adding user %q: %w", u.Name, err)
+	}
+	if err := d.CleanupUserCollections(ctx, u); err != nil {
+		d.slog.Warn("Cannot cleanup user collections", "username", u.Name, "err", err)
 	}
 	return nil
 }
