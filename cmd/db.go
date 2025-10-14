@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/vogtp/rag/pkg/logger"
 	"github.com/vogtp/rag/pkg/usercfg"
-	"github.com/vogtp/rag/pkg/usercfg/db/ent/user"
 )
 
 func addDB() {
@@ -111,23 +110,23 @@ var dbCleanupCmd = &cobra.Command{
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
-		db, err := usercfg.NewENT(cmd.Context(), logger.New(), usercfg.Dialect, usercfg.DBFileName)
+		db, err := usercfg.Create(ctx, logger.New())
 		if err != nil {
 			return err
 		}
 		if len(args) > 0 {
-			usr, err := db.GetUserQuery(ctx).Where(user.Name(args[0])).First(ctx)
+			usr, err := db.User(ctx, args[0])
 			if err != nil {
 				return err
 			}
 			return db.CleanupUserCollections(ctx, usr)
 		}
-		usrs, err := db.GetUserQuery(ctx).All(ctx)
+		usrs, err := db.Users(ctx)
 		if err != nil {
 			return err
 		}
 		for _, usr := range usrs {
-			if err := db.CleanupUserCollections(ctx, usr); err != nil {
+			if err := db.CleanupUserCollections(ctx, &usr); err != nil {
 				return err
 			}
 		}
