@@ -14,12 +14,16 @@ func Migrate2Gorm(ctx context.Context, slog *slog.Logger) error {
 	if err != nil {
 		return err
 	}
-	gDB, err := Create(ctx, slog)
+	dbGorm, err := Create(ctx, slog)
 	if err != nil {
 		return err
 	}
 
 	for _, u := range usrs {
+		if eu, err := dbGorm.User(ctx, u.Name); err == nil && eu != nil {
+			slog.Info("User already migrated", "user", u.Name)
+			continue
+		}
 		slog.Warn("Migration DB from ent to gorm", "user", u.Name)
 		gu := User{
 			Name:        u.Name,
@@ -47,7 +51,7 @@ func Migrate2Gorm(ctx context.Context, slog *slog.Logger) error {
 
 			gu.Collections[i] = gc
 		}
-		if err := gDB.Add(ctx, &gu); err != nil {
+		if err := dbGorm.Add(ctx, &gu); err != nil {
 			return err
 		}
 	}
