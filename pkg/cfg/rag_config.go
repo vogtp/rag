@@ -33,12 +33,35 @@ const (
 // 	} `yaml:"vecdb"`
 // }
 
-type RagConfig struct {
-	Name       string        `yaml:"Name"`
-	APIToken   string        `yaml:"api_token"`
-	Model      ModelCfg      `yaml:"model"`
-	Vecdb      VecDbCfg      `yaml:"vecdb"`
-	Confluence ConfluenceCfg `yaml:"confluence"`
+type RagConfig interface {
+	CollectionName() string
+	Name() string
+	Confluence() *ConfluenceCfg
+	ModelEmbedding() string
+	VecDBUpdateIntervall() time.Duration
+}
+
+var _ RagConfig = (*RagConfigInteral)(nil)
+
+func (r RagConfigInteral) Name() string {
+	return r.NameInt
+}
+func (r RagConfigInteral) CollectionName() string {
+	return r.VecdbInt.CollectionName
+}
+func (r RagConfigInteral) Confluence() *ConfluenceCfg {
+	return &r.ConfluenceCfg
+}
+func (r RagConfigInteral) ModelEmbedding() string {
+	return r.ModelInt.Embedding
+}
+
+type RagConfigInteral struct {
+	NameInt       string        `yaml:"Name"`
+	APITokenInt   string        `yaml:"api_token"`
+	ModelInt      ModelCfg      `yaml:"model"`
+	VecdbInt      VecDbCfg      `yaml:"vecdb"`
+	ConfluenceCfg ConfluenceCfg `yaml:"confluence"`
 }
 
 type ModelCfg struct {
@@ -57,17 +80,17 @@ type ConfluenceCfg struct {
 	Spaces  []string `yaml:"spaces"`
 }
 
-func (r RagConfig) VecDBUpdateIntervall() time.Duration {
-	d, err := time.ParseDuration(r.Vecdb.UpdateIntervall)
+func (r RagConfigInteral) VecDBUpdateIntervall() time.Duration {
+	d, err := time.ParseDuration(r.VecdbInt.UpdateIntervall)
 	if err != nil {
-		slog.Warn("Cannot parse update intervall of RAG", "name", r.Name, "update_intervall", r.Vecdb.UpdateIntervall, "err", err)
+		slog.Warn("Cannot parse update intervall of RAG", "name", r.Name, "update_intervall", r.VecdbInt.UpdateIntervall, "err", err)
 		return DefaultVecDBUpdateIntervall
 	}
 	return d
 }
 
-func GetRagConfig() ([]RagConfig, error) {
-	ragCfg := make([]RagConfig, 0)
+func GetRagConfig() ([]RagConfigInteral, error) {
+	ragCfg := make([]RagConfigInteral, 0)
 	if err := viper.UnmarshalKey(ragConfigKey, &ragCfg); err != nil {
 		return nil, fmt.Errorf("read rag config: %v", err)
 	}
@@ -76,31 +99,31 @@ func GetRagConfig() ([]RagConfig, error) {
 	for i, l := range raw.([]any) {
 		r := l.(map[string]any)
 		v := r["vecdb"].(map[string]any)
-		ragCfg[i].Vecdb.CollectionName = v["collection_name"].(string)
-		ragCfg[i].Vecdb.UpdateIntervall = v["update_intervall"].(string)
+		ragCfg[i].VecdbInt.CollectionName = v["collection_name"].(string)
+		ragCfg[i].VecdbInt.UpdateIntervall = v["update_intervall"].(string)
 	}
 	return ragCfg, nil
 }
 
-var defaultRagCfg *RagConfig
+var defaultRagCfg *RagConfigInteral
 
 func RagCfgFIXME() RagConfig {
 	return DefaultRagCfg()
 }
 
-func DefaultRagCfg() RagConfig {
+func DefaultRagCfg() RagConfigInteral {
 	if defaultRagCfg == nil {
-		defaultRagCfg = &RagConfig{
-			Name: "Default",
-			Model: ModelCfg{
+		defaultRagCfg = &RagConfigInteral{
+			NameInt: "Default",
+			ModelInt: ModelCfg{
 				Embedding: viper.GetString(ModelEmbedding),
 				LLM:       viper.GetString(ModelLLM),
 			},
-			Vecdb: VecDbCfg{
+			VecdbInt: VecDbCfg{
 				CollectionName:  viper.GetString(VecDBColName),
 				UpdateIntervall: viper.GetString(VecDBUpdateIntervall),
 			},
-			Confluence: ConfluenceCfg{
+			ConfluenceCfg: ConfluenceCfg{
 				Key:     viper.GetString(ConfluenceKey),
 				BaseURL: viper.GetString(ConfluenceBaseURL),
 				Spaces:  viper.GetStringSlice(ConfluenceSpaces),

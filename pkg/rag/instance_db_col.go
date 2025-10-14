@@ -5,19 +5,23 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
+	"sync"
 
 	chroma "github.com/amikos-tech/chroma-go"
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
-	"github.com/vogtp/rag/pkg/logger"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent"
+	"github.com/vogtp/rag/pkg/vecDB/confluence"
 )
 
 var _ (Instance) = (*instanceDBCol)(nil)
+var _ (cfg.RagConfig) = (*instanceDBCol)(nil)
 
 type instanceDBCol struct {
 	*instanceCfg
 	collection *ent.Collection
+
+	muEmbed sync.Mutex
 }
 
 func newInstanceDBCol(ctx context.Context, slog *slog.Logger, col *ent.Collection) (*instanceDBCol, error) {
@@ -36,17 +40,17 @@ func newInstanceDBCol(ctx context.Context, slog *slog.Logger, col *ent.Collectio
 	if len(spaces) < 1 {
 		return nil, fmt.Errorf("no spaces found: %q", src.Parts)
 	}
-	ucfg := cfg.RagConfig{
-		Name: col.Name,
-		Model: cfg.ModelCfg{
+	ucfg := cfg.RagConfigInteral{
+		NameInt: col.Name,
+		ModelInt: cfg.ModelCfg{
 			Embedding: viper.GetString(cfg.ModelEmbedding),
 			LLM:       viper.GetString(cfg.ModelLLM),
 		},
-		Vecdb: cfg.VecDbCfg{
+		VecdbInt: cfg.VecDbCfg{
 			CollectionName:  col.CollectionName,
 			UpdateIntervall: "24h",
 		},
-		Confluence: cfg.ConfluenceCfg{
+		ConfluenceCfg: cfg.ConfluenceCfg{
 			Key:     src.Key,
 			BaseURL: src.URL,
 			Spaces:  spaces,
@@ -63,13 +67,33 @@ func newInstanceDBCol(ctx context.Context, slog *slog.Logger, col *ent.Collectio
 	return i, nil
 }
 
-func (i instanceDBCol) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
-	cfg := cfg.DefaultRagCfg()
-	cfg.Vecdb.CollectionName = i.collection.CollectionName
-	cols, err := i.vecDB.ListCollections(ctx, cfg)
-	if err != nil {
-		i.slog.Warn("No collection found collection instance", "collectionname", i.collection.Name, logger.Stacktrace())
-		return nil, fmt.Errorf("retrieving collection %s: %v", i.collection.Name, err)
+func (i *instanceDBCol) CollectionName() string {
+	return i.collection.CollectionName
+}
+
+func (i *instanceDBCol) Embbed(ctx context.Context) error {	
+	if !i.muEmbed.TryLock() {
+		return fmt.Errorf("Embedding (%q) already running!", i.config.Name())
 	}
-	return cols, nil
+	defer i.muEmbed.Unlock()
+	return confluence.Embed(ctx, i.slog, i)
+}
+
+func (i *instanceDBCol) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
+	if len(i.CollectionName()) < 1 {
+		return nil, fmt.Errorf("no collection name given")
+
+	}
+	cols, err := i.vecDB.ListAllCollections(ctx)
+	if err != nil {
+		return nil, err
+	}
+	collections := make([]*chroma.Collection, 0, len(cols))
+	for _, col := range cols {
+		if !strings.EqualFold(col.Name, i.CollectionName()) {
+			continue
+		}
+		collections = append(collections, col)
+	}
+	return collections, nil
 }

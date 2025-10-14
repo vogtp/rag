@@ -9,6 +9,7 @@ import (
 
 	chromago "github.com/amikos-tech/chroma-go"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 	"github.com/vogtp/rag/pkg/vecDB/chroma"
@@ -82,9 +83,7 @@ var vecDbSearchCmd = &cobra.Command{
 			fmt.Printf("Searching collection %s took %s\n", collectionName, time.Since(t))
 		}(start)
 		ctx := cmd.Context()
-		dcfg := cfg.DefaultRagCfg()
-		dcfg.Vecdb.CollectionName = collectionName
-		client, err := vecdb.New(ctx, slog.Default(), dcfg, vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
+		client, err := vecdb.New(ctx, slog.Default(), viper.GetString(cfg.ModelEmbedding), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
 		if err != nil {
 			return fmt.Errorf("Failed to create vector DB: %w", err)
 		}
@@ -112,9 +111,7 @@ var vecDbRmCmd = &cobra.Command{
 			return cmd.Usage()
 		}
 		ctx := cmd.Context()
-		dcfg := cfg.RagCfgFIXME()
-		dcfg.Vecdb.CollectionName = args[0]
-		client, err := vecdb.New(ctx, slog.Default(), dcfg)
+		client, err := vecdb.New(ctx, slog.Default(), viper.GetString(cfg.ModelEmbedding))
 		if err != nil {
 			return fmt.Errorf("Failed to create client: %w", err)
 		}
@@ -148,7 +145,7 @@ var vecDbLsCmd = &cobra.Command{
 	Long:    ``,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
-		client, err := vecdb.New(ctx, slog.Default(), cfg.RagCfgFIXME())
+		client, err := vecdb.New(ctx, slog.Default(), viper.GetString(cfg.ModelEmbedding))
 		if err != nil {
 			return fmt.Errorf("failed to create client: %w", err)
 		}
@@ -192,9 +189,7 @@ var vecDbColLsCmd = &cobra.Command{
 		}
 		colName := args[0]
 		ctx := cmd.Context()
-		dcfg := cfg.DefaultRagCfg()
-		dcfg.Vecdb.CollectionName = colName
-		client, err := vecdb.New(ctx, slog.Default(), dcfg)
+		client, err := vecdb.New(ctx, slog.Default(), viper.GetString(cfg.ModelEmbedding))
 		if err != nil {
 			return fmt.Errorf("Failed to create client: %w", err)
 		}

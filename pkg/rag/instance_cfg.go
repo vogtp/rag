@@ -18,30 +18,32 @@ import (
 )
 
 var _ (Instance) = (*instanceCfg)(nil)
+var _ (cfg.RagConfig) = (*instanceCfg)(nil)
 
 type instanceCfg struct {
 	slog   *slog.Logger
-	config cfg.RagConfig
+	config cfg.RagConfigInteral
 
 	vecDB  *vecdb.VecDB
 	models []Model
 
 	bearerAuth bearer.Auth
+	// muEmbed    sync.Mutex
 }
 
-func newInstanceCfg(ctx context.Context, slog *slog.Logger, config cfg.RagConfig) (*instanceCfg, error) {
+func newInstanceCfg(ctx context.Context, slog *slog.Logger, config cfg.RagConfigInteral) (*instanceCfg, error) {
 	m := instanceCfg{
-		slog:       slog.With("rag.name", config.Name, "collection.name", config.Vecdb.CollectionName),
+		slog:       slog.With("rag.name", config.Name(), "collection.name", config.CollectionName()),
 		config:     config,
-		bearerAuth: bearer.TokenAuth(config.APIToken),
+		bearerAuth: bearer.TokenAuth(config.APITokenInt),
 		models: []Model{
 			OllamaModel{
-				Name:    config.Model.LLM,
-				LLMName: config.Model.LLM,
+				Name:    config.ModelInt.LLM,
+				LLMName: config.ModelInt.LLM,
 			},
 		},
 	}
-	v, err := vecdb.New(ctx, slog, config)
+	v, err := vecdb.New(ctx, slog, config.ModelEmbedding())
 	if err != nil {
 		return nil, fmt.Errorf("cannot connect to chroma: %w", err)
 	}
@@ -53,31 +55,46 @@ func newInstanceCfg(ctx context.Context, slog *slog.Logger, config cfg.RagConfig
 	return &m, nil
 }
 
-func (i instanceCfg) Name() string {
-	return i.config.Name
+func (i *instanceCfg) Name() string {
+	return i.config.Name()
 }
 
-func (i instanceCfg) UpdateIntervall() time.Duration {
+func (i *instanceCfg) UpdateIntervall() time.Duration {
 	return i.config.VecDBUpdateIntervall()
 }
 
-func (i instanceCfg) Authorise(w http.ResponseWriter, r *http.Request) bool {
+func (i *instanceCfg) Authorise(w http.ResponseWriter, r *http.Request) bool {
 	return i.bearerAuth.Authorise(w, r)
 }
 
 // LLM returns the name of the LLM that is used for generation
-func (i instanceCfg) LLM() string {
-	return i.config.Model.LLM
+func (i *instanceCfg) LLM() string {
+	return i.config.ModelInt.LLM
+}
+
+func (i *instanceCfg) CollectionName() string {
+	return i.config.CollectionName()
+}
+
+func (i *instanceCfg) Confluence() *cfg.ConfluenceCfg {
+	return i.config.Confluence()
+}
+
+func (i *instanceCfg) ModelEmbedding() string {
+	return i.config.ModelEmbedding()
+}
+
+func (i *instanceCfg) VecDBUpdateIntervall() time.Duration {
+	return i.config.VecDBUpdateIntervall()
 }
 
 func (i *instanceCfg) updateModelsFromChroma(ctx context.Context) error {
-
-	collections, err := i.vecDB.ListCollections(ctx, i.config)
+	collections, err := i.vecDB.ListCollections(ctx, i.config.CollectionName())
 	if err != nil {
 		return fmt.Errorf("cannot list chroma collections: %w", err)
 	}
 
-	model := i.config.Model.LLM
+	model := i.config.ModelInt.LLM
 	for _, c := range collections {
 		i.models = append(i.models, VectorStoreModel{Name: c.Name, vecDB: i.vecDB, Collection: c.Name, LLMName: model, config: i.config, bearerAuth: i.bearerAuth})
 	}
@@ -96,7 +113,7 @@ func (i *instanceCfg) Models(ctx context.Context) []Model {
 	return i.models
 }
 
-func (i instanceCfg) Model(name string) (Model, error) {
+func (i *instanceCfg) Model(name string) (Model, error) {
 	i.slog.Debug("Query model", "model", name)
 	decoded, err := url.QueryUnescape(name)
 	if err != nil {
@@ -111,20 +128,24 @@ func (i instanceCfg) Model(name string) (Model, error) {
 	}
 	return nil, fmt.Errorf("model %s not found", name)
 }
-func (i instanceCfg) Embbed(ctx context.Context) error {
-	if len(i.config.Vecdb.CollectionName) < 1 {
+func (i *instanceCfg) Embbed(ctx context.Context) error {
+	// if !i.muEmbed.TryLock() {
+	// 	return fmt.Errorf("Embedding (%q) already running!", i.config.Name())
+	// }
+	// defer i.muEmbed.Unlock()
+	if len(i.config.VecdbInt.CollectionName) < 1 {
 		return nil
 	}
 	return confluence.Embed(ctx, i.slog, i.config)
 }
 
-func (i instanceCfg) SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error) {
+func (i *instanceCfg) SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error) {
 	res, err := i.vecDB.Query(ctx, collection, []string{query}, int32(maxResults))
 	if err != nil {
 		return nil, fmt.Errorf("query vector DB: %w", err)
 	}
 	return res[0].Documents, nil
 }
-func (i instanceCfg) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
-	return i.vecDB.ListCollections(ctx, i.config)
+func (i *instanceCfg) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
+	return i.vecDB.ListCollections(ctx, i.config.CollectionName())
 }

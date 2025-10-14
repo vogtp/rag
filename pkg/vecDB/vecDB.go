@@ -25,11 +25,11 @@ type VecDB struct {
 }
 
 // New creates a vectorDB
-func New(ctx context.Context, slog *slog.Logger, config cfg.RagConfig, opts ...Option) (*VecDB, error) {
+func New(ctx context.Context, slog *slog.Logger, embeddingsModel string, opts ...Option) (*VecDB, error) {
 	v := &VecDB{
 		slog:            slog,
 		chromaAddr:      cfg.ChromaUrl(),
-		embeddingsModel: config.Model.Embedding,
+		embeddingsModel: embeddingsModel,
 	}
 	for _, o := range opts {
 		o(v)
@@ -105,9 +105,8 @@ func (v *VecDB) ListAllCollections(ctx context.Context) ([]*chroma.Collection, e
 }
 
 // ListCollections lists all colletions
-func (v *VecDB) ListCollections(ctx context.Context, cfg cfg.RagConfig) ([]*chroma.Collection, error) {
-
-	if len(cfg.Vecdb.CollectionName) < 1 {
+func (v *VecDB) ListCollections(ctx context.Context, collectionName string) ([]*chroma.Collection, error) {
+	if len(collectionName) < 1 {
 		return nil, fmt.Errorf("no collection name given")
 
 	}
@@ -115,7 +114,7 @@ func (v *VecDB) ListCollections(ctx context.Context, cfg cfg.RagConfig) ([]*chro
 	if err != nil {
 		return nil, err
 	}
-	prefix := cfg.Vecdb.CollectionName + "-"
+	prefix := collectionName
 	collections := make([]*chroma.Collection, 0, len(cols))
 	for _, col := range cols {
 		if !strings.HasPrefix(col.Name, prefix) {

@@ -115,9 +115,9 @@ func (i *instanceList) ListCollections(ctx context.Context) ([]*chroma.Collectio
 		}
 		cols = append(cols, c...)
 	}
-	if len(cols) < 1 {
-		return cols, fmt.Errorf("no collections found")
-	}
+	// if len(cols) < 1 {
+	// 	return cols, fmt.Errorf("no collections found")
+	// }
 	return cols, nil
 }
 
@@ -126,7 +126,7 @@ func (i *instanceList) SearchVecDB(ctx context.Context, slog *slog.Logger, colle
 	for _, r := range i.rags {
 		c, err := r.SearchVecDB(ctx, slog, collection, query, maxResults)
 		if err != nil {
-			i.slog.Warn("Cannot search vecDV of rag list member", "err", err, "rag.name", r.Name())
+			i.slog.Error("Cannot search vecDV of rag list member", "err", err, "rag.name", r.Name())
 		}
 		docs = append(docs, c...)
 	}

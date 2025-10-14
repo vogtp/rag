@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
@@ -27,13 +28,11 @@ func (db *DB) CleanupUserCollections(ctx context.Context, usr *ent.User) error {
 			}
 		}
 	}
-	vc := cfg.DefaultRagCfg()
-	vc.Vecdb.CollectionName = usr.Name
-	vecDb, err := vecdb.New(ctx, slog, vc)
+	vecDb, err := vecdb.New(ctx, slog, viper.GetString(cfg.ModelEmbedding))
 	if err != nil {
 		return err
 	}
-	cols, err := vecDb.ListCollections(ctx, vc)
+	cols, err := vecDb.ListCollections(ctx, usr.Name)
 	if err != nil {
 		return err
 	}

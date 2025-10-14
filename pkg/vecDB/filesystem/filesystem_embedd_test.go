@@ -6,16 +6,17 @@ import (
 	"os"
 	"testing"
 
+	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 	"github.com/vogtp/rag/pkg/vecDB/filesystem"
 )
 
 func TestGenerate(t *testing.T) {
+	viper.Set(cfg.VecDBColName, "test-test")
 	ctx := context.Background()
 	dcfg := cfg.DefaultRagCfg()
-	dcfg.Vecdb.CollectionName = "test-test"
-	client, err := vecdb.New(ctx, slog.Default(), dcfg, vecdb.WithChromaAddress("http://localhost:8000"), vecdb.WithOllamaAddress("https://llama-1.its.unibas.ch"))
+	client, err := vecdb.New(ctx, slog.Default(), dcfg.ModelEmbedding(), vecdb.WithChromaAddress("http://localhost:8000"), vecdb.WithOllamaAddress("https://llama-1.its.unibas.ch"))
 	if err != nil {
 		t.Fatalf("Failed to create vector DB: %v", err)
 	}

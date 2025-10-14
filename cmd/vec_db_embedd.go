@@ -37,8 +37,8 @@ var vecDbEmbbedPathCmd = &cobra.Command{
 		}(start)
 		ctx := cmd.Context()
 		dcfg := cfg.DefaultRagCfg()
-		dcfg.Vecdb.CollectionName = collectionName
-		client, err := vecdb.New(ctx, slog.Default(), dcfg, vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
+		dcfg.VecdbInt.CollectionName = collectionName
+		client, err := vecdb.New(ctx, slog.Default(), dcfg.ModelEmbedding(), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
 		if err != nil {
 			return fmt.Errorf("create vector DB: %w", err)
 		}
@@ -61,8 +61,8 @@ var vecDbEmbbedConfluenceCmd = &cobra.Command{
 		}
 		notUsed := ""
 		for _, ragCfg := range ragCfgs {
-			if len(args) > 0 && !strings.EqualFold(args[0], ragCfg.Name) {
-				notUsed = fmt.Sprintf("%s %s", notUsed, ragCfg.Name)
+			if len(args) > 0 && !strings.EqualFold(args[0], ragCfg.Name()) {
+				notUsed = fmt.Sprintf("%s %s", notUsed, ragCfg.Name())
 				continue
 			}
 			if err := confluence.Embed(ctx, slog, ragCfg); err != nil {

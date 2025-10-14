@@ -203,7 +203,7 @@ func (m *VectorStoreModel) getEmbedder(ctx context.Context) (*embeddings.Embedde
 	if m.embedder != nil {
 		return m.embedder, nil
 	}
-	llm, err := getOllamaClient(ctx, m.config.Model.Embedding)
+	llm, err := getOllamaClient(ctx, m.config.ModelEmbedding())
 	if err != nil {
 		return nil, fmt.Errorf("cannot create llm client: %w", err)
 	}

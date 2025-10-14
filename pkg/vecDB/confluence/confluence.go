@@ -19,20 +19,20 @@ import (
 
 // GetDocuments retrives confluence spaces and generates vecdb.EmbeddDocuments
 func GetDocuments(ctx context.Context, slog *slog.Logger, config cfg.RagConfig, spaces ...string) (chan *vecdb.EmbeddDocument, error) {
-	baseURL := config.Confluence.BaseURL
+	baseURL := config.Confluence().BaseURL
 	baseURL = strings.TrimRight(baseURL, "/")
 	conf := confluence{
 		slog:       slog.With("confluence_url", baseURL),
 		baseURL:    baseURL,
 		out:        make(chan *vecdb.EmbeddDocument, 10),
-		accessKey:  config.Confluence.Key,
+		accessKey:  config.Confluence().Key,
 		rateLimit:  rate.Limit(0.4),
 		queryLimit: 100,
 		spaces:     spaces,
 		config:     config,
 	}
 	if len(spaces) < 1 {
-		conf.spaces = config.Confluence.Spaces
+		conf.spaces = config.Confluence().Spaces
 	}
 	if err := conf.init(); err != nil {
 		return nil, err

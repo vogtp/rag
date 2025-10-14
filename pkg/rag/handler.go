@@ -43,7 +43,7 @@ func New(ctx context.Context, slog *slog.Logger, usercfg *usercfg.DB) (Handler, 
 	for i, ragCfg := range ragCfgs {
 		r, err := newInstanceCfg(ctx, slog, ragCfg)
 		if err != nil {
-			return nil, fmt.Errorf("start rag %q backend: %w", ragCfg.Name, err)
+			return nil, fmt.Errorf("start rag %q backend: %w", ragCfg.Name(), err)
 		}
 		rags[i] = r
 	}
