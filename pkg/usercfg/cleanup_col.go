@@ -2,7 +2,6 @@ package usercfg
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -22,10 +21,11 @@ func (db *DB) CleanupUserCollections(ctx context.Context, usr *ent.User) error {
 				spaces = strings.Split(src.Parts, " ")
 			}
 			spaces = append(spaces, "all")
-			for _, s := range spaces {
-				colName := strings.ToLower(fmt.Sprintf("%s-%s-%s", usr.Name, col.Name, s))
-				colMap[colName] = true
-			}
+			colMap[col.CollectionName] = true
+			// for _, s := range spaces {
+			// 	colName := strings.ToLower(fmt.Sprintf("%s-%s-%s", usr.Name, col.Name, s))
+			// 	colMap[colName] = true
+			// }
 		}
 	}
 	vecDb, err := vecdb.New(ctx, slog, viper.GetString(cfg.ModelEmbedding))
@@ -35,6 +35,10 @@ func (db *DB) CleanupUserCollections(ctx context.Context, usr *ent.User) error {
 	cols, err := vecDb.ListCollections(ctx, usr.Name)
 	if err != nil {
 		return err
+	}
+	if len(cols) < 1 {
+		slog.Info("No collections to cleanup")
+		return nil
 	}
 	for _, col := range cols {
 		if colMap[strings.ToLower(col.Name)] {
