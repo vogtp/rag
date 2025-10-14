@@ -7,8 +7,10 @@ import (
 
 	"github.com/sashabaranov/go-openai"
 	"github.com/vogtp/langchaingo/chains"
+	"github.com/vogtp/langchaingo/embeddings"
 	"github.com/vogtp/langchaingo/llms"
 	"github.com/vogtp/langchaingo/llms/ollama"
+	llmopenai "github.com/vogtp/langchaingo/llms/openai"
 	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/web/bearer"
 )
@@ -68,13 +70,29 @@ func (m OllamaModel) GenerateContent(ctx context.Context, messages []llms.Messag
 	return respString, err
 }
 
+// BackendModel allows generate and embedding
+type BackendModel interface {
+	llms.Model
+	llms.ReasoningModel
+	embeddings.EmbedderClient
+}
+
 // getOllamaClient returns a ollama client
 // it is used not only in the OllamaModel
-func getOllamaClient(ctx context.Context, llmName string) (*ollama.LLM, error) {
+func getOllamaClient(ctx context.Context, llmName string) (BackendModel, error) {
 	url := cfg.GetOllamaHost(ctx)
-	slog.Info("connecting to ollama", "OllamaModel", llmName, "url", url)
+	slog.Info("connecting to ollama", "LLM", llmName, "url", url)
 	return ollama.New(
 		ollama.WithModel(llmName),
 		ollama.WithServerURL(url),
+	)
+}
+
+func getOpenAIClient(ctx context.Context, llmName string) (BackendModel, error) {
+	url := cfg.GetOllamaHost(ctx)
+	slog.Info("connecting to ollama", "LLM", llmName, "url", url)
+	return llmopenai.New(
+		llmopenai.WithModel(llmName),
+		llmopenai.WithBaseURL("FIXME"),
 	)
 }
