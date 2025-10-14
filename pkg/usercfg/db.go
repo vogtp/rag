@@ -15,6 +15,11 @@ import (
 	"gorm.io/gorm/clause"
 )
 
+const (
+	//Dialect    = dialect.SQLite
+	DBFileName = "rag_users.sqlite"
+)
+
 type SourceSystemType uint
 
 const (
@@ -71,7 +76,7 @@ func Create(ctx context.Context, sl *slog.Logger) (*DataBase, error) {
 	if dbInstance != nil {
 		return dbInstance, nil
 	}
-	dbName := "test.db"
+	dbName := DBFileName
 	sl = sl.With(slog.String("database", dbName))
 	logOpts := []slogGorm.Option{slogGorm.WithHandler(sl.Handler())}
 	if sl.Enabled(ctx, slog.LevelDebug) {

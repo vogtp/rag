@@ -6,7 +6,7 @@ import (
 )
 
 func Migrate2Gorm(ctx context.Context, slog *slog.Logger) error {
-	dbEnt, err := newENT(ctx, slog, Dialect, DBFileName)
+	dbEnt, err := newENT(ctx, slog, Dialect, DBFileNameEnt)
 	if err != nil {
 		return err
 	}

@@ -16,7 +16,7 @@ import (
 
 const (
 	Dialect    = dialect.SQLite
-	DBFileName = "rag.sqlite"
+	DBFileNameEnt = "rag.sqlite"
 )
 
 type DB struct {
