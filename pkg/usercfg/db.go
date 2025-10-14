@@ -1,5 +1,7 @@
 package usercfg
 
+//go:generate stringer -type=SourceSystemType --trimprefix Source
+
 import (
 	"context"
 	"fmt"
@@ -16,7 +18,7 @@ import (
 type SourceSystemType uint
 
 const (
-	SourceConfluence = iota
+	SourceConfluence SourceSystemType = iota
 	SourceHTTP
 )
 
@@ -56,11 +58,6 @@ func (u *User) Collection(n string) *Collection {
 		}
 	}
 	return nil
-}
-
-func (u *User) SetAPIKey(k string) *User {
-	u.APIKey = k
-	return u
 }
 
 type DataBase struct {
