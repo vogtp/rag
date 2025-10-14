@@ -18,5 +18,9 @@
   "/api": {
     "target": "http://localhost:4444",
     "secure": false
+  },
+  "/auth/callback": {
+    "target": "http://localhost:4444",
+    "secure": false
   }
 }
