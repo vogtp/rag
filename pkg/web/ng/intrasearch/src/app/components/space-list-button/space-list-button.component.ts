@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -36,7 +37,15 @@ export class SpaceListButtonComponent {
       },
       error: (err) => {
         console.error('Load space list from backend: ' + err);
-        window.location.href = '/login?OrigPath=' + window.location.href;
+        if (err === undefined) {
+          return
+        }
+          console.log('Load space list Http status: ' + err.status);
+        if (err instanceof HttpErrorResponse) {
+          console.log('Load space list Http status: ' + err.status);
+          
+          window.location.href = '/login?OrigPath=' + window.location.href;
+        }
       },
     });
   }

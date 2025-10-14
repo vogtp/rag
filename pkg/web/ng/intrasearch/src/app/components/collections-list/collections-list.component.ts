@@ -7,6 +7,7 @@ import {
 
 import { MatListModule } from '@angular/material/list';
 import { RouterLink } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-collections-list',
@@ -27,7 +28,15 @@ export class CollectionsListComponent {
       },
       error: (err) => {
         console.error('Load collection list from backend: ' + err);
-        window.location.href = '/login?OrigPath=' + window.location.href;
+        if (err === undefined) {
+          return;
+        }
+        console.log('Load collection list Http status: ' + err.status);
+        if (err instanceof HttpErrorResponse) {
+          console.log('Load collection list Http status: ' + err.status);
+
+          window.location.href = '/login?OrigPath=' + window.location.href;
+        }
       },
     });
   }
