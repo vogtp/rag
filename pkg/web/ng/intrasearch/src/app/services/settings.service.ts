@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { httpHeaders, userSettingsURL } from './common';
-import { User } from './settings.service.structs';
+import { User } from './user.structs';
 
 @Injectable({
   providedIn: 'root',

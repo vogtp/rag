@@ -23,11 +23,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { SbbLoadingIndicatorModule } from '@sbb-esta/angular/loading-indicator';
 import { SettingsService } from '../../services/settings.service';
-import {
-  Collection,
-  SourceSystem,
-  User,
-} from '../../services/settings.service.structs';
+import { Collection, SourceSystem, User } from '../../services/user.structs';
 import { CollectionComponent } from './collection/collection.component';
 
 @Component({
@@ -68,7 +64,7 @@ export class SettingsComponent {
     this.settingsService.getUserSetting().subscribe({
       next: (data) => {
         this.userSettings = data;
-        this.collections.set(data.edges.Collections!);
+        this.collections.set(data.Collections!);
         this.cdRef.detectChanges();
       },
       error: (err) => {
@@ -121,20 +117,19 @@ export class SettingsComponent {
 
   addCollection() {
     let col = new Collection();
-    col.Name = 'New Collection (please change)';
+    col.DisplayName = 'New Collection (please change)';
     let src = new SourceSystem();
     src.Name = 'New Source (please change)';
-    let s = this.userSettings!.edges.Collections![0].edges.Sources![0];
+    let s = this.userSettings!.Collections![0].Source!;
     src.URL = s.URL;
     src.Type = s.Type;
     src.Name = s.Name;
-    col.edges.Sources = new Array<SourceSystem>();
-    col.edges.Sources.push(src);
+    col.Source = src;
     console.log(col);
     // let src = new SourceSystem();
     // src.Name = "New Source (please change)"
     // col.edges.Sources?.push(src)
-    this.userSettings?.edges.Collections?.unshift(col);
+    this.userSettings?.Collections?.unshift(col);
   }
 
   debug() {

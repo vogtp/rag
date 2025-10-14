@@ -7,7 +7,7 @@
     <mat-card-content>
         <mat-form-field>
             <mat-label>Collection Name</mat-label>
-            <input matInput [(ngModel)]="collection()!.Name">
+            <input matInput [(ngModel)]="collection()!.DisplayName">
         </mat-form-field>
 
         <mat-form-field style="padding-bottom: 20px;">
@@ -28,11 +28,11 @@
             <mat-card-content>
 
                 <mat-tab-group>
-                    <div *ngFor="let src of collection()!.edges!.Sources; let i = index">
-                        <mat-tab label="{{ collection()!.edges!.Sources![i].Name }}">
-                            <app-source [(source)]="collection()!.edges!.Sources![i]" />
+                    <!-- <div *ngFor="let src of collection()!.Sources; let i = index"> -->
+                        <mat-tab label="{{ collection()!.Source!.Name }}">
+                            <app-source [(source)]="collection()!.Source!" />
                         </mat-tab>
-                    </div>
+                    <!-- </div> -->
                 </mat-tab-group>
             </mat-card-content>
         </mat-card>

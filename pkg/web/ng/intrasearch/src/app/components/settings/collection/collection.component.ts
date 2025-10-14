@@ -9,10 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTreeModule } from '@angular/material/tree';
-import {
-  Collection,
-  SourceSystem,
-} from '../../../services/settings.service.structs';
+import { Collection, SourceSystem } from '../../../services/user.structs';
 import { SourceComponent } from '../source/source.component';
 
 @Component({
@@ -31,7 +28,6 @@ import { SourceComponent } from '../source/source.component';
     MatTreeModule,
     MatIconModule,
     SourceComponent,
-    NgFor,
   ],
   templateUrl: './collection.component.html',
   styleUrl: './collection.component.css',
@@ -40,11 +36,11 @@ import { SourceComponent } from '../source/source.component';
 export class CollectionComponent {
   collection = model<Collection>();
 
-  addSource() {
-    console.log('Add source');
-    let src = new SourceSystem();
-    src.Name = 'New Source';
-    this.collection()?.edges.Sources?.push(src);
-    console.log(this.collection());
-  }
+  // addSource() {
+  //   console.log('Add source');
+  //   let src = new SourceSystem();
+  //   src.Name = 'New Source';
+  //   this.collection()?.Source? = src;
+  //   console.log(this.collection());
+  // }
 }

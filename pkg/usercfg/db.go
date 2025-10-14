@@ -32,6 +32,7 @@ type Collection struct {
 	UserID         uint         `gorm:"index,column:user_id"`
 	DisplayName    string       `gorm:"column:display_name"`                 // DisplayName is the name displayed to the user
 	CollectionName string       `gorm:"unique,index,column:collection_name"` // CollectionName is the internal unique name of the collection
+	APIKey         string       `gorm:"index,column:api_key"`
 	Source         SourceSystem //`gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 

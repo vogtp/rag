@@ -20,7 +20,7 @@
         </mat-form-field>
         <mat-form-field style="padding-bottom: 20px;">
             <mat-label>Personal Access Token</mat-label>
-            <input matInput [(ngModel)]="source()!.key" />
+            <input matInput [(ngModel)]="source()!.Key" />
             <mat-hint>
                 Get your <i>Personal Access Token</i> in your
                 <a href="{{source()!.URL}}/plugins/personalaccesstokens/usertokens.action"> profile settings</a>.
@@ -28,7 +28,7 @@
         </mat-form-field>
         <mat-form-field>
             <mat-label>Spaces keys (separeted by comma, e.g. "HR,ITSKB")</mat-label>
-            <input matInput [(ngModel)]="source()!.parts">
+            <input matInput [(ngModel)]="source()!.Parts">
         </mat-form-field>
     </mat-card-content>
     <!-- <mat-card-actions>
