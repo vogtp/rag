@@ -72,12 +72,12 @@ export class SettingsComponent {
         this.cdRef.detectChanges();
       },
       error: (err) => {
-        console.error('Load setting from backend: ' + err);
+        console.log('Load setting from backend: ' + err);
         this.waitingResponse = false;
         window.location.href = '/login?OrigPath=' + window.location.href;
       },
       complete: () => {
-        console.debug('request usersettings complete');
+        console.log('request usersettings complete');
         //window.location.reload();
         this.waitingResponse = false;
       },
