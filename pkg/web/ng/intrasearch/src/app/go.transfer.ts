@@ -1,1 +1,0 @@
-export const version: string = "0.4.3 (2025-10-10T14:34:33)"
