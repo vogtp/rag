@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/vogtp/rag/pkg/logger"
 	"github.com/vogtp/rag/pkg/usercfg"
-	"github.com/vogtp/rag/pkg/usercfg/db"
 	"github.com/vogtp/rag/pkg/usercfg/db/ent/user"
 )
 
@@ -31,22 +30,23 @@ var dbCmd = &cobra.Command{
 var dbUserCmd = &cobra.Command{
 	Use:          "user",
 	Short:        "list users",
-	Aliases:      []string{},
+	Aliases:      []string{"users", "ls", "list"},
 	Long:         ``,
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
-		db, err := usercfg.New(cmd.Context(), logger.New(), dialect.SQLite, "rag.sqlite")
+		////////////////// ENT
+		entDB, err := usercfg.NewENT(cmd.Context(), logger.New(), dialect.SQLite, "rag.sqlite")
 		if err != nil {
 			return err
 		}
-		users, err := db.GetUserQuery(ctx).All(ctx)
+		usersEnt, err := entDB.GetUserQuery(ctx).All(ctx)
 		if err != nil {
 			return err
 		}
 		colCnt := 0
-		fmt.Println("User list:")
-		for _, u := range users {
+		fmt.Println("User list ENT:")
+		for _, u := range usersEnt {
 			//u.Edges.Confluence
 			cols := u.Edges.Collections
 			fmt.Printf(" %s\n", u.Name)
@@ -55,7 +55,6 @@ var dbUserCmd = &cobra.Command{
 					fmt.Printf("   %s (%s)\n", c.Name, c.Edges.Sources[0].Parts)
 					colCnt++
 				}
-				fmt.Println()
 			}
 			// b, err := json.MarshalIndent(u, "", "  ")
 			// if err != nil {
@@ -63,31 +62,43 @@ var dbUserCmd = &cobra.Command{
 			// }
 			// fmt.Print(string(b))
 		}
+		fmt.Printf("Count:\n Users: %v\n Collections: %v\n", len(usersEnt), colCnt)
+		//////////////////// GROM
+		db, err := usercfg.Create(ctx, logger.New())
+		if err != nil {
+			return err
+		}
+		colCnt = 0
+		fmt.Println("User list:")
+		users, err := db.Users(ctx)
+		if err != nil {
+			return err
+		}
+		for _, u := range users {
+			fmt.Printf(" %s\n", u.Name)
+			if len(u.Collections) > 0 {
+				for _, c := range u.Collections {
+					fmt.Printf("   %s (%s)\n", c.DisplayName, c.Source.Parts)
+					colCnt++
+				}
+			}
+		}
 		fmt.Printf("Count:\n Users: %v\n Collections: %v\n", len(users), colCnt)
+
 		return nil
 	},
 }
 
 var dbGormCmd = &cobra.Command{
-	Use:          "gorm",
-	Short:        "list users",
-	Aliases:      []string{},
+	Use:          "migrate",
+	Short:        "migrate to gorm",
+	Aliases:      []string{"gorm"},
 	Long:         ``,
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
-		dbEnt, err := usercfg.New(cmd.Context(), logger.New(), usercfg.Dialect, usercfg.DBFileName)
-		if err != nil {
-			return err
-		}
-		usrs, err := dbEnt.GetUserQuery(ctx).All(ctx)
-		if err != nil {
-			return err
-		}
-		for _, u := range usrs {
-			fmt.Println(u.Name)
-		}
-		return db.InitGorm()
+
+		return usercfg.Migrate2Gorm(ctx, logger.New())
 	},
 }
 
@@ -100,7 +111,7 @@ var dbCleanupCmd = &cobra.Command{
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
-		db, err := usercfg.New(cmd.Context(), logger.New(), usercfg.Dialect, usercfg.DBFileName)
+		db, err := usercfg.NewENT(cmd.Context(), logger.New(), usercfg.Dialect, usercfg.DBFileName)
 		if err != nil {
 			return err
 		}

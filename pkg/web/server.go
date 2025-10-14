@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-    "github.com/rs/cors"
+	"github.com/rs/cors"
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/rag"
@@ -38,7 +38,7 @@ func New(ctx context.Context, slog *slog.Logger) (*Server, error) {
 	// if len(rags) == 0 {
 	// 	return nil, fmt.Errorf("no RAGs passed")
 	// }
-	userCfg, err := usercfg.New(ctx, slog, usercfg.Dialect, usercfg.DBFileName)
+	userCfg, err := usercfg.NewENT(ctx, slog, usercfg.Dialect, usercfg.DBFileName)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +99,7 @@ func (srv *Server) Run(ctx context.Context) error {
 	}
 
 	srv.slog.Warn("Listen for incoming requests")
-	srv.httpSrv.Handler = cors.Default().Handler(srv.mux )
+	srv.httpSrv.Handler = cors.Default().Handler(srv.mux)
 	go srv.closeOnCtxDone(ctx)
 	return srv.httpSrv.ListenAndServe()
 }

@@ -16,6 +16,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/matoous/go-nanoid v1.5.1
 	github.com/ollama/ollama v0.12.5
+	github.com/orandin/slog-gorm v1.4.0
 	github.com/rs/cors v1.11.1
 	github.com/sashabaranov/go-openai v1.32.1
 	github.com/spf13/cobra v1.10.1
@@ -30,6 +31,8 @@ require (
 	github.com/zitadel/oidc/v3 v3.35.0
 	golang.org/x/sync v0.17.0
 	golang.org/x/time v0.9.0
+	gorm.io/driver/sqlite v1.6.0
+	gorm.io/gorm v1.31.0
 )
 
 require (
@@ -144,8 +147,6 @@ require (
 	gonum.org/v1/gonum v0.16.0 // indirect
 	gorgonia.org/vecf32 v0.9.0 // indirect
 	gorgonia.org/vecf64 v0.9.0 // indirect
-	gorm.io/driver/sqlite v1.6.0 // indirect
-	gorm.io/gorm v1.31.0 // indirect
 	gotest.tools/v3 v3.5.1 // indirect
 	modernc.org/libc v1.66.3 // indirect
 	modernc.org/mathutil v1.7.1 // indirect

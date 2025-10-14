@@ -12,8 +12,11 @@ import (
 )
 
 func New() *slog.Logger {
-	lvl := LevelFromString(viper.GetString(cfg.LogLevel))
-	return Create(lvl)
+	return Create(Level())
+}
+
+func Level() slog.Level {
+	return LevelFromString(viper.GetString(cfg.LogLevel))
 }
 
 func Create(lvl slog.Level) *slog.Logger {
