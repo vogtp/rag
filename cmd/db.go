@@ -56,9 +56,8 @@ var dbUserCmd = &cobra.Command{
 			cols := u.Edges.Collections
 			fmt.Printf(" %s\n", u.Name)
 			if len(cols) > 0 {
-				fmt.Print("   ")
 				for _, c := range cols {
-					fmt.Printf("%s (%s)", c.Name, c.Edges.Sources[0].Parts)
+					fmt.Printf("   %s (%s)\n", c.Name, c.Edges.Sources[0].Parts)
 					colCnt++
 				}
 				fmt.Println()
