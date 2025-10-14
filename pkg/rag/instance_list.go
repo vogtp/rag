@@ -126,7 +126,7 @@ func (i *instanceList) SearchVecDB(ctx context.Context, slog *slog.Logger, colle
 	for _, r := range i.rags {
 		c, err := r.SearchVecDB(ctx, slog, collection, query, maxResults)
 		if err != nil {
-			i.slog.Error("Cannot search vecDV of rag list member", "err", err, "rag.name", r.Name())
+			i.slog.Error("Cannot search vecDD of rag list member", "err", err, "rag.name", r.Name(), "collection", collection)
 		}
 		docs = append(docs, c...)
 	}
