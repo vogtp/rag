@@ -12,7 +12,7 @@ GO_CMD=go
 BRANCH=$(shell git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
 # prod -> main branch
 host_main=its-a-hack.its.unibas.ch
-user_main=vogtp
+user_main=root
 path_main=/srv/intrasearch/
 service_main=intrasearch
 # qa
@@ -82,7 +82,7 @@ diff-config: remote-copy-config
 deploy-config: remote-copy-config remote-restart
 
 .PHONY: deploy
-deploy: build remote-stop-rag remote-copy remote-start-rag remote-autocomplete
+deploy: build remote-stop-$(service) remote-copy remote-copy-config remote-start-$(service) remote-autocomplete
 
 .PHONY: remote-autocomplete
 remote-autocomplete:
