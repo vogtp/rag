@@ -26,3 +26,4 @@ ignore_*
 ragctl.yml
 go.work*
 .embedd_history/*
+pkg/web/ng/intrasearch/src/app/go.transfer.ts
