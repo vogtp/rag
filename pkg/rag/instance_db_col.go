@@ -61,20 +61,20 @@ func newInstanceDBCol(ctx context.Context, slog *slog.Logger, col *usercfg.Colle
 	return i, nil
 }
 
-func (i *instanceDBCol) CollectionName() string {
+func (i *instanceDBCol) Collectionname() string {
 	return i.collection.CollectionName
 }
 
 func (i *instanceDBCol) Embbed(ctx context.Context) error {
 	if !i.muEmbed.TryLock() {
-		return fmt.Errorf("Embedding (%q) already running!", i.config.GetName())
+		return fmt.Errorf("Embedding (%q) already running!", i.config.Displayname())
 	}
 	defer i.muEmbed.Unlock()
 	return confluence.Embed(ctx, i.slog, i)
 }
 
 func (i *instanceDBCol) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
-	if len(i.CollectionName()) < 1 {
+	if len(i.Collectionname()) < 1 {
 		return nil, fmt.Errorf("no collection name given")
 
 	}
@@ -84,7 +84,7 @@ func (i *instanceDBCol) ListCollections(ctx context.Context) ([]*chroma.Collecti
 	}
 	collections := make([]*chroma.Collection, 0, len(cols))
 	for _, col := range cols {
-		if !strings.EqualFold(col.Name, i.CollectionName()) {
+		if !strings.EqualFold(col.Name, i.Collectionname()) {
 			continue
 		}
 		collections = append(collections, col)

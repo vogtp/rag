@@ -11,17 +11,23 @@ import (
 )
 
 type Instance interface {
-	GetName() string
+	Displayname() string
 
 	Model(name string) (Model, error)
+
+	//FIXME models and list collections should be the same
 	Models(ctx context.Context) []Model
+	ListCollections(ctx context.Context) ([]*chroma.Collection, error)
 
 	LLM() string
 
 	UpdateIntervall() time.Duration
 	Embbed(ctx context.Context) error
-	ListCollections(ctx context.Context) ([]*chroma.Collection, error)
 	SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error)
 
+	// CollectionName() string
+	// Confluence() *cfg.ConfluenceCfg
+	// ModelEmbedding() string
+	// VecDBUpdateIntervall() time.Duration
 	bearer.Auth
 }

@@ -34,7 +34,7 @@ type instanceCfg struct {
 
 func newInstanceCfg(ctx context.Context, slog *slog.Logger, config cfg.RagConfigInteral) (*instanceCfg, error) {
 	m := instanceCfg{
-		slog:       slog.With("rag.name", config.GetName(), "collection.name", config.CollectionName()),
+		slog:       slog.With("rag.name", config.Displayname(), "collection.name", config.Collectionname()),
 		config:     config,
 		bearerAuth: bearer.TokenAuth(config.APITokenInt),
 		models: []types.Model{
@@ -56,8 +56,8 @@ func newInstanceCfg(ctx context.Context, slog *slog.Logger, config cfg.RagConfig
 	return &m, nil
 }
 
-func (i *instanceCfg) GetName() string {
-	return i.config.GetName()
+func (i *instanceCfg) Displayname() string {
+	return i.config.Displayname()
 }
 
 func (i *instanceCfg) UpdateIntervall() time.Duration {
@@ -73,8 +73,8 @@ func (i *instanceCfg) LLM() string {
 	return i.config.ModelInt.LLM
 }
 
-func (i *instanceCfg) CollectionName() string {
-	return i.config.CollectionName()
+func (i *instanceCfg) Collectionname() string {
+	return i.config.Collectionname()
 }
 
 func (i *instanceCfg) Confluence() *cfg.ConfluenceCfg {
@@ -90,7 +90,7 @@ func (i *instanceCfg) VecDBUpdateIntervall() time.Duration {
 }
 
 func (i *instanceCfg) updateModelsFromChroma(ctx context.Context) error {
-	collections, err := i.vecDB.ListCollections(ctx, i.config.CollectionName())
+	collections, err := i.vecDB.ListCollections(ctx, i.config.Collectionname())
 	if err != nil {
 		return fmt.Errorf("cannot list chroma collections: %w", err)
 	}
@@ -148,5 +148,5 @@ func (i *instanceCfg) SearchVecDB(ctx context.Context, slog *slog.Logger, collec
 	return res[0].Documents, nil
 }
 func (i *instanceCfg) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
-	return i.vecDB.ListCollections(ctx, i.config.CollectionName())
+	return i.vecDB.ListCollections(ctx, i.config.Collectionname())
 }
