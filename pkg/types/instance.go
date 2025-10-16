@@ -17,12 +17,12 @@ type Instance interface {
 
 	//FIXME models and list collections should be the same
 	Models(ctx context.Context) []Model
-	ListCollections(ctx context.Context) ([]*chroma.Collection, error)
+	ListCollections(ctx context.Context, slog *slog.Logger) ([]*chroma.Collection, error)
 
 	LLM() string
 
 	UpdateIntervall() time.Duration
-	Embbed(ctx context.Context) error
+	Embbed(ctx context.Context, slog *slog.Logger) error
 	SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error)
 
 	// CollectionName() string

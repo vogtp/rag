@@ -54,7 +54,7 @@ func (srv *Server) saveUser(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		srv.slog.Warn("Updating user rag after config saved", "user", userName, "ctx.err", srv.srvCtx.Err())
 		rag := srv.ragMgr.UserFromRequest(srv.srvCtx, r)
-		if err := rag.Embbed(srv.srvCtx); err != nil {
+		if err := rag.Embbed(srv.srvCtx, srv.slog); err != nil {
 			srv.slog.Warn("Failed embed user rag", "err", err, "user", userName)
 		}
 	}()

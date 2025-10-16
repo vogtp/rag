@@ -81,19 +81,19 @@ func (i *instanceList) UpdateIntervall() time.Duration {
 	return d
 }
 
-func (i *instanceList) Embbed(ctx context.Context) error {
+func (i *instanceList) Embbed(ctx context.Context, _ *slog.Logger) error {
 	for _, r := range i.rags {
-		if err := r.Embbed(ctx); err != nil {
+		if err := r.Embbed(ctx, i.slog); err != nil {
 			i.slog.Warn("Cannot embed rag list member", "err", err, "rag.name", r.Displayname())
 		}
 	}
 	return nil
 }
 
-func (i *instanceList) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
+func (i *instanceList) ListCollections(ctx context.Context, _ *slog.Logger) ([]*chroma.Collection, error) {
 	cols := make([]*chroma.Collection, 0)
 	for _, r := range i.rags {
-		c, err := r.ListCollections(ctx)
+		c, err := r.ListCollections(ctx, i.slog)
 		if err != nil {
 			i.slog.Warn("Cannot list collections of rag list member", "err", err, "rag.name", r.Displayname())
 		}

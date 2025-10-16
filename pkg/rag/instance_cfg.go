@@ -130,7 +130,7 @@ func (i *instanceCfg) Model(name string) (types.Model, error) {
 	}
 	return nil, fmt.Errorf("model %s not found", name)
 }
-func (i *instanceCfg) Embbed(ctx context.Context) error {
+func (i *instanceCfg) Embbed(ctx context.Context, _ *slog.Logger) error {
 	// if !i.muEmbed.TryLock() {
 	// 	return fmt.Errorf("Embedding (%q) already running!", i.config.Name())
 	// }
@@ -148,6 +148,7 @@ func (i *instanceCfg) SearchVecDB(ctx context.Context, slog *slog.Logger, collec
 	}
 	return res[0].Documents, nil
 }
-func (i *instanceCfg) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
+
+func (i *instanceCfg) ListCollections(ctx context.Context, _ *slog.Logger) ([]*chroma.Collection, error) {
 	return i.vecDB.ListCollections(ctx, i.config.Collectionname())
 }

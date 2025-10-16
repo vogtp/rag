@@ -6,6 +6,8 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
+	"time"
 
 	slogGorm "github.com/orandin/slog-gorm"
 	"github.com/vogtp/rag/pkg/logger"
@@ -20,31 +22,20 @@ const (
 	DBFileName = "rag_users.sqlite"
 )
 
-type SourceSystemType uint
+type SourceSystemType int
 
 const (
 	SourceConfluence SourceSystemType = iota
 	SourceHTTP
 )
 
-type User struct {
-	gorm.Model
-	Name        string       `gorm:"unique,index,column:'name'"`
-	APIKey      string       `gorm:"index,column:api_key"`
-	Collections []Collection `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-}
-
-type Collection struct {
-	gorm.Model
-	UserID         uint         `gorm:"index,column:user_id"`
-	DisplayName    string       `gorm:"column:display_name"`                 // DisplayName is the name displayed to the user
-	CollectionName string       `gorm:"unique,index,column:collection_name"` // CollectionName is the internal unique name of the collection
-	APIKey         string       `gorm:"index,column:api_key"`
-	Source         SourceSystem `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-}
-
 type SourceSystem struct {
-	gorm.Model
+	// gorm.Model in order to avoid name clashes
+	ID        uint `gorm:"primarykey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+
 	CollectionID uint             `gorm:"column:collection_id"`
 	Name         string           `gorm:"column:name"`
 	Type         SourceSystemType `gorm:"column:src_sys_type"`
@@ -53,16 +44,15 @@ type SourceSystem struct {
 	Parts        string           `gorm:"column:parts"`
 }
 
-func (u *User) Collection(n string) *Collection {
-	for _, c := range u.Collections {
-		if c.CollectionName == n {
-			return &c
-		}
-		if c.DisplayName == n {
-			return &c
-		}
+func (s SourceSystem) splitParts() []string {
+	parts := strings.Split(s.Parts, ",")
+	if len(parts) < 1 {
+		parts = strings.Split(s.Parts, " ")
 	}
-	return nil
+	for i, p := range parts {
+		parts[i] = strings.TrimSpace(p)
+	}
+	return parts
 }
 
 type DataBase struct {

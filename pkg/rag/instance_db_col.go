@@ -65,7 +65,7 @@ func (i *instanceDBCol) Collectionname() string {
 	return i.collection.CollectionName
 }
 
-func (i *instanceDBCol) Embbed(ctx context.Context) error {
+func (i *instanceDBCol) Embbed(ctx context.Context, _ *slog.Logger) error {
 	if !i.muEmbed.TryLock() {
 		return fmt.Errorf("Embedding (%q) already running!", i.config.Displayname())
 	}
@@ -73,7 +73,7 @@ func (i *instanceDBCol) Embbed(ctx context.Context) error {
 	return confluence.Embed(ctx, i.slog, i)
 }
 
-func (i *instanceDBCol) ListCollections(ctx context.Context) ([]*chroma.Collection, error) {
+func (i *instanceDBCol) ListCollections(ctx context.Context, _ *slog.Logger) ([]*chroma.Collection, error) {
 	if len(i.Collectionname()) < 1 {
 		return nil, fmt.Errorf("no collection name given")
 

@@ -32,7 +32,7 @@ func (srv *Server) schedulePeriodicVecDBUpdates(ctx context.Context) {
 		ticker := time.NewTicker(updateIntervall)
 		go func() {
 			start := time.Now()
-			if err := rag.Embbed(ctx); err != nil {
+			if err := rag.Embbed(ctx, slog); err != nil {
 				slog.Error("Cannot embed", "err", err)
 			}
 			select {

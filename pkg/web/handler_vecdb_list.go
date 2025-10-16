@@ -23,7 +23,7 @@ func (srv *Server) vecDBlist(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx := r.Context()
 
-	cols, err := srv.rag(r).ListCollections(ctx)
+	cols, err := srv.rag(r).ListCollections(ctx, slog)
 	if err != nil {
 		slog.Error("Error listing vectorDB collections", "err", err)
 		srv.Error(w, r, fmt.Sprintf("Error listing vectorDB collections: %v", err), http.StatusInternalServerError)
