@@ -32,12 +32,16 @@ run: generate ng-build
 	$(GO_CMD) run . --log.source web start --log.json --log.level warn | jq -R 'fromjson? | .' 
 
 .PHONY: build
-build: generate ng-build
+build: generate ng-build test
 	$(GO_CMD) build $(build_flags) -tags prod -o ./build/ragctl . 
 
 .PHONY: generate
 generate:
 	$(GO_CMD) generate ./...
+
+.PHONY: test
+test:
+	$(GO_CMD) test ./...
 
 .PHONY: ng-serve
 ng-serve:
@@ -46,6 +50,10 @@ ng-serve:
 .PHONY: ng-build
 ng-build:
 	cd pkg/web/ng/intrasearch/dist/intrasearch/browser/ ; ng build --base-href=/ui/
+
+.PHONY: ng-test
+ng-test:
+	cd pkg/web/ng/intrasearch/dist/intrasearch/browser/ ; ng test --no-watch --no-progress --browsers=ChromeHeadless
 
 .PHONY: remote-stop
 remote-stop: remote-stop-$(service)

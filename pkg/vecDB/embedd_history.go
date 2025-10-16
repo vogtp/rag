@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	historyCacheDirName = ".embedd_history"
+	HistoryCacheDirName = ".embedd_history"
 	historyCacheFilePrefix = ""
 )
 
@@ -58,8 +58,8 @@ func (eh *emeddHistory) init() error {
 	if eh.slog == nil {
 		eh.slog = slog.Default()
 	}
-	if err:=os.MkdirAll(historyCacheDirName, os.ModePerm); err != nil {
-		slog.Error("cannot create history cache dir", "err",err,"HistoryCacheDirName",historyCacheDirName)
+	if err:=os.MkdirAll(HistoryCacheDirName, os.ModePerm); err != nil {
+		slog.Error("cannot create history cache dir", "err",err,"HistoryCacheDirName",HistoryCacheDirName)
 	}
 	interval := eh.vecDBUpdateIntervall
 	if interval > 24*time.Hour || interval < time.Hour {
@@ -75,7 +75,7 @@ func (eh emeddHistory) key(d *EmbeddDocument) string {
 }
 
 func (eh emeddHistory) filename() string {
-	return fmt.Sprintf("%s/%s_%s.json",historyCacheDirName,historyCacheFilePrefix, eh.collectionName)
+	return fmt.Sprintf("%s/%s_%s.json",HistoryCacheDirName,historyCacheFilePrefix, eh.collectionName)
 }
 
 func (eh *emeddHistory) load() error {

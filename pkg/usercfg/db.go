@@ -112,6 +112,14 @@ func (d *DataBase) Add(ctx context.Context, u *User) error {
 	if err := d.db.Clauses(clause.OnConflict{UpdateAll: true}).Create(u).Error; err != nil {
 		return fmt.Errorf("adding user %q: %w", u.Name, err)
 	}
+	for _, c := range u.Collections {
+		if err := d.db.Clauses(clause.OnConflict{UpdateAll: true}).Create(&c).Error; err != nil {
+			return fmt.Errorf("adding user %q collection %q: %w", u.Name, c.DisplayName, err)
+		}
+		if err := d.db.Clauses(clause.OnConflict{UpdateAll: true}).Create(&c.Source).Error; err != nil {
+			return fmt.Errorf("adding user %q collection %q source %q: %w", u.Name, c.DisplayName, c.Source.Name, err)
+		}
+	}
 	if err := d.CleanupUserCollections(ctx, u); err != nil {
 		d.slog.Warn("Cannot cleanup user collections", "username", u.Name, "err", err)
 	}

@@ -49,4 +49,12 @@ func TestDataBase_Add(t *testing.T) {
 		t.Errorf("cannot query user %q: %v", tu.Name, err)
 	}
 	testhelper.CompareUser(t, tu, u)
+	for i, c := range tu.Collections {
+		if c.DisplayName != fmt.Sprintf(dnFmt, i) {
+			t.Errorf("collection display name not correct: %v -> %s", i, c.DisplayName)
+		}
+		if c.Source.Parts != fmt.Sprintf(partsFmt, i, i) {
+			t.Errorf("collection source parts not correct: %v -> %s", i, c.Source.Parts)
+		}
+	}
 }
