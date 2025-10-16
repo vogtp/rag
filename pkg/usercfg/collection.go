@@ -146,6 +146,7 @@ func (c *Collection) ListCollections(ctx context.Context, slog *slog.Logger) ([]
 	collections := make([]*chroma.Collection, 0, len(cols))
 	for _, col := range cols {
 		if !strings.EqualFold(col.Name, c.Collectioname) {
+			slog.Debug("Not a valid collection", "vecDB.name", col.Name, "collectionName", c.Collectioname)
 			continue
 		}
 		collections = append(collections, col)
