@@ -33,11 +33,15 @@ type SourceSystem struct {
 
 func (s SourceSystem) splitParts() []string {
 	parts := strings.Split(s.Parts, ",")
-	if len(parts) < 1 {
+	if len(parts) < 2 && parts[0] != s.Parts {
 		parts = strings.Split(s.Parts, " ")
 	}
+	retParts := make([]string, 0, len(parts))
 	for i, p := range parts {
 		parts[i] = strings.TrimSpace(p)
+		if len(parts[i]) > 0 {
+			retParts = append(retParts, parts[i])
+		}
 	}
-	return parts
+	return retParts
 }
