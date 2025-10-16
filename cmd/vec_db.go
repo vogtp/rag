@@ -26,7 +26,6 @@ func addVecDB() {
 
 	vecDbCmd.AddCommand(vecDbEmbbedCmd)
 	vecDbEmbbedCmd.AddCommand(vecDbEmbbedPathCmd)
-	vecDbEmbbedCmd.AddCommand(vecDbEmbbedConfluenceCmd)
 	vecDbEmbbedCmd.AddCommand(vecDbEmbbedScrapCmd)
 }
 
