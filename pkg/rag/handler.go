@@ -13,7 +13,7 @@ import (
 )
 
 type Handler interface {
-	AllFromRequest(r *http.Request) Instance
+	AllFromRequest(ctx context.Context, r *http.Request) Instance
 	UserFromRequest(ctx context.Context, r *http.Request) Instance
 }
 
@@ -69,11 +69,11 @@ func (h handler) GetAllRags(ctx context.Context) []Instance {
 	return rags
 }
 
-func (h handler) AllFromRequest(r *http.Request) Instance {
+func (h handler) AllFromRequest(ctx context.Context, r *http.Request) Instance {
 	rags := newInstanceList(h.slog, "global")
 
 	rags.Add(h.publicInstances())
-	rags.Add(h.UserFromRequest(r.Context(), r))
+	rags.Add(h.UserFromRequest(ctx, r))
 	return rags
 }
 
@@ -97,12 +97,12 @@ func (h handler) UserFromRequest(ctx context.Context, r *http.Request) Instance 
 	}
 
 	if len(bt) > 1 {
-		if usrs, err := h.usercfg.UserByAPIKey(ctx, bt); err != nil {
+		if usrs, err := h.usercfg.UserByAPIKey(ctx, bt); err == nil {
 			rags.Add(h.getUserInstances(ctx, usrs...)...)
 		} else {
 			h.slog.Warn("Cannot query users by api key", "err", err, "apikey", bt)
 		}
-		if cols, err := h.usercfg.CollectionByAPIKey(ctx, bt); err != nil {
+		if cols, err := h.usercfg.CollectionByAPIKey(ctx, bt); err == nil {
 			rags.Add(h.getCollectionInstances(ctx, cols...)...)
 		} else {
 			h.slog.Warn("Cannot query collections by api key", "err", err, "apikey", bt)

@@ -41,6 +41,9 @@ func readBearer(w http.ResponseWriter, r *http.Request) (string, bool) {
 }
 
 func Get(r *http.Request) (string, bool) {
+	if r == nil {
+		return "", false
+	}
 	s, ok := r.Context().Value(bearerCtxValue).(string)
 	return s, ok
 }
