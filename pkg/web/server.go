@@ -34,12 +34,8 @@ type Server struct {
 }
 
 // New creates a new webserver
-func New(ctx context.Context, slog *slog.Logger) (*Server, error) {
+func New(ctx context.Context, slog *slog.Logger, userCfg *usercfg.DataBase) (*Server, error) {
 
-	userCfg, err := usercfg.Create(ctx, slog, usercfg.DBFileName)
-	if err != nil {
-		return nil, err
-	}
 	rags, err := rag.New(ctx, slog, userCfg)
 	if err != nil {
 		return nil, err

@@ -38,8 +38,11 @@ func startWeb(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("start chroma: %w", err)
 	}
-
-	api, err := web.New(ctx, slog)
+	userCfg, err := usercfg.Create(ctx, slog, usercfg.DBFileName)
+	if err != nil {
+		return  err
+	}
+	api, err := web.New(ctx, slog, userCfg)
 	if err != nil {
 		return fmt.Errorf("start http server: %w", err)
 	}
