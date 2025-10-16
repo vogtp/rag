@@ -27,6 +27,6 @@ button:hover {
     border: 10px solid #d0d0d0;
 }
 
-mat-form-field {
-    /* height: 6em; */
-}
+/* mat-form-field {
+    height: 6em;
+} */
