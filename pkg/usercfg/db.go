@@ -31,7 +31,7 @@ type User struct {
 	gorm.Model
 	Name        string       `gorm:"unique,index,column:'name'"`
 	APIKey      string       `gorm:"index,column:api_key"`
-	Collections []Collection //`gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Collections []Collection `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 type Collection struct {
@@ -40,7 +40,7 @@ type Collection struct {
 	DisplayName    string       `gorm:"column:display_name"`                 // DisplayName is the name displayed to the user
 	CollectionName string       `gorm:"unique,index,column:collection_name"` // CollectionName is the internal unique name of the collection
 	APIKey         string       `gorm:"index,column:api_key"`
-	Source         SourceSystem //`gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Source         SourceSystem `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 type SourceSystem struct {
