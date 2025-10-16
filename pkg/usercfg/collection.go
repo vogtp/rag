@@ -94,12 +94,7 @@ func (c *Collection) VecDBUpdateIntervall() time.Duration {
 }
 
 func (c *Collection) Confluence() *cfg.ConfluenceCfg {
-	src := c.Source
-	return &cfg.ConfluenceCfg{
-		BaseURL: src.URL,
-		Key:     src.Key,
-		Spaces:  src.splitParts(),
-	}
+	return c.Source.Confluence()
 }
 
 func (c *Collection) getVecDb(ctx context.Context, slog *slog.Logger) (*vecdb.VecDB, error) {
