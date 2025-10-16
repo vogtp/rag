@@ -1,38 +1,74 @@
 package web
 
 import (
-	"log/slog"
+	"fmt"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/vogtp/rag/internal/testhelper"
-	"github.com/vogtp/rag/pkg/rag"
+	"github.com/vogtp/rag/pkg/web/bearer"
+	"github.com/vogtp/rag/pkg/web/oidc"
 )
 
-func TestServer_rag(t *testing.T) {
-	tests := []struct {
-		name string // description of this test case
-		// Named input parameters for receiver constructor.
-		slog *slog.Logger
-		// Named input parameters for target function.
-		r    *http.Request
-		want rag.Instance
-	}{
-		// TODO: Add test cases.
-	}
+func TestServer_BearerToken_AllFromRequest(t *testing.T) {
+
 	db, slog := testhelper.GetDB(t)
-	srv, err := New(t.Context(), slog)
+	srv, err := New(t.Context(), slog, db)
 	if err != nil {
-		t.Fatalf("could not construct receiver type: %v", err)
+		t.Fatalf("could not create web server: %v", err)
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := srv.rag(tt.r)
-			db.Users(t.Context())
-			// TODO: update the condition below to compare got with tt.want.
-			if true {
-				t.Errorf("rag() = %v, want %v", got, tt.want)
-			}
-		})
+	tu := testhelper.User1
+	testRequest := httptest.NewRequest(http.MethodGet, "/ui", nil)
+	testRequest.Header.Add("Authorization", fmt.Sprintf("Bearer %s", tu.APIKey))
+	h := bearer.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		testRequest = r
+	})
+	h.ServeHTTP(httptest.NewRecorder(), testRequest)
+	bt, ok := bearer.Get(testRequest)
+	if !ok {
+		t.Errorf("no bearer token found in request")
 	}
+	if bt != tu.APIKey {
+		t.Errorf("wrong bearer token found: got %q want %q", bt, tu.APIKey)
+	}
+	rag := srv.ragMgr.AllFromRequest(t.Context(), testRequest)
+	models := rag.Models(t.Context())
+	if len(models) < 1 {
+		t.Errorf("found no models")
+	}
+	// FIXME what is the difference between Models() and ListCollections()
+	// -> cleanup interface
+	// for _, c := range models {
+	// 	t.Error(c.GetName())
+	// }
+}
+
+func TestServer_OIDCUser_AllFromRequest(t *testing.T) {
+
+	db, slog := testhelper.GetDB(t)
+	srv, err := New(t.Context(), slog, db)
+	if err != nil {
+		t.Fatalf("could not create web server: %v", err)
+	}
+	tu := testhelper.User1
+	oidc.TESTINGUsernameDoNotUse(tu.Name)
+	// passing nil as request allows test usernames
+	un, err := oidc.UserName(nil)
+	if err != nil {
+		t.Errorf("cannot get username from requst: %v", err)
+	}
+	if un != tu.Name {
+		t.Errorf("wrong username found: got %q want %q", un, tu.Name)
+	}
+	rag := srv.ragMgr.AllFromRequest(t.Context(), nil)
+	models := rag.Models(t.Context())
+	if len(models) < 1 {
+		t.Errorf("found no models")
+	}
+	// FIXME what is the difference between Models() and ListCollections()
+	// -> cleanup interface
+	// for _, c := range models {
+	// 	t.Error(c.GetName())
+	// }
 }
