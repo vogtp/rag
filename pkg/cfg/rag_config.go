@@ -1,7 +1,6 @@
 package cfg
 
 import (
-	"fmt"
 	"log/slog"
 	"time"
 
@@ -9,29 +8,9 @@ import (
 )
 
 const (
-	ragConfigKey = "rag_model"
-
 	DefaultVecDBUpdateIntervall = 24 * time.Hour
 	MinVecDBUpdateIntervall     = time.Hour
 )
-
-// type RagConfig struct {
-// 	Name     string `yaml:"Name"`
-// 	APIToken string `yaml:"api_token"`
-// 	Model    struct {
-// 		Embedding string `yaml:"embedding"`
-// 		Default   string `yaml:"default"`
-// 	} `yaml:"model"`
-// 	Confluence struct {
-// 		Key     string   `yaml:"key"`
-// 		BaseURL string   `yaml:"baseURL"`
-// 		Spaces  []string `yaml:"spaces"`
-// 	} `yaml:"confluence"`
-// 	Vecdb struct {
-// 		UpdateIntervall string `yaml:"update_intervall"`
-// 		CollectionName  string `yaml:"collection_name"`
-// 	} `yaml:"vecdb"`
-// }
 
 type RagConfig interface {
 	Collectionname() string
@@ -87,22 +66,6 @@ func (r RagConfigInteral) VecDBUpdateIntervall() time.Duration {
 		return DefaultVecDBUpdateIntervall
 	}
 	return d
-}
-
-func GetRagConfig() ([]RagConfigInteral, error) {
-	ragCfg := make([]RagConfigInteral, 0)
-	if err := viper.UnmarshalKey(ragConfigKey, &ragCfg); err != nil {
-		return nil, fmt.Errorf("read rag config: %v", err)
-	}
-	//FIXME this is a hack since UnmarshalKey does not parse the vecDB stuff
-	raw := viper.Get(ragConfigKey)
-	for i, l := range raw.([]any) {
-		r := l.(map[string]any)
-		v := r["vecdb"].(map[string]any)
-		ragCfg[i].VecdbInt.CollectionName = v["collection_name"].(string)
-		ragCfg[i].VecdbInt.UpdateIntervall = v["update_intervall"].(string)
-	}
-	return ragCfg, nil
 }
 
 var defaultRagCfg *RagConfigInteral

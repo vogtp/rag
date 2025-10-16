@@ -32,7 +32,7 @@ func TestServer_BearerToken_AllFromRequest(t *testing.T) {
 	if bt != tu.APIKey {
 		t.Errorf("wrong bearer token found: got %q want %q", bt, tu.APIKey)
 	}
-	rag := srv.ragMgr.AllFromRequest(t.Context(), testRequest)
+	rag := srv.ragMgr.FromRequest(t.Context(), testRequest)
 	models := rag.Models(t.Context())
 	if len(models) < 1 {
 		t.Errorf("found no models")
@@ -61,7 +61,7 @@ func TestServer_OIDCUser_AllFromRequest(t *testing.T) {
 	if un != tu.Name {
 		t.Errorf("wrong username found: got %q want %q", un, tu.Name)
 	}
-	rag := srv.ragMgr.AllFromRequest(t.Context(), nil)
+	rag := srv.ragMgr.FromRequest(t.Context(), nil)
 	models := rag.Models(t.Context())
 	if len(models) < 1 {
 		t.Errorf("found no models")

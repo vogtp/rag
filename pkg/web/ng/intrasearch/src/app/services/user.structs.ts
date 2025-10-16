@@ -120,6 +120,9 @@ class Collection {
 	DisplayName: string;
 	CollectionName: string;
 	APIKey: string;
+	GenModel: string;
+	EmbedModel: string;
+	DBUpdateIntervall: number;
 	Source: SourceSystem;
 
 	constructor(data?: any) {
@@ -132,6 +135,9 @@ class Collection {
 		this.DisplayName = ('DisplayName' in d) ? d.DisplayName as string : '';
 		this.CollectionName = ('CollectionName' in d) ? d.CollectionName as string : '';
 		this.APIKey = ('APIKey' in d) ? d.APIKey as string : '';
+		this.GenModel = ('GenModel' in d) ? d.GenModel as string : '';
+		this.EmbedModel = ('EmbedModel' in d) ? d.EmbedModel as string : '';
+		this.DBUpdateIntervall = ('DBUpdateIntervall' in d) ? d.DBUpdateIntervall as number : 0;
 		this.Source = new SourceSystem(d.Source);
 	}
 
@@ -141,6 +147,7 @@ class Collection {
 		cfg.CreatedAt = 'string';
 		cfg.UpdatedAt = 'string';
 		cfg.UserID = 'number';
+		cfg.DBUpdateIntervall = 'number';
 		return ToObject(this, cfg);
 	}
 }
