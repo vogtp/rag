@@ -12,6 +12,7 @@ import (
 
 	chroma "github.com/amikos-tech/chroma-go"
 	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/model"
 	"github.com/vogtp/rag/pkg/types"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 	"github.com/vogtp/rag/pkg/vecDB/confluence"
@@ -38,7 +39,7 @@ func newInstanceCfg(ctx context.Context, slog *slog.Logger, config cfg.RagConfig
 		config:     config,
 		bearerAuth: bearer.TokenAuth(config.APITokenInt),
 		models: []types.Model{
-			OllamaModel{
+			model.Ollama{
 				Name:    config.ModelInt.LLM,
 				LLMName: config.ModelInt.LLM,
 			},

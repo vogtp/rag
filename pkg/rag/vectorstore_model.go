@@ -15,6 +15,7 @@ import (
 	"github.com/vogtp/langchaingo/vectorstores"
 	"github.com/vogtp/langchaingo/vectorstores/chroma"
 	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/model"
 	"github.com/vogtp/rag/pkg/types"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 	"github.com/vogtp/rag/pkg/web/bearer"
@@ -156,7 +157,7 @@ func (m VectorStoreModel) GenerateContent(ctx context.Context, messages []llms.M
 	// for _, r := range recs {
 	// 	slog.Warn(r.PageContent)
 	// }
-	llm, err := getOllamaClient(ctx, m.LLMName)
+	llm, err := model.GetOllamaClient(ctx, m.LLMName)
 	if err != nil {
 		return "", fmt.Errorf("cannot get ollama: %w", err)
 	}
@@ -204,7 +205,7 @@ func (m *VectorStoreModel) getEmbedder(ctx context.Context) (*embeddings.Embedde
 	if m.embedder != nil {
 		return m.embedder, nil
 	}
-	llm, err := getOllamaClient(ctx, m.config.ModelEmbedding())
+	llm, err := model.GetOllamaClient(ctx, m.config.ModelEmbedding())
 	if err != nil {
 		return nil, fmt.Errorf("cannot create llm client: %w", err)
 	}

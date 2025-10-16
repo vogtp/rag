@@ -1,4 +1,4 @@
-package rag
+package model
 
 import (
 	"context"
@@ -16,32 +16,32 @@ import (
 	"github.com/vogtp/rag/pkg/web/bearer"
 )
 
-var _ types.Model = (*OllamaModel)(nil)
+var _ types.Model = (*Ollama)(nil)
 
-type OllamaModel struct {
+type Ollama struct {
 	Name    string
 	LLMName string
 
 	OwnedBy string
 }
 
-func (m OllamaModel) GetName() string {
+func (m Ollama) GetName() string {
 	return m.Name
 }
 
-func (m OllamaModel) String() string {
+func (m Ollama) String() string {
 	return m.GetName()
 }
 
-func (m OllamaModel) GetLLMName() string {
+func (m Ollama) GetLLMName() string {
 	return m.LLMName
 }
 
-func (m OllamaModel) BearerAuth() bearer.Auth {
+func (m Ollama) BearerAuth() bearer.Auth {
 	return bearer.NoAuth()
 }
 
-func (m OllamaModel) ToOpenAI() openai.Model {
+func (m Ollama) ToOpenAI() openai.Model {
 	return openai.Model{
 		// CreatedAt:  0,
 		ID:      m.Name,
@@ -51,8 +51,8 @@ func (m OllamaModel) ToOpenAI() openai.Model {
 	}
 }
 
-func (m OllamaModel) GenerateContent(ctx context.Context, messages []llms.MessageContent, temperature float64, streamingFunc types.StreamingFunc) (string, error) {
-	llm, err := getOllamaClient(ctx, m.LLMName)
+func (m Ollama) GenerateContent(ctx context.Context, messages []llms.MessageContent, temperature float64, streamingFunc types.StreamingFunc) (string, error) {
+	llm, err := GetOllamaClient(ctx, m.LLMName)
 	if err != nil {
 		return "", fmt.Errorf("cannot get ollama client: %w", err)
 	}
@@ -78,9 +78,9 @@ type BackendModel interface {
 	embeddings.EmbedderClient
 }
 
-// getOllamaClient returns a ollama client
+// GetOllamaClient returns a ollama client
 // it is used not only in the OllamaModel
-func getOllamaClient(ctx context.Context, llmName string) (BackendModel, error) {
+func GetOllamaClient(ctx context.Context, llmName string) (BackendModel, error) {
 	url := cfg.GetOllamaHost(ctx)
 	slog.Info("connecting to ollama", "LLM", llmName, "url", url)
 	return ollama.New(
