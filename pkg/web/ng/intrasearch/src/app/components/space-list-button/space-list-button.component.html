@@ -1,11 +1,11 @@
-
 <button mat-icon-button [matMenuTriggerFor]="menu" class="toolbar-icon" aria-label="icon-button with menu icon">
     <mat-icon>menu</mat-icon>
 </button>
-<mat-menu #menu="matMenu" >
+<mat-menu #menu="matMenu">
     <div class="menuTitle">Search in:</div>
     <span *ngFor="let col of collectionResponse?.Collections">
-        <button mat-menu-item routerLink="/collection/{{col.Name}}" queryParamsHandling="preserve">{{ col.Name }}</button>
+        <button mat-menu-item routerLink="/collection/{{col.Name}}" queryParamsHandling="preserve">{{ col.Name
+            }}</button>
     </span>
 </mat-menu>
 

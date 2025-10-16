@@ -117,7 +117,7 @@ export class SettingsComponent {
 
   addCollection() {
     let col = new Collection();
-    col.DisplayName = 'New Collection (please change)';
+    col.Displayname = 'New Collection (please change)';
     let src = new SourceSystem();
     src.Name = 'New Source (please change)';
     let s = this.userSettings!.Collections![0].Source!;

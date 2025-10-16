@@ -37,7 +37,7 @@ func parseTime(t string) (time.Time, error) {
 }
 
 func (v *VecDB) Embedd(ctx context.Context, config cfg.RagConfig, in <-chan *EmbeddDocument) (int, error) {
-	collectionName := config.Collectionname()
+	collectionName := config.CollectionName()
 	slog := v.slog.With("collection", collectionName)
 	slogBase := slog
 	slog.Warn("Starting embedding", logger.Stacktrace())

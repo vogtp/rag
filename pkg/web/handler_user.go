@@ -76,7 +76,7 @@ func (srv *Server) loadUser(w http.ResponseWriter, r *http.Request) {
 			Name: userName,
 			Collections: []usercfg.Collection{
 				{
-					DisplayName: "Intranet",
+					Displayname: "Intranet",
 					Source: usercfg.SourceSystem{
 						Name: viper.GetString(cfg.ConfluenceBaseURL),
 						URL:  viper.GetString(cfg.ConfluenceBaseURL),

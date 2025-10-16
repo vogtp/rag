@@ -44,7 +44,7 @@ test:
 	$(GO_CMD) test ./...
 
 .PHONY: ng-serve
-ng-serve:
+ng-serve: generate
 	cd pkg/web/ng/intrasearch/dist/intrasearch/browser/ ; ng serve
 
 .PHONY: ng-build

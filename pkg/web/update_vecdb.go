@@ -24,7 +24,7 @@ func (srv *Server) schedulePeriodicVecDBUpdates(ctx context.Context) {
 	}
 	for _, rag := range ragger.GetAllRags(ctx) {
 		updateIntervall := rag.UpdateIntervall()
-		slog := srv.slog.With("rag", rag.Displayname(), "updateIntervall", updateIntervall.String())
+		slog := srv.slog.With("rag", rag.DisplayName(), "updateIntervall", updateIntervall.String())
 		if updateIntervall < cfg.MinVecDBUpdateIntervall {
 			slog.Warn("Not starting periodic vector DB updates since update intervall is too short")
 			continue

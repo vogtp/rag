@@ -3,7 +3,6 @@ package usercfg
 import (
 	"context"
 	"log/slog"
-
 )
 
 func Migrate2Gorm(ctx context.Context, slog *slog.Logger) error {
@@ -45,9 +44,9 @@ func Migrate2Gorm(ctx context.Context, slog *slog.Logger) error {
 				}
 			}
 			gc := Collection{
-				DisplayName:    c.Name,
-				CollectionName: c.CollectionName,
-				Source:         src,
+				Displayname:   c.Name,
+				Collectioname: c.CollectionName,
+				Source:        src,
 			}
 
 			gu.Collections[i] = gc

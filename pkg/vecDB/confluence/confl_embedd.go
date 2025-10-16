@@ -13,7 +13,7 @@ import (
 )
 
 func Embed(ctx context.Context, slog *slog.Logger, config cfg.RagConfig) error {
-	collectionName := config.Collectionname()
+	collectionName := config.CollectionName()
 	client, err := vecdb.New(ctx, slog, config.ModelEmbedding(), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
 	if err != nil {
 		return fmt.Errorf("Failed to create vector DB: %w", err)
@@ -58,7 +58,7 @@ func Embed(ctx context.Context, slog *slog.Logger, config cfg.RagConfig) error {
 }
 
 func embedd(ctx context.Context, client *vecdb.VecDB, config cfg.RagConfig, c chan *vecdb.EmbeddDocument) error {
-	slog := slog.With("collection", config.Collectionname())
+	slog := slog.With("collection", config.CollectionName())
 	slog.Info("Embebbing start")
 	start := time.Now()
 	cnt, err := client.Embedd(ctx, config, c)

@@ -117,11 +117,11 @@ class Collection {
 	UpdatedAt: Date;
 	DeletedAt: DeletedAt;
 	UserID: number;
-	DisplayName: string;
-	CollectionName: string;
+	Displayname: string;
+	Collectioname: string;
 	APIKey: string;
-	GenModel: string;
-	EmbedModel: string;
+	Genmodel: string;
+	Embedmodel: string;
 	DBUpdateIntervall: number;
 	Source: SourceSystem;
 
@@ -132,11 +132,11 @@ class Collection {
 		this.UpdatedAt = ('UpdatedAt' in d) ? ParseDate(d.UpdatedAt) : new Date();
 		this.DeletedAt = new DeletedAt(d.DeletedAt);
 		this.UserID = ('UserID' in d) ? d.UserID as number : 0;
-		this.DisplayName = ('DisplayName' in d) ? d.DisplayName as string : '';
-		this.CollectionName = ('CollectionName' in d) ? d.CollectionName as string : '';
+		this.Displayname = ('Displayname' in d) ? d.Displayname as string : '';
+		this.Collectioname = ('Collectioname' in d) ? d.Collectioname as string : '';
 		this.APIKey = ('APIKey' in d) ? d.APIKey as string : '';
-		this.GenModel = ('GenModel' in d) ? d.GenModel as string : '';
-		this.EmbedModel = ('EmbedModel' in d) ? d.EmbedModel as string : '';
+		this.Genmodel = ('Genmodel' in d) ? d.Genmodel as string : '';
+		this.Embedmodel = ('Embedmodel' in d) ? d.Embedmodel as string : '';
 		this.DBUpdateIntervall = ('DBUpdateIntervall' in d) ? d.DBUpdateIntervall as number : 0;
 		this.Source = new SourceSystem(d.Source);
 	}

@@ -33,21 +33,21 @@ var _ (cfg.RagConfig) = (*User)(nil)
 // Collection returns a collection by CollectionName or DisplayName
 func (u *User) Collection(n string) *Collection {
 	for _, c := range u.Collections {
-		if c.CollectionName == n {
+		if c.Collectioname == n {
 			return &c
 		}
-		if c.DisplayName == n {
+		if c.Displayname == n {
 			return &c
 		}
 	}
 	return nil
 }
 
-func (u *User) Displayname() string {
+func (u *User) DisplayName() string {
 	return u.Name
 }
 
-func (u *User) Collectionname() string {
+func (u *User) CollectionName() string {
 	return u.Name
 }
 
@@ -116,7 +116,7 @@ func (u *User) Embbed(ctx context.Context, slog *slog.Logger) error {
 	slog = slog.With("username", u.Name)
 	for _, c := range u.Collections {
 		if err := c.Embbed(ctx, slog); err != nil {
-			slog.Warn("Cannot embed user collection", "err", err, "collection", c.Displayname())
+			slog.Warn("Cannot embed user collection", "err", err, "collection", c.DisplayName())
 		}
 	}
 	return nil

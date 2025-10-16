@@ -47,7 +47,7 @@ var dbUserCmd = &cobra.Command{
 			fmt.Printf(" * %s\n", u.Name)
 			if len(u.Collections) > 0 {
 				for _, c := range u.Collections {
-					fmt.Printf("   %s (%s)\n", c.DisplayName, c.Source.Parts)
+					fmt.Printf("   %s (%s)\n", c.Displayname, c.Source.Parts)
 					colCnt++
 				}
 			}

@@ -11,7 +11,7 @@ import (
 )
 
 type Instance interface {
-	Displayname() string
+	DisplayName() string
 
 	Model(name string) (Model, error)
 

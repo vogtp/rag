@@ -52,10 +52,10 @@ func (d *DataBase) Add(ctx context.Context, u *User) error {
 	if eu, err := d.User(ctx, u.Name); err == nil && eu != nil {
 		u.ID = eu.ID
 		for i, c := range u.Collections {
-			if len(c.CollectionName) < len(c.DisplayName) {
-				c.CollectionName = fmt.Sprintf("%s-%s", u.Name, chroma.FixCollectionName(c.DisplayName))
+			if len(c.Collectioname) < len(c.Displayname) {
+				c.Collectioname = fmt.Sprintf("%s-%s", u.Name, chroma.FixCollectionName(c.Displayname))
 			}
-			if ec := eu.Collection(c.CollectionName); ec != nil {
+			if ec := eu.Collection(c.Collectioname); ec != nil {
 				c.ID = ec.ID
 				c.Source.ID = ec.Source.ID
 				u.Collections[i] = c
@@ -67,10 +67,10 @@ func (d *DataBase) Add(ctx context.Context, u *User) error {
 	}
 	for _, c := range u.Collections {
 		if err := d.db.Clauses(clause.OnConflict{UpdateAll: true}).Create(&c).Error; err != nil {
-			return fmt.Errorf("adding user %q collection %q: %w", u.Name, c.DisplayName, err)
+			return fmt.Errorf("adding user %q collection %q: %w", u.Name, c.Displayname, err)
 		}
 		if err := d.db.Clauses(clause.OnConflict{UpdateAll: true}).Create(&c.Source).Error; err != nil {
-			return fmt.Errorf("adding user %q collection %q source %q: %w", u.Name, c.DisplayName, c.Source.Name, err)
+			return fmt.Errorf("adding user %q collection %q source %q: %w", u.Name, c.Displayname, c.Source.Name, err)
 		}
 	}
 	if err := d.CleanupUserCollections(ctx, u); err != nil {

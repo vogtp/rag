@@ -13,7 +13,7 @@ func (d *DataBase) CleanupUserCollections(ctx context.Context, usr *User) error 
 	slog.Info("Cleanup user collecions")
 	colMap := make(map[string]bool)
 	for _, col := range usr.Collections {
-		colMap[col.CollectionName] = true
+		colMap[col.Collectioname] = true
 	}
 	vecDb, err := vecdb.New(ctx, slog, viper.GetString(cfg.ModelEmbedding))
 	if err != nil {

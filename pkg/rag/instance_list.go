@@ -37,7 +37,7 @@ func (i *instanceList) Add(rags ...types.Instance) {
 	i.rags = append(i.rags, rags...)
 }
 
-func (i *instanceList) Displayname() string {
+func (i *instanceList) DisplayName() string {
 	return i.name
 }
 
@@ -84,7 +84,7 @@ func (i *instanceList) UpdateIntervall() time.Duration {
 func (i *instanceList) Embbed(ctx context.Context, _ *slog.Logger) error {
 	for _, r := range i.rags {
 		if err := r.Embbed(ctx, i.slog); err != nil {
-			i.slog.Warn("Cannot embed rag list member", "err", err, "rag.name", r.Displayname())
+			i.slog.Warn("Cannot embed rag list member", "err", err, "rag.name", r.DisplayName())
 		}
 	}
 	return nil
@@ -95,7 +95,7 @@ func (i *instanceList) ListCollections(ctx context.Context, _ *slog.Logger) ([]*
 	for _, r := range i.rags {
 		c, err := r.ListCollections(ctx, i.slog)
 		if err != nil {
-			i.slog.Warn("Cannot list collections of rag list member", "err", err, "rag.name", r.Displayname())
+			i.slog.Warn("Cannot list collections of rag list member", "err", err, "rag.name", r.DisplayName())
 		}
 		cols = append(cols, c...)
 	}
@@ -110,7 +110,7 @@ func (i *instanceList) SearchVecDB(ctx context.Context, slog *slog.Logger, colle
 	for _, r := range i.rags {
 		c, err := r.SearchVecDB(ctx, slog, collection, query, maxResults)
 		if err != nil {
-			i.slog.Error("Cannot search vecDD of rag list member", "err", err, "rag.name", r.Displayname(), "collection", collection)
+			i.slog.Error("Cannot search vecDD of rag list member", "err", err, "rag.name", r.DisplayName(), "collection", collection)
 		}
 		docs = append(docs, c...)
 	}

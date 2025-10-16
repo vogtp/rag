@@ -58,7 +58,7 @@ func TestDataBase_Add(t *testing.T) {
 	partsFmt := "newParts%v,newParts%v"
 	dnFmt := "newDisplayName%v"
 	for i := range tu.Collections {
-		tu.Collections[i].DisplayName = fmt.Sprintf(dnFmt, i)
+		tu.Collections[i].Displayname = fmt.Sprintf(dnFmt, i)
 		tu.Collections[i].Source.Parts = fmt.Sprintf(partsFmt, i, i)
 	}
 	if err := db.Add(ctx, tu); err != nil {
@@ -70,8 +70,8 @@ func TestDataBase_Add(t *testing.T) {
 	}
 	testhelper.CompareUser(t, tu, u)
 	for i, c := range tu.Collections {
-		if c.DisplayName != fmt.Sprintf(dnFmt, i) {
-			t.Errorf("collection display name not correct: %v -> %s", i, c.DisplayName)
+		if c.Displayname != fmt.Sprintf(dnFmt, i) {
+			t.Errorf("collection display name not correct: %v -> %s", i, c.Displayname)
 		}
 		if c.Source.Parts != fmt.Sprintf(partsFmt, i, i) {
 			t.Errorf("collection source parts not correct: %v -> %s", i, c.Source.Parts)
