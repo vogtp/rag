@@ -53,7 +53,7 @@ func (c *Collection) Collectionname() string {
 
 func (c *Collection) Model(name string) (types.Model, error) {
 	if !strings.EqualFold(name, c.DisplayName) && !strings.EqualFold(name, c.CollectionName) {
-		return nil, fmt.Errorf("model %q not found", name)
+		return nil, fmt.Errorf("model %q not found, collection %q or %q", name, c.CollectionName, c.DisplayName)
 	}
 	m := model.Ollama{
 		Name:    c.LLM(),
