@@ -12,10 +12,11 @@ import (
 	"github.com/vogtp/langchaingo/llms/ollama"
 	llmopenai "github.com/vogtp/langchaingo/llms/openai"
 	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/types"
 	"github.com/vogtp/rag/pkg/web/bearer"
 )
 
-var _ Model = (*OllamaModel)(nil)
+var _ types.Model = (*OllamaModel)(nil)
 
 type OllamaModel struct {
 	Name    string
@@ -50,7 +51,7 @@ func (m OllamaModel) ToOpenAI() openai.Model {
 	}
 }
 
-func (m OllamaModel) GenerateContent(ctx context.Context, messages []llms.MessageContent, temperature float64, streamingFunc StreamingFunc) (string, error) {
+func (m OllamaModel) GenerateContent(ctx context.Context, messages []llms.MessageContent, temperature float64, streamingFunc types.StreamingFunc) (string, error) {
 	llm, err := getOllamaClient(ctx, m.LLMName)
 	if err != nil {
 		return "", fmt.Errorf("cannot get ollama client: %w", err)

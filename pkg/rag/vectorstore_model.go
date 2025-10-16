@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/amikos-tech/chroma-go/types"
+	typeschroma "github.com/amikos-tech/chroma-go/types"
 	"github.com/sashabaranov/go-openai"
 	"github.com/vogtp/langchaingo/embeddings"
 	"github.com/vogtp/langchaingo/llms"
@@ -15,11 +15,12 @@ import (
 	"github.com/vogtp/langchaingo/vectorstores"
 	"github.com/vogtp/langchaingo/vectorstores/chroma"
 	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/types"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 	"github.com/vogtp/rag/pkg/web/bearer"
 )
 
-var _ Model = (*VectorStoreModel)(nil)
+var _ types.Model = (*VectorStoreModel)(nil)
 
 type VectorStoreModel struct {
 	Name    string
@@ -71,7 +72,7 @@ Always give references to the used knowledge and if you cannot say "I do not kno
 	}},
 }
 
-func (m VectorStoreModel) GenerateContent(ctx context.Context, messages []llms.MessageContent, temperature float64, streamingFunc StreamingFunc) (string, error) {
+func (m VectorStoreModel) GenerateContent(ctx context.Context, messages []llms.MessageContent, temperature float64, streamingFunc types.StreamingFunc) (string, error) {
 	store, err := m.getChroma(ctx)
 	if err != nil {
 		return "", err
@@ -191,7 +192,7 @@ func (m *VectorStoreModel) getChroma(ctx context.Context) (vectorstores.VectorSt
 		chroma.WithChromaURL(cfg.ChromaUrl()),
 		chroma.WithNameSpace(m.Collection),
 		chroma.WithEmbedder(e),
-		chroma.WithDistanceFunction(types.COSINE),
+		chroma.WithDistanceFunction(typeschroma.COSINE),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create chroma client: %w", err)

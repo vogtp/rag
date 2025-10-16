@@ -10,37 +10,21 @@ import (
 	chroma "github.com/amikos-tech/chroma-go"
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/types"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
-	"github.com/vogtp/rag/pkg/web/bearer"
 )
 
-type Instance interface {
-	Name() string
-
-	Model(name string) (Model, error)
-	Models(ctx context.Context) []Model
-
-	LLM() string
-
-	UpdateIntervall() time.Duration
-	Embbed(ctx context.Context) error
-	ListCollections(ctx context.Context) ([]*chroma.Collection, error)
-	SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error)
-
-	bearer.Auth
-}
-
-var _ (Instance) = (*instanceList)(nil)
+var _ (types.Instance) = (*instanceList)(nil)
 
 type instanceList struct {
 	slog *slog.Logger
 	name string
-	rags []Instance
+	rags []types.Instance
 }
 
-func newInstanceList(slog *slog.Logger, name string, rags ...Instance) *instanceList {
+func newInstanceList(slog *slog.Logger, name string, rags ...types.Instance) *instanceList {
 	if rags == nil {
-		rags = make([]Instance, 0)
+		rags = make([]types.Instance, 0)
 	}
 	return &instanceList{
 		slog: slog,
@@ -49,7 +33,7 @@ func newInstanceList(slog *slog.Logger, name string, rags ...Instance) *instance
 	}
 }
 
-func (i *instanceList) Add(rags ...Instance) {
+func (i *instanceList) Add(rags ...types.Instance) {
 	i.rags = append(i.rags, rags...)
 }
 
@@ -57,7 +41,7 @@ func (i *instanceList) Name() string {
 	return i.name
 }
 
-func (i *instanceList) Model(name string) (m Model, err error) {
+func (i *instanceList) Model(name string) (m types.Model, err error) {
 	for _, r := range i.rags {
 		m, err = r.Model(name)
 		if m != nil {
@@ -67,8 +51,8 @@ func (i *instanceList) Model(name string) (m Model, err error) {
 	return nil, err
 }
 
-func (i *instanceList) Models(ctx context.Context) []Model {
-	m := make([]Model, 0)
+func (i *instanceList) Models(ctx context.Context) []types.Model {
+	m := make([]types.Model, 0)
 	for _, r := range i.rags {
 		m = append(m, r.Models(ctx)...)
 	}

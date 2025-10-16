@@ -7,20 +7,21 @@ import (
 	"net/http"
 
 	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/types"
 	"github.com/vogtp/rag/pkg/usercfg"
 	"github.com/vogtp/rag/pkg/web/bearer"
 	"github.com/vogtp/rag/pkg/web/oidc"
 )
 
 type Handler interface {
-	AllFromRequest(ctx context.Context, r *http.Request) Instance
-	UserFromRequest(ctx context.Context, r *http.Request) Instance
+	AllFromRequest(ctx context.Context, r *http.Request) types.Instance
+	UserFromRequest(ctx context.Context, r *http.Request) types.Instance
 }
 
 var _ (Handler) = (*handler)(nil)
 
 type GetAllRager interface {
-	GetAllRags(context.Context) []Instance
+	GetAllRags(context.Context) []types.Instance
 }
 
 var _ (GetAllRager) = (*handler)(nil)
@@ -28,7 +29,7 @@ var _ (GetAllRager) = (*handler)(nil)
 type handler struct {
 	slog       *slog.Logger
 	usercfg    *usercfg.DataBase
-	globalRags []Instance
+	globalRags []types.Instance
 }
 
 func New(ctx context.Context, slog *slog.Logger, usercfg *usercfg.DataBase) (Handler, error) {
@@ -36,7 +37,7 @@ func New(ctx context.Context, slog *slog.Logger, usercfg *usercfg.DataBase) (Han
 	if err != nil {
 		return nil, fmt.Errorf("read RAG config: %w", err)
 	}
-	rags := make([]Instance, len(ragCfgs))
+	rags := make([]types.Instance, len(ragCfgs))
 	for i, ragCfg := range ragCfgs {
 		r, err := newInstanceCfg(ctx, slog, ragCfg)
 		if err != nil {
@@ -58,8 +59,8 @@ func (h handler) publicInstances() *instanceList {
 
 // GetAllRags returns a slice of all instance without any authentical
 // for internal use only
-func (h handler) GetAllRags(ctx context.Context) []Instance {
-	rags := make([]Instance, 0)
+func (h handler) GetAllRags(ctx context.Context) []types.Instance {
+	rags := make([]types.Instance, 0)
 	rags = append(rags, h.globalRags...)
 	usrs, err := h.usercfg.Users(ctx)
 	if err != nil {
@@ -69,7 +70,7 @@ func (h handler) GetAllRags(ctx context.Context) []Instance {
 	return rags
 }
 
-func (h handler) AllFromRequest(ctx context.Context, r *http.Request) Instance {
+func (h handler) AllFromRequest(ctx context.Context, r *http.Request) types.Instance {
 	rags := newInstanceList(h.slog, "global")
 
 	rags.Add(h.publicInstances())
@@ -77,7 +78,7 @@ func (h handler) AllFromRequest(ctx context.Context, r *http.Request) Instance {
 	return rags
 }
 
-func (h handler) UserFromRequest(ctx context.Context, r *http.Request) Instance {
+func (h handler) UserFromRequest(ctx context.Context, r *http.Request) types.Instance {
 	username, _ := oidc.UserName(r)
 
 	// by Bearer Token
@@ -112,16 +113,16 @@ func (h handler) UserFromRequest(ctx context.Context, r *http.Request) Instance 
 	return rags
 }
 
-func (h handler) getUserInstances(ctx context.Context, usrs ...usercfg.User) []Instance {
-	rags := make([]Instance, 0)
+func (h handler) getUserInstances(ctx context.Context, usrs ...usercfg.User) []types.Instance {
+	rags := make([]types.Instance, 0)
 	for _, u := range usrs {
 		rags = append(rags, h.getCollectionInstances(ctx, u.Collections...)...)
 	}
 	return rags
 }
 
-func (h handler) getCollectionInstances(ctx context.Context, usrs ...usercfg.Collection) []Instance {
-	rags := make([]Instance, 0)
+func (h handler) getCollectionInstances(ctx context.Context, usrs ...usercfg.Collection) []types.Instance {
+	rags := make([]types.Instance, 0)
 	for _, c := range usrs {
 		idc, err := newInstanceDBCol(ctx, h.slog, &c)
 		if err != nil {

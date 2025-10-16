@@ -13,6 +13,7 @@ import (
 	"github.com/sashabaranov/go-openai"
 	"github.com/vogtp/langchaingo/llms"
 	"github.com/vogtp/rag/pkg/rag"
+	"github.com/vogtp/rag/pkg/types"
 )
 
 func (srv *Server) completionHandler(w http.ResponseWriter, r *http.Request) {
@@ -123,7 +124,7 @@ func (srv *Server) chatCompletionHandler(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-func (srv *Server) handleCompletionStream(req *openai.ChatCompletionRequest, ragModel rag.Model, w http.ResponseWriter, r *http.Request) {
+func (srv *Server) handleCompletionStream(req *openai.ChatCompletionRequest, ragModel types.Model, w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	msgs := make([]llms.MessageContent, 0, len(req.Messages)*3)
@@ -217,7 +218,7 @@ func stream(ctx context.Context, w http.ResponseWriter, step func(w io.Writer) b
 	}
 }
 
-func generateChatStreamResponse(ragModel rag.Model, chunk []byte) *openai.ChatCompletionStreamResponse {
+func generateChatStreamResponse(ragModel types.Model, chunk []byte) *openai.ChatCompletionStreamResponse {
 	id := prefixID("chatcmpl-")
 	res := openai.ChatCompletionStreamResponse{
 		ID:      id,

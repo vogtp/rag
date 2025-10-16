@@ -10,11 +10,12 @@ import (
 	chroma "github.com/amikos-tech/chroma-go"
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/types"
 	"github.com/vogtp/rag/pkg/usercfg"
 	"github.com/vogtp/rag/pkg/vecDB/confluence"
 )
 
-var _ (Instance) = (*instanceDBCol)(nil)
+var _ (types.Instance) = (*instanceDBCol)(nil)
 var _ (cfg.RagConfig) = (*instanceDBCol)(nil)
 
 type instanceDBCol struct {

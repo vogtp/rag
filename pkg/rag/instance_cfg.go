@@ -12,12 +12,13 @@ import (
 
 	chroma "github.com/amikos-tech/chroma-go"
 	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/types"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 	"github.com/vogtp/rag/pkg/vecDB/confluence"
 	"github.com/vogtp/rag/pkg/web/bearer"
 )
 
-var _ (Instance) = (*instanceCfg)(nil)
+var _ (types.Instance) = (*instanceCfg)(nil)
 var _ (cfg.RagConfig) = (*instanceCfg)(nil)
 
 type instanceCfg struct {
@@ -25,7 +26,7 @@ type instanceCfg struct {
 	config cfg.RagConfigInteral
 
 	vecDB  *vecdb.VecDB
-	models []Model
+	models []types.Model
 
 	bearerAuth bearer.Auth
 	// muEmbed    sync.Mutex
@@ -36,7 +37,7 @@ func newInstanceCfg(ctx context.Context, slog *slog.Logger, config cfg.RagConfig
 		slog:       slog.With("rag.name", config.Name(), "collection.name", config.CollectionName()),
 		config:     config,
 		bearerAuth: bearer.TokenAuth(config.APITokenInt),
-		models: []Model{
+		models: []types.Model{
 			OllamaModel{
 				Name:    config.ModelInt.LLM,
 				LLMName: config.ModelInt.LLM,
@@ -99,21 +100,21 @@ func (i *instanceCfg) updateModelsFromChroma(ctx context.Context) error {
 		i.models = append(i.models, VectorStoreModel{Name: c.Name, vecDB: i.vecDB, Collection: c.Name, LLMName: model, config: i.config, bearerAuth: i.bearerAuth})
 	}
 	i.slog.Debug("Models raw ", "models", i.models)
-	slices.SortFunc(i.models, func(a, b Model) int { return strings.Compare(a.GetName(), b.GetName()) })
+	slices.SortFunc(i.models, func(a, b types.Model) int { return strings.Compare(a.GetName(), b.GetName()) })
 	i.slog.Debug("Models sort", "models", i.models)
-	i.models = slices.CompactFunc(i.models, func(a, b Model) bool { return strings.EqualFold(a.GetName(), b.GetName()) })
+	i.models = slices.CompactFunc(i.models, func(a, b types.Model) bool { return strings.EqualFold(a.GetName(), b.GetName()) })
 	i.slog.Debug("Models comp", "models", i.models)
 	return nil
 }
 
-func (i *instanceCfg) Models(ctx context.Context) []Model {
+func (i *instanceCfg) Models(ctx context.Context) []types.Model {
 	if err := i.updateModelsFromChroma(ctx); err != nil {
 		i.slog.WarnContext(ctx, "Cannot update models from chroma", "err", err)
 	}
 	return i.models
 }
 
-func (i *instanceCfg) Model(name string) (Model, error) {
+func (i *instanceCfg) Model(name string) (types.Model, error) {
 	i.slog.Debug("Query model", "model", name)
 	decoded, err := url.QueryUnescape(name)
 	if err != nil {
