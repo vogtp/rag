@@ -13,8 +13,8 @@ import (
 )
 
 type Handler interface {
-	AllFromRequest(r *http.Request) (Instance, error)
-	UserFromRequest(ctx context.Context, r *http.Request) (Instance, error)
+	AllFromRequest(r *http.Request) Instance
+	UserFromRequest(ctx context.Context, r *http.Request) Instance
 }
 
 var _ (Handler) = (*handler)(nil)
@@ -69,21 +69,24 @@ func (h handler) GetAllRags(ctx context.Context) []Instance {
 	return rags
 }
 
-func (h handler) AllFromRequest(r *http.Request) (Instance, error) {
+func (h handler) AllFromRequest(r *http.Request) Instance {
 	rags := newInstanceList(h.slog, "global")
 
 	rags.Add(h.publicInstances())
-	u, err := h.UserFromRequest(r.Context(), r)
-	rags.Add(u)
-	return rags, err
+	rags.Add(h.UserFromRequest(r.Context(), r))
+	return rags
 }
 
-func (h handler) UserFromRequest(ctx context.Context, r *http.Request) (Instance, error) {
-	username, err := oidc.UserName(r)
+func (h handler) UserFromRequest(ctx context.Context, r *http.Request) Instance {
+	username, _ := oidc.UserName(r)
 
 	// by Bearer Token
 	bt, _ := bearer.Get(r)
 	rags := newInstanceList(h.slog, fmt.Sprintf("%s|%s", username, bt))
+
+	if len(username)+len(bt) < 1 {
+		h.slog.Warn("Neither user nor token authentication found in request", "request", r.Header)
+	}
 
 	if len(username) > 1 {
 		if u, err := h.usercfg.User(ctx, username); err == nil {
@@ -106,7 +109,7 @@ func (h handler) UserFromRequest(ctx context.Context, r *http.Request) (Instance
 		}
 	}
 
-	return rags, err
+	return rags
 }
 
 func (h handler) getUserInstances(ctx context.Context, usrs ...usercfg.User) []Instance {

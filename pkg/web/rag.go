@@ -8,9 +8,6 @@ import (
 
 // TODO fix summary handler
 func (srv *Server) rag(r *http.Request) rag.Instance {
-	rag, err := srv.ragMgr.AllFromRequest(r)
-	if err != nil {
-		srv.slog.Warn("Cannot load rag from request", "err", err)
-	}
+	rag := srv.ragMgr.AllFromRequest(r)
 	return rag
 }
