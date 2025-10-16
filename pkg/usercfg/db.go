@@ -72,19 +72,18 @@ type DataBase struct {
 
 var dbInstance *DataBase
 
-func Create(ctx context.Context, sl *slog.Logger) (*DataBase, error) {
+func Create(ctx context.Context, sl *slog.Logger, name string) (*DataBase, error) {
 	if dbInstance != nil {
 		return dbInstance, nil
 	}
-	dbName := DBFileName
-	sl = sl.With(slog.String("database", dbName))
+	sl = sl.With(slog.String("database", name))
 	logOpts := []slogGorm.Option{slogGorm.WithHandler(sl.Handler())}
 	if sl.Enabled(ctx, slog.LevelDebug) {
 		logOpts = append(logOpts, slogGorm.WithTraceAll()) // trace all messages
 		logOpts = append(logOpts, slogGorm.SetLogLevel(slogGorm.DefaultLogType, logger.Level()))
 	}
 	gormSlog := slogGorm.New(logOpts...)
-	backend := sqlite.Open(fmt.Sprintf("file:%s?&cache=shared&_fk=1", dbName))
+	backend := sqlite.Open(fmt.Sprintf("file:%s?&cache=shared&_fk=1", name))
 	db, err := gorm.Open(backend, &gorm.Config{Logger: gormSlog})
 	if err != nil {
 		return nil, fmt.Errorf("create db: %w", err)

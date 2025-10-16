@@ -33,7 +33,7 @@ var dbUserCmd = &cobra.Command{
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
-		db, err := usercfg.Create(ctx, logger.New())
+		db, err := usercfg.Create(ctx, logger.New(), usercfg.DBFileName)
 		if err != nil {
 			return err
 		}
@@ -80,7 +80,7 @@ var dbCleanupCmd = &cobra.Command{
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
-		db, err := usercfg.Create(ctx, logger.New())
+		db, err := usercfg.Create(ctx, logger.New(), usercfg.DBFileName)
 		if err != nil {
 			return err
 		}

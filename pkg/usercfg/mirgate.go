@@ -3,6 +3,7 @@ package usercfg
 import (
 	"context"
 	"log/slog"
+
 )
 
 func Migrate2Gorm(ctx context.Context, slog *slog.Logger) error {
@@ -14,7 +15,7 @@ func Migrate2Gorm(ctx context.Context, slog *slog.Logger) error {
 	if err != nil {
 		return err
 	}
-	dbGorm, err := Create(ctx, slog)
+	dbGorm, err := Create(ctx, slog, DBFileName)
 	if err != nil {
 		return err
 	}

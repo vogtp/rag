@@ -78,17 +78,3 @@ func embedd(ctx context.Context, client *vecdb.VecDB, config cfg.RagConfig, c ch
 	slog.Info("Embebbing finished", "document.count", cnt, "duration", d.String(), "duration_ms", d.Milliseconds())
 	return nil
 }
-
-func fanOut(in chan *vecdb.EmbeddDocument) (chan *vecdb.EmbeddDocument, chan *vecdb.EmbeddDocument) {
-	o1 := make(chan *vecdb.EmbeddDocument)
-	o2 := make(chan *vecdb.EmbeddDocument)
-	go func() {
-		defer close(o1)
-		defer close(o2)
-		for d := range in {
-			o1 <- d
-			o2 <- d
-		}
-	}()
-	return o1, o2
-}

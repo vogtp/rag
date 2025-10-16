@@ -26,7 +26,7 @@ type Server struct {
 	mux     *http.ServeMux
 	oidcMux oidc.Mux
 
-	usercfg    *usercfg.DataBase
+	usercfg *usercfg.DataBase
 
 	ragMgr     rag.Handler
 	lastEmbedd map[string]time.Time
@@ -35,8 +35,8 @@ type Server struct {
 
 // New creates a new webserver
 func New(ctx context.Context, slog *slog.Logger) (*Server, error) {
-	
-	userCfg, err := usercfg.Create(ctx, slog)
+
+	userCfg, err := usercfg.Create(ctx, slog, usercfg.DBFileName)
 	if err != nil {
 		return nil, err
 	}
