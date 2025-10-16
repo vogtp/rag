@@ -61,8 +61,8 @@ var vecDbEmbbedConfluenceCmd = &cobra.Command{
 		}
 		notUsed := ""
 		for _, ragCfg := range ragCfgs {
-			if len(args) > 0 && !strings.EqualFold(args[0], ragCfg.Name()) {
-				notUsed = fmt.Sprintf("%s %s", notUsed, ragCfg.Name())
+			if len(args) > 0 && !strings.EqualFold(args[0], ragCfg.GetName()) {
+				notUsed = fmt.Sprintf("%s %s", notUsed, ragCfg.GetName())
 				continue
 			}
 			if err := confluence.Embed(ctx, slog, ragCfg); err != nil {

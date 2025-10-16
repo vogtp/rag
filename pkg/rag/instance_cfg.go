@@ -34,7 +34,7 @@ type instanceCfg struct {
 
 func newInstanceCfg(ctx context.Context, slog *slog.Logger, config cfg.RagConfigInteral) (*instanceCfg, error) {
 	m := instanceCfg{
-		slog:       slog.With("rag.name", config.Name(), "collection.name", config.CollectionName()),
+		slog:       slog.With("rag.name", config.GetName(), "collection.name", config.CollectionName()),
 		config:     config,
 		bearerAuth: bearer.TokenAuth(config.APITokenInt),
 		models: []types.Model{
@@ -56,8 +56,8 @@ func newInstanceCfg(ctx context.Context, slog *slog.Logger, config cfg.RagConfig
 	return &m, nil
 }
 
-func (i *instanceCfg) Name() string {
-	return i.config.Name()
+func (i *instanceCfg) GetName() string {
+	return i.config.GetName()
 }
 
 func (i *instanceCfg) UpdateIntervall() time.Duration {

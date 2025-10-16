@@ -35,7 +35,7 @@ const (
 
 type RagConfig interface {
 	CollectionName() string
-	Name() string
+	GetName() string
 	Confluence() *ConfluenceCfg
 	ModelEmbedding() string
 	VecDBUpdateIntervall() time.Duration
@@ -43,7 +43,7 @@ type RagConfig interface {
 
 var _ RagConfig = (*RagConfigInteral)(nil)
 
-func (r RagConfigInteral) Name() string {
+func (r RagConfigInteral) GetName() string {
 	return r.NameInt
 }
 func (r RagConfigInteral) CollectionName() string {
@@ -83,7 +83,7 @@ type ConfluenceCfg struct {
 func (r RagConfigInteral) VecDBUpdateIntervall() time.Duration {
 	d, err := time.ParseDuration(r.VecdbInt.UpdateIntervall)
 	if err != nil {
-		slog.Warn("Cannot parse update intervall of RAG", "name", r.Name, "update_intervall", r.VecdbInt.UpdateIntervall, "err", err)
+		slog.Warn("Cannot parse update intervall of RAG", "name", r.GetName(), "update_intervall", r.VecdbInt.UpdateIntervall, "err", err)
 		return DefaultVecDBUpdateIntervall
 	}
 	return d

@@ -11,7 +11,7 @@ import (
 )
 
 type Instance interface {
-	Name() string
+	GetName() string
 
 	Model(name string) (Model, error)
 	Models(ctx context.Context) []Model

@@ -67,7 +67,7 @@ func (i *instanceDBCol) CollectionName() string {
 
 func (i *instanceDBCol) Embbed(ctx context.Context) error {
 	if !i.muEmbed.TryLock() {
-		return fmt.Errorf("Embedding (%q) already running!", i.config.Name())
+		return fmt.Errorf("Embedding (%q) already running!", i.config.GetName())
 	}
 	defer i.muEmbed.Unlock()
 	return confluence.Embed(ctx, i.slog, i)
