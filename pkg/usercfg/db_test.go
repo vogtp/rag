@@ -8,7 +8,7 @@ import (
 	"github.com/vogtp/rag/pkg/usercfg"
 )
 
-func TestCreate(t *testing.T) {
+func TestDataBase_QueryUser(t *testing.T) {
 	ctx := t.Context()
 	db, _ := testhelper.GetDB(t)
 	usrs, err := db.Users(ctx)
@@ -25,6 +25,26 @@ func TestCreate(t *testing.T) {
 			t.Errorf("cannot query user %q: %v", tu.Name, err)
 		}
 		testhelper.CompareUser(t, &tu, u)
+	}
+}
+
+func TestDataBase_QueryAPIKey(t *testing.T) {
+	ctx := t.Context()
+	db, _ := testhelper.GetDB(t)
+	usrs, err := db.Users(ctx)
+	if err != nil {
+		t.Fatalf("query users: %v", err)
+	}
+	if len(usrs) != len(testhelper.AllUsers) {
+		t.Errorf("user count not correct: have: %v want %v", len(usrs), len(testhelper.AllUsers))
+	}
+	testUsrs := []usercfg.User{testhelper.User1, testhelper.User2}
+	for _, tu := range testUsrs {
+		u, err := db.UserByAPIKey(ctx, tu.APIKey)
+		if err != nil {
+			t.Errorf("cannot query user %q: %v", tu.Name, err)
+		}
+		testhelper.CompareUser(t, &tu, &u[0])
 	}
 }
 

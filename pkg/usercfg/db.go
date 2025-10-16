@@ -146,11 +146,11 @@ func (d *DataBase) User(ctx context.Context, name string) (*User, error) {
 }
 
 func (d *DataBase) UserByAPIKey(ctx context.Context, key string) ([]User, error) {
-	usrs, err := d.usr().Where("APIKey = ?", key).Find(ctx)
+	usrs, err := d.usr().Where("api_key = ?", key).Find(ctx)
 	return usrs, err
 }
 
 func (d *DataBase) CollectionByAPIKey(ctx context.Context, key string) ([]Collection, error) {
-	cols, err := d.col().Where("APIKey = ?", key).Find(ctx)
+	cols, err := d.col().Where("api_key = ?", key).Find(ctx)
 	return cols, err
 }
