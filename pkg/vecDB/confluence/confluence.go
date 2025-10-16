@@ -8,13 +8,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/graze/go-throttled"
 	"github.com/spf13/viper"
 	conflu "github.com/virtomize/confluence-go-api"
 	"github.com/vogtp/rag/pkg/cfg"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 	"github.com/vogtp/rag/pkg/vecDB/pdf"
-	"golang.org/x/time/rate"
 )
 
 // GetDocuments retrives confluence spaces and generates vecdb.EmbeddDocuments
@@ -26,7 +24,6 @@ func GetDocuments(ctx context.Context, slog *slog.Logger, config cfg.RagConfig, 
 		baseURL:    baseURL,
 		out:        make(chan *vecdb.EmbeddDocument, 10),
 		accessKey:  config.Confluence().Key,
-		rateLimit:  rate.Limit(0.4),
 		queryLimit: 100,
 		spaces:     spaces,
 		config:     config,
@@ -47,7 +44,6 @@ type confluence struct {
 	out        chan *vecdb.EmbeddDocument
 	api        *conflu.API
 	accessKey  string
-	rateLimit  rate.Limit
 	queryLimit int
 	spaces     []string
 	mu         sync.Mutex
@@ -63,11 +59,8 @@ func (c *confluence) init() error {
 	if api == nil {
 		return fmt.Errorf("confluence api was not created")
 	}
-	api.Client.Transport = &uaRT{
-		RoundTripper: api.Client.Transport,
-	}
 
-	api.Client = throttled.WrapClient(api.Client, rate.NewLimiter(c.rateLimit, 1))
+	api.Client = getRateLimitHttpClient(api.Client)
 	c.api = api
 	c.slog.Info("loaded confluence rest api", "url", url)
 	return nil

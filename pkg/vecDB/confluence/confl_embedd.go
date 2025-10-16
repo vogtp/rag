@@ -6,14 +6,11 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/vogtp/rag/pkg/cfg"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 )
-
-var wg sync.WaitGroup
 
 func Embed(ctx context.Context, slog *slog.Logger, config cfg.RagConfig) error {
 	collectionName := config.CollectionName()
@@ -57,13 +54,10 @@ func Embed(ctx context.Context, slog *slog.Logger, config cfg.RagConfig) error {
 			return ctx.Err()
 		}
 	}
-	wg.Wait()
 	return nil
 }
 
 func embedd(ctx context.Context, client *vecdb.VecDB, config cfg.RagConfig, c chan *vecdb.EmbeddDocument) error {
-	wg.Add(1)
-	defer wg.Done()
 	slog := slog.With("collection", config.CollectionName())
 	slog.Info("Embebbing start")
 	start := time.Now()
