@@ -118,7 +118,7 @@ class Collection {
 	DeletedAt: DeletedAt;
 	UserID: number;
 	Displayname: string;
-	Collectioname: string;
+	Collectionname: string;
 	APIKey: string;
 	Genmodel: string;
 	Embedmodel: string;
@@ -133,7 +133,7 @@ class Collection {
 		this.DeletedAt = new DeletedAt(d.DeletedAt);
 		this.UserID = ('UserID' in d) ? d.UserID as number : 0;
 		this.Displayname = ('Displayname' in d) ? d.Displayname as string : '';
-		this.Collectioname = ('Collectioname' in d) ? d.Collectioname as string : '';
+		this.Collectionname = ('Collectionname' in d) ? d.Collectionname as string : '';
 		this.APIKey = ('APIKey' in d) ? d.APIKey as string : '';
 		this.Genmodel = ('Genmodel' in d) ? d.Genmodel as string : '';
 		this.Embedmodel = ('Embedmodel' in d) ? d.Embedmodel as string : '';

@@ -52,10 +52,10 @@ func (d *DataBase) Add(ctx context.Context, u *User) error {
 	if eu, err := d.User(ctx, u.Name); err == nil && eu != nil {
 		u.ID = eu.ID
 		for i, c := range u.Collections {
-			if len(c.Collectioname) < len(c.Displayname) {
-				c.Collectioname = fmt.Sprintf("%s-%s", u.Name, chroma.FixCollectionName(c.Displayname))
+			if len(c.Collectionname) < len(c.Displayname) {
+				c.Collectionname = fmt.Sprintf("%s-%s", u.Name, chroma.FixCollectionName(c.Displayname))
 			}
-			if ec := eu.Collection(c.Collectioname); ec != nil {
+			if ec := eu.Collection(c.Collectionname); ec != nil {
 				c.ID = ec.ID
 				c.Source.ID = ec.Source.ID
 				u.Collections[i] = c

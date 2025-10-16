@@ -52,8 +52,8 @@ func CompareCollection(t *testing.T, tc *usercfg.Collection, c *usercfg.Collecti
 	if tc.Displayname != c.Displayname {
 		t.Errorf("collection not the correct DisplayName: want %s have %s", tc.Displayname, c.Displayname)
 	}
-	if tc.Collectioname != c.Collectioname {
-		t.Errorf("collection not the correct CollectionName: want %s have %s", tc.Collectioname, c.Collectioname)
+	if tc.Collectionname != c.Collectionname {
+		t.Errorf("collection not the correct CollectionName: want %s have %s", tc.Collectionname, c.Collectionname)
 	}
 	if tc.APIKey != c.APIKey {
 		t.Errorf("collection not the correct APIKey: want %s have %s", tc.APIKey, c.APIKey)
@@ -87,10 +87,10 @@ var (
 	}
 	CollectionsUser1 = []usercfg.Collection{
 		{
-			Displayname:   "TestDisplayNameUser1",
-			Collectioname: "TestCollectionNameUser1",
-			APIKey:        "TestAPIKeyUser1",
-			Source:        SourceUser1,
+			Displayname:    "TestDisplayNameUser1",
+			Collectionname: "TestCollectionNameUser1",
+			APIKey:         "TestAPIKeyUser1",
+			Source:         SourceUser1,
 		},
 	}
 	SourceUser1 = usercfg.SourceSystem{
@@ -107,10 +107,10 @@ var (
 	}
 	CollectionsUser2 = []usercfg.Collection{
 		{
-			Displayname:   "TestDisplayNameUser2",
-			Collectioname: "TestCollectionNameUser2",
-			APIKey:        "TestAPIKeyUser2",
-			Source:        SourceUser2,
+			Displayname:    "TestDisplayNameUser2",
+			Collectionname: "TestCollectionNameUser2",
+			APIKey:         "TestAPIKeyUser2",
+			Source:         SourceUser2,
 		},
 	}
 	SourceUser2 = usercfg.SourceSystem{

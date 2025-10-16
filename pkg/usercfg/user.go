@@ -33,7 +33,7 @@ var _ (cfg.RagConfig) = (*User)(nil)
 // Collection returns a collection by CollectionName or DisplayName
 func (u *User) Collection(n string) *Collection {
 	for _, c := range u.Collections {
-		if c.Collectioname == n {
+		if c.Collectionname == n {
 			return &c
 		}
 		if c.Displayname == n {

@@ -26,10 +26,10 @@ type Collection struct {
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 
-	UserID        uint   `gorm:"index,column:user_id"`
-	Displayname   string `gorm:"column:display_name"`                 // DisplayName is the name displayed to the user
-	Collectioname string `gorm:"unique,index,column:collection_name"` // CollectionName is the internal unique name of the collection
-	APIKey        string `gorm:"index,column:api_key"`
+	UserID         uint   `gorm:"index,column:user_id"`
+	Displayname    string `gorm:"column:display_name"`                 // DisplayName is the name displayed to the user
+	Collectionname string `gorm:"unique,index,column:collection_name"` // CollectionName is the internal unique name of the collection
+	APIKey         string `gorm:"index,column:api_key"`
 
 	Genmodel          string        `gorm:"column:gen_model"`
 	Embedmodel        string        `gorm:"column:embed_model"`
@@ -48,12 +48,12 @@ func (c *Collection) DisplayName() string {
 }
 
 func (c *Collection) CollectionName() string {
-	return c.Collectioname
+	return c.Collectionname
 }
 
 func (c *Collection) Model(name string) (types.Model, error) {
-	if !strings.EqualFold(name, c.Displayname) && !strings.EqualFold(name, c.Collectioname) {
-		return nil, fmt.Errorf("model %q not found, collection %q or %q", name, c.Collectioname, c.Displayname)
+	if !strings.EqualFold(name, c.Displayname) && !strings.EqualFold(name, c.Collectionname) {
+		return nil, fmt.Errorf("model %q not found, collection %q or %q", name, c.Collectionname, c.Displayname)
 	}
 	m := model.Ollama{
 		Name:    c.LLM(),
@@ -63,7 +63,7 @@ func (c *Collection) Model(name string) (types.Model, error) {
 }
 
 func (c *Collection) Models(ctx context.Context) []types.Model {
-	m, _ := c.Model(c.Collectioname)
+	m, _ := c.Model(c.Collectionname)
 	return []types.Model{m}
 }
 
@@ -101,7 +101,7 @@ func (c *Collection) getVecDb(ctx context.Context, slog *slog.Logger) (*vecdb.Ve
 	if c.vecDB != nil {
 		return c.vecDB, nil
 	}
-	v, err := vecdb.New(ctx, slog.With("collection", c.Collectioname), c.ModelEmbedding())
+	v, err := vecdb.New(ctx, slog.With("collection", c.Collectionname), c.ModelEmbedding())
 	if err != nil {
 		return nil, fmt.Errorf("cannot connect to chroma: %w", err)
 	}
@@ -112,7 +112,7 @@ func (c *Collection) getVecDb(ctx context.Context, slog *slog.Logger) (*vecdb.Ve
 func (c *Collection) SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error) {
 	vecDB, err := c.getVecDb(ctx, slog)
 	if err != nil {
-		return nil, fmt.Errorf("cannot create vecDB for %q: %w", c.Collectioname, err)
+		return nil, fmt.Errorf("cannot create vecDB for %q: %w", c.Collectionname, err)
 	}
 	res, err := vecDB.Query(ctx, collection, []string{query}, int32(maxResults))
 	if err != nil {
@@ -132,7 +132,7 @@ func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger) error {
 func (c *Collection) ListCollections(ctx context.Context, slog *slog.Logger) ([]*chroma.Collection, error) {
 	vecDB, err := c.getVecDb(ctx, slog)
 	if err != nil {
-		return nil, fmt.Errorf("cannot create vecDB for %q: %w", c.Collectioname, err)
+		return nil, fmt.Errorf("cannot create vecDB for %q: %w", c.Collectionname, err)
 	}
 	cols, err := vecDB.ListAllCollections(ctx)
 	if err != nil {
@@ -140,8 +140,8 @@ func (c *Collection) ListCollections(ctx context.Context, slog *slog.Logger) ([]
 	}
 	collections := make([]*chroma.Collection, 0, len(cols))
 	for _, col := range cols {
-		if !strings.EqualFold(col.Name, c.Collectioname) {
-			slog.Debug("Not a valid collection", "vecDB.name", col.Name, "collectionName", c.Collectioname)
+		if !strings.EqualFold(col.Name, c.Collectionname) {
+			slog.Debug("Not a valid collection", "vecDB.name", col.Name, "collectionName", c.Collectionname)
 			continue
 		}
 		collections = append(collections, col)

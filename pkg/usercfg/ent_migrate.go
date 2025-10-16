@@ -44,9 +44,9 @@ func Migrate2Gorm(ctx context.Context, slog *slog.Logger) error {
 				}
 			}
 			gc := Collection{
-				Displayname:   c.Name,
-				Collectioname: c.CollectionName,
-				Source:        src,
+				Displayname:    c.Name,
+				Collectionname: c.CollectionName,
+				Source:         src,
 			}
 
 			gu.Collections[i] = gc
