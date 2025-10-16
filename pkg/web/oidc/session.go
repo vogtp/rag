@@ -75,10 +75,24 @@ func ClearSession(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserName(r *http.Request) (string, error) {
+	if r == nil {
+		if len(testUsername) > 0 {
+			return testUsername, nil
+		}
+		return "", fmt.Errorf("requst is empty: no user")
+	}
 	sess, err := GetSession(r)
 	if err != nil {
 		slog.Info("Cannot get session to get username", "err", err)
 		return "", fmt.Errorf("get user from session: %w", err)
 	}
 	return sess.UserName, nil
+}
+
+var testUsername string
+
+// TESTINGUsernameDoNotUse allows setting a username for testing
+// in order to retrive the username the request has to be nil
+func TESTINGUsernameDoNotUse(username string) {
+	testUsername = username
 }
