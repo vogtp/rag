@@ -52,13 +52,15 @@ func (u *User) Collectionname() string {
 }
 
 func (u *User) Model(name string) (m types.Model, err error) {
+	var retErr error
 	for _, c := range u.Collections {
 		m, err = c.Model(name)
-		if err != nil {
-			return m, err
+		if err == nil {
+			return m, nil
 		}
+		retErr = fmt.Errorf("%v\n%w", retErr, err)
 	}
-	return nil, err
+	return nil, retErr
 }
 
 func (u *User) Models(ctx context.Context) []types.Model {
