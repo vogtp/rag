@@ -3,6 +3,7 @@ package vecdb
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	sl "log/slog"
 	"time"
 
@@ -36,9 +37,13 @@ func parseTime(t string) (time.Time, error) {
 	return time.Parse(timeFormat, t)
 }
 
-func (v *VecDB) Embedd(ctx context.Context, config cfg.RagConfig, in <-chan *EmbeddDocument) (int, error) {
+func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, config cfg.RagConfig, in <-chan *EmbeddDocument) (int, error) {
 	collectionName := config.CollectionName()
-	slog := v.slog.With("collection", collectionName)
+	if len(collectionName) < 1 {
+		slog.Info("No collections name given")
+		return 0, fmt.Errorf("no collection name to embed to")
+	}
+	slog = slog.With("collection", collectionName)
 	slogBase := slog
 	slog.Warn("Starting embedding", logger.Stacktrace())
 	embedFunc, err := v.GetEmbeddingFunc()
@@ -48,7 +53,7 @@ func (v *VecDB) Embedd(ctx context.Context, config cfg.RagConfig, in <-chan *Emb
 
 	coll, err := v.CreateCollection(ctx, collectionName, map[string]interface{}{MetaIsRag: true, MetaCreated: time.Now().Unix})
 	if err != nil {
-		v.slog.Error("cannot create collection", "collectionName", collectionName, "err", err)
+		slog.Error("cannot create collection", "collectionName", collectionName, "err", err)
 		return 0, fmt.Errorf("failed to create collection: %v", err)
 	}
 	coll.Metadata[MetaUpdated] = time.Now()

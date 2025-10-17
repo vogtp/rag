@@ -29,7 +29,7 @@ func Embed(ctx context.Context, slog *slog.Logger, config cfg.RagConfig) error {
 		slog := slog.With("space", space)
 		slog.Info("Starting confluence embdding")
 		start := time.Now()
-		cnt, err := client.Embedd(ctx, config, c)
+		cnt, err := client.Embedd(ctx, slog, config, c)
 		if err != nil {
 			slog.Warn("Embedding returned an error", "err", err)
 		}

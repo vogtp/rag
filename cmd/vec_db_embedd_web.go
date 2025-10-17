@@ -3,10 +3,10 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"log/slog"
 
 	"github.com/spf13/cobra"
 	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/logger"
 	"github.com/vogtp/rag/pkg/scraper"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 )
@@ -51,10 +51,11 @@ func scapper2vecDB(ctx context.Context, url string, collectionName string) error
 
 	dcfg := cfg.DefaultRagCfg()
 	dcfg.VecdbInt.CollectionName = collectionName
-	client, err := vecdb.New(ctx, slog.Default(),  dcfg.ModelEmbedding(), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
+	slog := logger.New()
+	client, err := vecdb.New(ctx, slog, dcfg.ModelEmbedding(), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
 	if err != nil {
 		return fmt.Errorf("Failed to create vector DB: %w", err)
 	}
-	_, err = client.Embedd(ctx, dcfg, docsChannel)
+	_, err = client.Embedd(ctx, slog, dcfg, docsChannel)
 	return err
 }

@@ -28,19 +28,19 @@ func TestGenerate(t *testing.T) {
 		if err := client.DeleteCollection(ctx, colName); err != nil {
 			t.Errorf("cannot delete collection %q: %v", colName, err)
 		}
-		if err:=os.RemoveAll(vecdb.HistoryCacheDirName); err != nil {
-			t.Errorf("cannot remove %s: %v",vecdb.HistoryCacheDirName,err)
+		if err := os.RemoveAll(vecdb.HistoryCacheDirName); err != nil {
+			t.Errorf("cannot remove %s: %v", vecdb.HistoryCacheDirName, err)
 		}
 	}()
 	ls, err := os.ReadDir(dir)
 	if err != nil {
 		t.Errorf("Cannot read dir %q: %v", dir, err)
 	}
-	cnt, err := client.Embedd(ctx, dcfg, filesystem.Generate(ctx, dir))
+	cnt, err := client.Embedd(ctx, slog.Default(), dcfg, filesystem.Generate(ctx, dir))
 	if err != nil {
 		t.Fatalf("Embedding: %v", err)
 	}
 	if len(ls) != cnt {
-		 t.Fatalf("Did not embedd all (%v) docs (%v)", len(ls), cnt)
+		t.Fatalf("Did not embedd all (%v) docs (%v)", len(ls), cnt)
 	}
 }
