@@ -22,8 +22,8 @@ type User struct {
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 
-	Name        string       `gorm:"unique,index,column:'name'"`
-	APIKey      string       `gorm:"index,column:api_key"`
+	Name        string       `gorm:"index;unique;column:name"`
+	APIKey      string       `gorm:"index;column:api_key"`
 	Collections []Collection `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
@@ -115,9 +115,11 @@ func (u *User) Confluence() *cfg.ConfluenceCfg {
 func (u *User) Embbed(ctx context.Context, slog *slog.Logger) error {
 	slog = slog.With("username", u.Name)
 	for _, c := range u.Collections {
-		if err := c.Embbed(ctx, slog); err != nil {
-			slog.Warn("Cannot embed user collection", "err", err, "collection", c.DisplayName())
-		}
+		go func(c *Collection) {
+			if err := c.Embbed(ctx, slog); err != nil {
+				slog.Warn("Cannot embed user collection", "err", err, "collection", c.DisplayName())
+			}
+		}(&c)
 	}
 	return nil
 }

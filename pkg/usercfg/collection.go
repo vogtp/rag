@@ -26,10 +26,10 @@ type Collection struct {
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 
-	UserID         uint   `gorm:"index,column:user_id"`
+	UserID         uint   `gorm:"index;column:user_id"`
 	Displayname    string `gorm:"column:display_name"`                 // DisplayName is the name displayed to the user
-	Collectionname string `gorm:"unique,index,column:collection_name"` // CollectionName is the internal unique name of the collection
-	APIKey         string `gorm:"index,column:api_key"`
+	Collectionname string `gorm:"index;unique;column:collection_name"` // CollectionName is the internal unique name of the collection
+	APIKey         string `gorm:"index;column:api_key"`
 
 	Genmodel          string        `gorm:"column:gen_model"`
 	Embedmodel        string        `gorm:"column:embed_model"`
