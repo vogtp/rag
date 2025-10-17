@@ -10,7 +10,6 @@ import (
 
 const (
 	HistoryCacheDirName = ".embedd_history"
-	historyCacheFilePrefix = ""
 )
 
 type emeddHistory struct {
@@ -75,7 +74,7 @@ func (eh emeddHistory) key(d *EmbeddDocument) string {
 }
 
 func (eh emeddHistory) filename() string {
-	return fmt.Sprintf("%s/%s_%s.json",HistoryCacheDirName,historyCacheFilePrefix, eh.collectionName)
+	return fmt.Sprintf("%s/%s.json",HistoryCacheDirName, eh.collectionName)
 }
 
 func (eh *emeddHistory) load() error {
