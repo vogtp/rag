@@ -16,6 +16,15 @@ import (
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 )
 
+type HttpStatusError struct {
+	StatusCode int
+	Status     string
+}
+
+func (hse HttpStatusError) Error() string {
+	return fmt.Sprintf("status not OK: %v (%s)", hse.StatusCode, hse.Status)
+}
+
 func SplitFromLink(ctx context.Context, link string) ([]vecdb.EmbeddDocument, error) {
 	// slog := slog.With("pdf.url", link)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, link, nil)
@@ -33,7 +42,7 @@ func SplitFromLink(ctx context.Context, link string) ([]vecdb.EmbeddDocument, er
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		// slog.Info("http get returned an error for PDF", "code", resp.StatusCode, "status", resp.Status)
-		return nil, fmt.Errorf("status not OK: %v (%s)", resp.StatusCode, resp.Status)
+		return nil, HttpStatusError{Status: resp.Status, StatusCode: resp.StatusCode}
 	}
 	buf, err := io.ReadAll(resp.Body)
 	if err != nil {

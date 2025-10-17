@@ -2,8 +2,10 @@ package confluence
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"strings"
 	"sync"
 	"time"
@@ -159,7 +161,12 @@ func (c *confluence) querySpace(ctx context.Context, spaceKey string) {
 			for _, pl := range pdfLinks {
 				docs, err := pdf.SplitFromLink(ctx, pl)
 				if err != nil {
-					slog.Warn("Cannot embedd PDF", "pdf.url", pl, "err", err)
+					httpError := pdf.HttpStatusError{}
+					if errors.As(err, &httpError) && httpError.StatusCode == http.StatusNotFound {
+						slog.Info("PDF http not found","pdf.url", pl, "err", err)
+					} else {
+						slog.Warn("Cannot embedd PDF", "pdf.url", pl, "err", err)
+					}
 					continue
 				}
 				for _, d := range docs {
