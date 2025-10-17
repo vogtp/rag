@@ -48,13 +48,13 @@ func Create(ctx context.Context, sl *slog.Logger, name string) (*DataBase, error
 }
 
 func (d *DataBase) Add(ctx context.Context, u *User) error {
+	for i, c := range u.Collections {
+		u.Collections[i].Collectionname = fmt.Sprintf("%s-%s", u.Name, chroma.FixCollectionName(c.Displayname))
+	}
 	// get primary keys from DB
 	if eu, err := d.User(ctx, u.Name); err == nil && eu != nil {
 		u.ID = eu.ID
 		for i, c := range u.Collections {
-			if len(c.Collectionname) < len(c.Displayname) {
-				c.Collectionname = fmt.Sprintf("%s-%s", u.Name, chroma.FixCollectionName(c.Displayname))
-			}
 			if ec := eu.Collection(c.Collectionname); ec != nil {
 				c.ID = ec.ID
 				c.Source.ID = ec.Source.ID
