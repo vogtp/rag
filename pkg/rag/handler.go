@@ -40,13 +40,13 @@ func New(ctx context.Context, slog *slog.Logger, usercfg *usercfg.DataBase) (Han
 // GetAllRags returns a slice of all instance without any authentical
 // for internal use only
 func (h handler) GetAllRags(ctx context.Context) []types.Instance {
-	rags := make([]types.Instance, 0)
 	usrs, err := h.usercfg.Users(ctx)
 	if err != nil {
 		h.slog.Warn("Cannot query users rags", "err", err)
 	}
-	for _, u := range usrs {
-		rags = append(rags, &u)
+	rags := make([]types.Instance, len(usrs))
+	for i, u := range usrs {
+		rags[i] = &u
 	}
 	return rags
 }
