@@ -2,7 +2,6 @@ package rag
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
@@ -113,9 +112,6 @@ func (i *instanceList) SearchVecDB(ctx context.Context, slog *slog.Logger, colle
 			i.slog.Error("Cannot search vecDD of rag list member", "err", err, "rag.name", r.DisplayName(), "collection", collection)
 		}
 		docs = append(docs, c...)
-	}
-	if len(docs) < 1 {
-		return docs, fmt.Errorf("no documents found")
 	}
 	return docs, nil
 }
