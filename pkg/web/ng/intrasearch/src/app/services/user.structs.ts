@@ -161,6 +161,7 @@ class User {
 	Name: string;
 	APIKey: string;
 	Collections: Collection[] | null;
+	AdvancedUI: boolean;
 
 	constructor(data?: any) {
 		const d: any = (data && typeof data === 'object') ? ToObject(data) : {};
@@ -171,6 +172,7 @@ class User {
 		this.Name = ('Name' in d) ? d.Name as string : '';
 		this.APIKey = ('APIKey' in d) ? d.APIKey as string : '';
 		this.Collections = Array.isArray(d.Collections) ? d.Collections.map((v: any) => new Collection(v)) : null;
+		this.AdvancedUI = ('AdvancedUI' in d) ? d.AdvancedUI as boolean : false;
 	}
 
 	toObject(): any {

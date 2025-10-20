@@ -6,7 +6,7 @@
         <mat-label>User</mat-label>
         <input matInput readonly [(ngModel)]="userSettings!.Name">
     </mat-form-field> -->
-    <mat-form-field id="userAPIKey">
+    <mat-form-field id="userAPIKey" *ngIf="userSettings?.AdvancedUI">
         <mat-label>API Key (for chatbots)</mat-label>
         <input matInput [(ngModel)]="userSettings!.APIKey">
         <mat-hint>This key can be used to acces the users collection with a chat ui at the
@@ -18,7 +18,7 @@
     <!-- <button (click)="debug()">
         Debug
     </button> -->
-    <button  style="margin-right: 14px;" (click)="onSaveClick()">
+    <button style="margin-right: 14px;" (click)="onSaveClick()">
         Save
     </button>
     <button (click)="addCollection()">

@@ -1,4 +1,4 @@
-import { NgFor } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
@@ -42,7 +42,8 @@ import { CollectionComponent } from './collection/collection.component';
     MatTabsModule,
     SbbLoadingIndicatorModule,
     MatBottomSheetModule,
-  ],
+    NgIf
+],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css',

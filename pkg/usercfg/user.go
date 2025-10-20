@@ -25,6 +25,8 @@ type User struct {
 	Name        string       `gorm:"index;unique;column:name"`
 	APIKey      string       `gorm:"index;column:api_key"`
 	Collections []Collection `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+
+	AdvancedUI bool
 }
 
 var _ (types.Instance) = (*User)(nil)

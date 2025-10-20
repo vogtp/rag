@@ -30,13 +30,12 @@ import { Observable, catchError, throwError } from 'rxjs';
   styleUrl: './search.component.css',
 })
 export class SearchComponent {
-  @Input() collection: string = 'intranet-all';
+  @Input() collection: string = '';
   @Input()
   set query(q: string) {
     this.searchQuery.setValue(q);
     if (q) {
       console.log('Searching for ' + q);
-
       this.search();
     }
   }

@@ -11,7 +11,7 @@ import { SearchComponent } from '../search/search.component';
   styleUrl: './collection-overview.component.css',
 })
 export class CollectionOverviewComponent {
-  @Input() collection: string = 'intranet-all';
+  @Input() collection: string = "";
 
   basePath: string = '/api/chat/completions';
 }
