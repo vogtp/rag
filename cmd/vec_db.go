@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
 
@@ -87,14 +88,15 @@ var vecDbSearchCmd = &cobra.Command{
 			return fmt.Errorf("Failed to create vector DB: %w", err)
 		}
 
-		res, err := client.Query(ctx, collectionName, []string{search}, 5)
+		res, err := client.Query(ctx, collectionName, []string{search}, 15)
 		if err != nil {
 			return fmt.Errorf("Failed to query vector DB: %w", err)
 		}
+		//for i,d:=range res[0].Documents
 		for i, r := range res[0].Documents {
-			fmt.Printf("\n\nDocument %v: %+v\n", i, r)
+			fmt.Printf("Document %v: %-50q\t%s\n", i, r.Title, r.URL)
 		}
-		fmt.Printf("Found %v documents for %q\n", len(res), search)
+		fmt.Printf("Found %v documents for %q\n", len(res[0].Documents), search)
 		return nil
 	},
 }
@@ -177,7 +179,7 @@ var vecDbLsCmd = &cobra.Command{
 }
 
 var vecDbColLsCmd = &cobra.Command{
-	Use:   "col <collection_name>",
+	Use:   "col <collection_name> [idx]",
 	Short: "List collection documents",
 
 	Aliases: []string{"c", "collection"},
@@ -201,8 +203,18 @@ var vecDbColLsCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("cannot get collection documents: %w", err)
 		}
+		if len(args) > 1 {
+			idx, err := strconv.Atoi(args[1])
+			if err != nil {
+				return err
+			}
+			md := res.Metadatas[idx]
+			delete(md, "document_original")
+			fmt.Printf("%v\nMetaData:\n%+v\n%+v\n", res.Documents[idx], md, len(res.Embeddings))
+			return nil
+		}
 		for i, d := range res.Metadatas {
-			fmt.Printf("%v: %s %s\n", i, d[vecdb.MetaURL], d[vecdb.MetaUpdated])
+			fmt.Printf("%v: %q\t%s %s\n", i, d[vecdb.MetaTitle], d[vecdb.MetaURL], d[vecdb.MetaUpdated])
 			//fmt.Printf("  ID: %v Len: %v Meta: %v\n", res.Ids[i], len(res.Documents[i]), d)
 		}
 		fmt.Printf("Found %v docs in collection %s\n", len(res.Documents), colName)
