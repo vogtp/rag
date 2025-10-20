@@ -129,6 +129,10 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, config cfg.RagCon
 			_, err = rs.BuildAndValidate(ctx)
 			if err != nil {
 				slog.Debug("cannot validate document", "err", err, "rs", rs)
+				if err.Error() == "document cannot be empty" {
+					slog.Info("document not validated", "err", err)
+					continue
+				}
 				slog.Warn("document not validated", "err", err)
 				continue
 				//return fmt.Errorf("error validating record set: %s \n", err)
