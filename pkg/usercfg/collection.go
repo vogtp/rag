@@ -126,7 +126,30 @@ func (c *Collection) Authorise(w http.ResponseWriter, r *http.Request) bool {
 }
 
 func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger) error {
-	return confluence.Embed(ctx, slog, c)
+	slog = slog.With("collectionname",c.Collectionname)
+	docsChan,err:=c.GetDocuments(ctx, slog)
+	if err != nil {
+		return err
+	}
+	vecDB, err:=c.getVecDb(ctx,slog)
+	if err != nil {
+		return err
+	}
+	i,err:=vecDB.Embedd(ctx,slog,c, docsChan)
+	if err != nil {
+		return err
+	}
+	slog.Warn("Finished embedding","doc.count",i)
+	return nil
+}
+
+func (c *Collection) GetDocuments(ctx context.Context, slog *slog.Logger) (chan *vecdb.EmbeddDocument, error) {
+	slog = slog.With("collection", c.Collectionname)
+	confl, err := confluence.New(ctx, slog, *c.Confluence())
+	if err != nil {
+		return nil, fmt.Errorf("create confluence: %w", err)
+	}
+	return confl.GetDocuments(ctx, slog)
 }
 
 func (c *Collection) ListCollections(ctx context.Context, slog *slog.Logger) ([]*chroma.Collection, error) {

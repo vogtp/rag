@@ -25,9 +25,7 @@ type Instance interface {
 	Embbed(ctx context.Context, slog *slog.Logger) error
 	SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error)
 
-	// CollectionName() string
-	// Confluence() *cfg.ConfluenceCfg
-	// ModelEmbedding() string
-	// VecDBUpdateIntervall() time.Duration
+	DocRetriver
+
 	bearer.Auth
 }

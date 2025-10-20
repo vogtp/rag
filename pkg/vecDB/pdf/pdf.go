@@ -52,6 +52,7 @@ func SplitFromLink(ctx context.Context, link string) ([]vecdb.EmbeddDocument, er
 	ra := bytes.NewReader(buf)
 	return SplitFromReaderAt(ctx, ra, ra.Size(), vecdb.MetaURL, link)
 }
+
 func SplitFromFile(ctx context.Context, path string) ([]vecdb.EmbeddDocument, error) {
 	f, err := os.Open(path)
 	if err != nil {

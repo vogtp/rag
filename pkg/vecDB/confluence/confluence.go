@@ -13,31 +13,32 @@ import (
 	"github.com/spf13/viper"
 	conflu "github.com/virtomize/confluence-go-api"
 	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/types"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 	"github.com/vogtp/rag/pkg/vecDB/pdf"
 )
 
 // GetDocuments retrives confluence spaces and generates vecdb.EmbeddDocuments
-func GetDocuments(ctx context.Context, slog *slog.Logger, config cfg.RagConfig, spaces ...string) (chan *vecdb.EmbeddDocument, error) {
-	baseURL := config.Confluence().BaseURL
+func (c *confluence) GetDocuments(ctx context.Context, _ *slog.Logger) (chan *vecdb.EmbeddDocument, error) {
+	go c.query(ctx)
+	return c.out, nil
+}
+
+func New(ctx context.Context, slog *slog.Logger, config cfg.ConfluenceCfg) (types.DocRetriver, error) {
+	baseURL := config.BaseURL
 	baseURL = strings.TrimRight(baseURL, "/")
 	conf := confluence{
 		slog:       slog.With("confluence_url", baseURL),
 		baseURL:    baseURL,
 		out:        make(chan *vecdb.EmbeddDocument, 10),
-		accessKey:  config.Confluence().Key,
+		accessKey:  config.Key,
 		queryLimit: 100,
-		spaces:     spaces,
-		config:     config,
-	}
-	if len(spaces) < 1 {
-		conf.spaces = config.Confluence().Spaces
+		spaces:     config.Spaces,
 	}
 	if err := conf.init(); err != nil {
 		return nil, err
 	}
-	go conf.query(ctx)
-	return conf.out, nil
+	return &conf, nil
 }
 
 type confluence struct {
@@ -49,7 +50,6 @@ type confluence struct {
 	queryLimit int
 	spaces     []string
 	mu         sync.Mutex
-	config     cfg.RagConfig
 }
 
 func (c *confluence) init() error {
@@ -163,7 +163,7 @@ func (c *confluence) querySpace(ctx context.Context, spaceKey string) {
 				if err != nil {
 					httpError := pdf.HttpStatusError{}
 					if errors.As(err, &httpError) && httpError.StatusCode == http.StatusNotFound {
-						slog.Info("PDF http not found","pdf.url", pl, "err", err)
+						slog.Info("PDF http not found", "pdf.url", pl, "err", err)
 					} else {
 						slog.Warn("Cannot embedd PDF", "pdf.url", pl, "err", err)
 					}

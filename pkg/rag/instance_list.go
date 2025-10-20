@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
+	"sync"
 	"time"
 
 	chroma "github.com/amikos-tech/chroma-go"
@@ -87,6 +88,28 @@ func (i *instanceList) Embbed(ctx context.Context, _ *slog.Logger) error {
 		}
 	}
 	return nil
+}
+
+func (i *instanceList) GetDocuments(ctx context.Context, slog *slog.Logger) (chan *vecdb.EmbeddDocument, error) {
+	c := make(chan *vecdb.EmbeddDocument, 10)
+	go func() {
+		defer close(c)
+		var wg sync.WaitGroup
+		for _, r := range i.rags {
+			wg.Go(func() {
+				cc, err := r.GetDocuments(ctx, slog)
+				if err != nil {
+					slog.Warn("Cannot get documents of rag list member", "err", err, "rag.name", r.DisplayName())
+					return
+				}
+				for doc := range cc {
+					c <- doc
+				}
+			})
+		}
+		wg.Wait()
+	}()
+	return c, nil
 }
 
 func (i *instanceList) ListCollections(ctx context.Context, _ *slog.Logger) ([]*chroma.Collection, error) {
