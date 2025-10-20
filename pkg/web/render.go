@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/logger"
 )
 
 type commonData struct {
@@ -55,7 +56,7 @@ func (srv *Server) render(w http.ResponseWriter, r *http.Request, templateName s
 	if strings.Contains(ah, "application/json") {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		if err := json.NewEncoder(w).Encode(data); err != nil {
-			srv.slog.Error("cannot encode data to json", "template", templateName, "err", err)
+			srv.slog.Error("cannot encode data to json", "template", templateName, "err", err, logger.Stacktrace())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
