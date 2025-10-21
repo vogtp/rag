@@ -31,7 +31,7 @@ type SourceSystem struct {
 	Key          string           `gorm:"column:key"`
 	Parts        string           `gorm:"column:parts"`
 
-	QueryRetryMax int `gorm:"column:query_retry_max;default:3";`
+	QueryRetryMax int `gorm:"column:query_retry_max;default:3"`
 }
 
 func (s SourceSystem) splitParts() []string {
