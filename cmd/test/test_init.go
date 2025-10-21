@@ -12,10 +12,6 @@ import (
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 )
 
-const (
-	collectionFlag = "test.collection"
-)
-
 var testDataFile = "cmd/test/ignore_testdata.yml"
 
 func Init(rootCmd *cobra.Command) {

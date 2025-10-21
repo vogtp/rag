@@ -29,7 +29,7 @@ func parsePage(slog *slog.Logger, p string) (string, []string) {
 	outC := make(chan string)
 	go func() {
 		var buf bytes.Buffer
-		io.Copy(&buf, r)
+		io.Copy(&buf, r) //nolint
 		outC <- buf.String()
 	}()
 	w.Close()
