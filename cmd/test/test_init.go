@@ -7,24 +7,46 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/vogtp/rag/pkg/usercfg"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
+	"golang.org/x/exp/slices"
+)
+
+const (
+	collectionFlag = "test.collection"
 )
 
 var testDataFile = "cmd/test/ignore_testdata.yml"
 
 func Init(rootCmd *cobra.Command) {
-	rootCmd.AddCommand(tstCmd)
 
+	rootCmd.AddCommand(tstCmd)
 	tstCmd.AddCommand(createTstStartCmd)
 	tstCmd.AddCommand(deleteTstStartCmd)
 	tstCmd.AddCommand(searchTstStartCmd)
 	tstCmd.AddCommand(allInOneTstStartCmd)
 }
 
+var includedCollections []string
+
+func excludeCollection(col *usercfg.Collection) bool {
+	e := len(includedCollections) > 0 && slices.Contains(includedCollections, col.CollectionName())
+	if !e {
+		fmt.Printf("Excluded collection %q it is not in %v\n", col.CollectionName(), includedCollections)
+	}
+	return !e
+}
+
 var tstCmd = &cobra.Command{
 	Use:     "test",
 	Short:   "Manage RAG web server",
 	Aliases: []string{"t", "tst"},
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		includedCollections = args
+		if len(includedCollections) > 0 {
+			fmt.Printf("Working only on collections %v\n", includedCollections)
+		}
+	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return cmd.Usage()
 	},
@@ -84,6 +106,9 @@ var deleteTstStartCmd = &cobra.Command{
 func createVecDBCollecions(ctx context.Context, slog *slog.Logger, tt *testData) error {
 	fmt.Println("Creating collections")
 	for _, col := range tt.Collections() {
+		if excludeCollection(&col) {
+			continue
+		}
 		start := time.Now()
 		fmt.Printf("\nEmbedding %s (%s)\n", col.CollectionName(), col.Source.Parts)
 		if err := col.Embbed(ctx, slog); err != nil {
@@ -107,16 +132,19 @@ func createVecDBCollecions(ctx context.Context, slog *slog.Logger, tt *testData)
 }
 
 func deleteVecDBCollecions(ctx context.Context, slog *slog.Logger, tt *testData) error {
-	for _, c := range tt.Setup.Collections {
-		vecDB, err := vecdb.New(ctx, slog, c.Model.Embedding)
+	for _, c := range tt.Collections() {
+		if excludeCollection(&c) {
+			continue
+		}
+		vecDB, err := vecdb.New(ctx, slog, c.ModelEmbedding())
 		if err != nil {
 			return err
 		}
-		if err := vecDB.DeleteCollection(ctx, c.Name); err != nil {
-			slog.Warn("Cannot delete collection", "collection", c.Name, "err", err)
+		if err := vecDB.DeleteCollection(ctx, c.CollectionName()); err != nil {
+			slog.Warn("Cannot delete collection", "collection", c.CollectionName(), "err", err)
 			continue
 		}
-		fmt.Printf("Deleted %s\n", c.Name)
+		fmt.Printf("Deleted %s\n", c.CollectionName())
 	}
 	return nil
 }

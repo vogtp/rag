@@ -40,6 +40,9 @@ func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
 	maxResult := 7
 	var retErr error
 	for _, col := range tt.Collections() {
+		if excludeCollection(&col){
+			continue
+		}
 		fmt.Printf("* %s\n", col.DisplayName())
 		for _, t := range tt.Tests {
 			if !slices.Contains(t.Collections, col.CollectionName()) {
