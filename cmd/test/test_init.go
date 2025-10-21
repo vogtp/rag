@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/vogtp/rag/pkg/usercfg"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
+	"github.com/vogtp/rag/pkg/vecDB/noopfilter"
 )
 
 var testDataFile = "cmd/test/ignore_testdata.yml"
@@ -114,7 +115,7 @@ func createVecDBCollecions(ctx context.Context, slog *slog.Logger, tt *testData)
 		}
 		start := time.Now()
 		fmt.Printf("\nEmbedding %s (%s)\n", col.CollectionName(), col.Source.Parts)
-		if err := col.Embbed(ctx, slog); err != nil {
+		if err := col.Embbed(ctx, slog, noopfilter.New()); err != nil {
 			return err
 		}
 		vecDB, err := vecdb.New(ctx, slog, col.ModelEmbedding())

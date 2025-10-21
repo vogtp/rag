@@ -81,9 +81,9 @@ func (i *instanceList) UpdateIntervall() time.Duration {
 	return d
 }
 
-func (i *instanceList) Embbed(ctx context.Context, _ *slog.Logger) error {
+func (i *instanceList) Embbed(ctx context.Context, _ *slog.Logger, filters ...vecdb.Filter) error {
 	for _, r := range i.rags {
-		if err := r.Embbed(ctx, i.slog); err != nil {
+		if err := r.Embbed(ctx, i.slog, filters...); err != nil {
 			i.slog.Warn("Cannot embed rag list member", "err", err, "rag.name", r.DisplayName())
 		}
 	}

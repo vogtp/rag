@@ -16,12 +16,12 @@ type Instance interface {
 	Model(name string) (Model, error)
 
 	Models(ctx context.Context) []Model
-	ListCollections(ctx context.Context, slog *slog.Logger) ([]*chroma.Collection, error)
+	ListCollections(ctx context.Context, slog *slog.Logger, ) ([]*chroma.Collection, error)
 
 	LLM() string
 
 	UpdateIntervall() time.Duration
-	Embbed(ctx context.Context, slog *slog.Logger) error
+	Embbed(ctx context.Context, slog *slog.Logger, filters ...vecdb.Filter) error
 	SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error)
 
 	DocRetriver

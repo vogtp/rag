@@ -121,10 +121,13 @@ func (c *Collection) Authorise(w http.ResponseWriter, r *http.Request) bool {
 	return bearer.TokenAuth(c.APIKey).Authorise(w, r)
 }
 
-func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger) error {
+func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger, filters ...vecdb.Filter) error {
 	slog = slog.With("collectionname", c.Collectionname)
 	start := time.Now()
 	docsChan, err := c.GetDocuments(ctx, slog)
+	if len(filters) == 0 {
+		filters = append(filters, history.New(slog, c.CollectionName(), c.UpdateIntervall()))
+	}
 	if err != nil {
 		return err
 	}
@@ -132,7 +135,7 @@ func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger) error {
 	if err != nil {
 		return err
 	}
-	cnt, err := vecDB.Embedd(ctx, slog, c.CollectionName(), docsChan, history.New(slog, c.CollectionName(), c.UpdateIntervall()))
+	cnt, err := vecDB.Embedd(ctx, slog, c.CollectionName(), docsChan, filters...)
 	if err != nil {
 		return err
 	}

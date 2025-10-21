@@ -110,11 +110,11 @@ func (u *User) Confluence() *cfg.ConfluenceCfg {
 	return &cfg.ConfluenceCfg{}
 }
 
-func (u *User) Embbed(ctx context.Context, slog *slog.Logger) error {
+func (u *User) Embbed(ctx context.Context, slog *slog.Logger, filters ...vecdb.Filter) error {
 	slog = slog.With("username", u.Name)
 	for _, c := range u.Collections {
 		go func(c *Collection) {
-			if err := c.Embbed(ctx, slog); err != nil {
+			if err := c.Embbed(ctx, slog, filters...); err != nil {
 				slog.Warn("Cannot embed user collection", "err", err, "collection", c.DisplayName())
 			}
 		}(&c)
