@@ -40,7 +40,14 @@ generate:
 	$(GO_CMD) generate ./...
 
 .PHONY: test
-test:
+test: test-go test-integration
+
+.PHONY: test-integration
+test-integration:
+	$(GO_CMD) test test all
+
+.PHONY: test-go
+test-go:
 	$(GO_CMD) test ./...
 
 .PHONY: ng-serve
