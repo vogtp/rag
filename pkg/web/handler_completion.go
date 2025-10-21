@@ -86,7 +86,7 @@ func (srv *Server) chatCompletionHandler(w http.ResponseWriter, r *http.Request)
 		// 	},
 		// }
 	}
-	content, err := ragModel.GenerateContent(ctx, msgs, 0.001, func(ctx context.Context, chunk []byte) error { return nil })
+	content, err := ragModel.GenerateContent(ctx, slog, msgs, 0.001, func(ctx context.Context, chunk []byte) error { return nil })
 	if err != nil {
 		slog.Warn("Internal server error: Cannot generate content", "err", err, "ragModel", ragModel)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -139,7 +139,7 @@ func (srv *Server) handleCompletionStream(req *openai.ChatCompletionRequest, rag
 	go func() {
 		defer close(resChan)
 
-		resp, err := ragModel.GenerateContent(ctx, msgs, 0.001, func(ctx context.Context, chunk []byte) error {
+		resp, err := ragModel.GenerateContent(ctx, srv.slog, msgs, 0.001, func(ctx context.Context, chunk []byte) error {
 			if ctx.Err() != nil {
 				slog.Error("GenerateContent call with a canceled context", "context error", ctx.Err())
 				return ctx.Err()

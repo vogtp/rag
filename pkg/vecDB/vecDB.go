@@ -35,7 +35,7 @@ func New(ctx context.Context, slog *slog.Logger, embeddingsModel string, opts ..
 		o(v)
 	}
 	if len(v.ollamaAddr) < 1 {
-		v.ollamaAddr = cfg.GetOllamaHost(ctx)
+		v.ollamaAddr = cfg.GetOllamaHost(ctx, slog)
 	}
 	if len(v.ollamaAddr) < 1 {
 		return nil, fmt.Errorf("no running ollama found: %q", v.ollamaAddr)

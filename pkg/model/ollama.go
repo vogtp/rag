@@ -51,8 +51,8 @@ func (m Ollama) ToOpenAI() openai.Model {
 	}
 }
 
-func (m Ollama) GenerateContent(ctx context.Context, messages []llms.MessageContent, temperature float64, streamingFunc types.StreamingFunc) (string, error) {
-	llm, err := GetOllamaClient(ctx, m.LLMName)
+func (m Ollama) GenerateContent(ctx context.Context, slog *slog.Logger, messages []llms.MessageContent, temperature float64, streamingFunc types.StreamingFunc) (string, error) {
+	llm, err := GetOllamaClient(ctx, slog, m.LLMName)
 	if err != nil {
 		return "", fmt.Errorf("cannot get ollama client: %w", err)
 	}
@@ -80,8 +80,8 @@ type BackendModel interface {
 
 // GetOllamaClient returns a ollama client
 // it is used not only in the OllamaModel
-func GetOllamaClient(ctx context.Context, llmName string) (BackendModel, error) {
-	url := cfg.GetOllamaHost(ctx)
+func GetOllamaClient(ctx context.Context, slog *slog.Logger, llmName string) (BackendModel, error) {
+	url := cfg.GetOllamaHost(ctx, slog)
 	slog.Info("connecting to ollama", "LLM", llmName, "url", url)
 	return ollama.New(
 		ollama.WithModel(llmName),
@@ -89,8 +89,8 @@ func GetOllamaClient(ctx context.Context, llmName string) (BackendModel, error) 
 	)
 }
 
-func getOpenAIClient(ctx context.Context, llmName string) (BackendModel, error) {
-	url := cfg.GetOllamaHost(ctx)
+func getOpenAIClient(ctx context.Context, slog *slog.Logger, llmName string) (BackendModel, error) {
+	url := cfg.GetOllamaHost(ctx, slog)
 	slog.Info("connecting to ollama", "LLM", llmName, "url", url)
 	return llmopenai.New(
 		llmopenai.WithModel(llmName),

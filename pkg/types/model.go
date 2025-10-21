@@ -2,6 +2,7 @@ package types
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/sashabaranov/go-openai"
 	"github.com/vogtp/langchaingo/llms"
@@ -14,7 +15,7 @@ type Model interface {
 	BearerAuth() bearer.Auth
 	String() string
 
-	GenerateContent(ctx context.Context, messages []llms.MessageContent, temperature float64, streamingFunc StreamingFunc) (string, error)
+	GenerateContent(ctx context.Context, slog *slog.Logger, messages []llms.MessageContent, temperature float64, streamingFunc StreamingFunc) (string, error)
 	ToOpenAI() openai.Model
 }
 

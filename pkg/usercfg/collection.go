@@ -126,20 +126,21 @@ func (c *Collection) Authorise(w http.ResponseWriter, r *http.Request) bool {
 }
 
 func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger) error {
-	slog = slog.With("collectionname",c.Collectionname)
-	docsChan,err:=c.GetDocuments(ctx, slog)
+	slog = slog.With("collectionname", c.Collectionname)
+	start := time.Now()
+	docsChan, err := c.GetDocuments(ctx, slog)
 	if err != nil {
 		return err
 	}
-	vecDB, err:=c.getVecDb(ctx,slog)
+	vecDB, err := c.getVecDb(ctx, slog)
 	if err != nil {
 		return err
 	}
-	i,err:=vecDB.Embedd(ctx,slog,c, docsChan)
+	i, err := vecDB.Embedd(ctx, slog, c, docsChan)
 	if err != nil {
 		return err
 	}
-	slog.Warn("Finished embedding","doc.count",i)
+	slog.Warn("Finished embedding", "doc.count", i, "duration", time.Since(start).String())
 	return nil
 }
 

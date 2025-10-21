@@ -13,7 +13,7 @@ import (
 var _ollamaHost string
 
 // GetOllamaHost returns a active ollama host
-func GetOllamaHost(ctx context.Context) string {
+func GetOllamaHost(ctx context.Context, slog *slog.Logger) string {
 	if checkOllama(ctx, _ollamaHost) {
 		slog.Debug("Using prevously found ollala host", "url", _ollamaHost)
 		return _ollamaHost

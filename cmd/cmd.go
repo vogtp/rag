@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/vogtp/rag/cmd/test"
 	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/logger"
 )
@@ -16,6 +17,7 @@ func New() *cobra.Command {
 	addOllama()
 	addWeb()
 	addDB()
+	test.Init(rootCmd)
 	//experiments.Add(rootCmd)
 
 	return rootCmd

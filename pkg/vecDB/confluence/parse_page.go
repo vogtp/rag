@@ -27,8 +27,8 @@ func parsePage(slog *slog.Logger, p string) (string, []string) {
 		if !strings.HasSuffix(strings.ToLower(lnk), ".pdf") {
 			continue
 		}
-		if _, err =url.Parse(lnk); err != nil{
-			slog.Warn("Incorrect confluence link", "link",lnk, "err",err)
+		if _, err = url.Parse(lnk); err != nil {
+			slog.Warn("Incorrect confluence link", "link", lnk, "err", err)
 			continue
 		}
 		pdfLnks = append(pdfLnks, lnk)

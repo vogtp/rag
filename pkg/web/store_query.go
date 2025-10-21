@@ -8,8 +8,8 @@ import (
 	"github.com/vogtp/rag/pkg/cfg"
 )
 
-func getOllamaClient(ctx context.Context, model string) (*ollama.LLM, error) {
-	url := cfg.GetOllamaHost(ctx)
+func getOllamaClient(ctx context.Context, slog *slog.Logger, model string) (*ollama.LLM, error) {
+	url := cfg.GetOllamaHost(ctx, slog)
 	slog.Debug("connecting to ollama", "model", model, "url", url)
 	return ollama.New(
 		ollama.WithModel(model),

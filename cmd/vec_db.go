@@ -12,6 +12,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/logger"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 	"github.com/vogtp/rag/pkg/vecDB/chroma"
 )
@@ -83,7 +84,8 @@ var vecDbSearchCmd = &cobra.Command{
 			fmt.Printf("Searching collection %s took %s\n", collectionName, time.Since(t))
 		}(start)
 		ctx := cmd.Context()
-		client, err := vecdb.New(ctx, slog.Default(), viper.GetString(cfg.ModelEmbedding), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx)))
+		slog := logger.New()
+		client, err := vecdb.New(ctx, slog, viper.GetString(cfg.ModelEmbedding), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx, slog)))
 		if err != nil {
 			return fmt.Errorf("Failed to create vector DB: %w", err)
 		}

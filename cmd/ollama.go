@@ -3,13 +3,13 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"log/slog"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vogtp/langchaingo/llms"
 	"github.com/vogtp/langchaingo/llms/ollama"
 	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/logger"
 )
 
 func addOllama() {
@@ -29,7 +29,8 @@ var ollamaCmd = &cobra.Command{
 }
 
 func getOllamaClient(ctx context.Context, model string) (*ollama.LLM, error) {
-	url := cfg.GetOllamaHost(ctx)
+	slog := logger.New()
+	url := cfg.GetOllamaHost(ctx, slog)
 	slog.Info("connecting to ollama", "model", model, "url", url)
 	return ollama.New(
 		ollama.WithModel(model),

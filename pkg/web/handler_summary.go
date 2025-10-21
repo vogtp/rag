@@ -22,7 +22,8 @@ const (
 )
 
 func (srv *Server) handleSummary(w http.ResponseWriter, r *http.Request) {
-	srv.slog.Info("Summary request", "url", r.URL.String(), "remote", r.RemoteAddr)
+	slog := srv.slog.With("url", r.URL.String(), "remote", r.RemoteAddr)
+	slog.Info("Summary request")
 	ctx := r.Context()
 	uuidStr := r.PathValue("uuid")
 	id, err := uuid.Parse(uuidStr)
@@ -39,7 +40,7 @@ func (srv *Server) handleSummary(w http.ResponseWriter, r *http.Request) {
 	}
 
 	model := srv.rag(r).LLM()
-	llm, err := getOllamaClient(ctx, model)
+	llm, err := getOllamaClient(ctx, slog, model)
 	if err != nil {
 		slog.Warn("Cannot connect to ollama", "err", err)
 		srv.Error(w, r, fmt.Sprintf("Cannot connect to ollama: %v", err), http.StatusInternalServerError)

@@ -73,8 +73,8 @@ Always give references to the used knowledge and if you cannot say "I do not kno
 	}},
 }
 
-func (m VectorStoreModel) GenerateContent(ctx context.Context, messages []llms.MessageContent, temperature float64, streamingFunc types.StreamingFunc) (string, error) {
-	store, err := m.getChroma(ctx)
+func (m VectorStoreModel) GenerateContent(ctx context.Context, slog *slog.Logger, messages []llms.MessageContent, temperature float64, streamingFunc types.StreamingFunc) (string, error) {
+	store, err := m.getChroma(ctx, slog)
 	if err != nil {
 		return "", err
 	}
@@ -157,7 +157,7 @@ func (m VectorStoreModel) GenerateContent(ctx context.Context, messages []llms.M
 	// for _, r := range recs {
 	// 	slog.Warn(r.PageContent)
 	// }
-	llm, err := model.GetOllamaClient(ctx, m.LLMName)
+	llm, err := model.GetOllamaClient(ctx, slog, m.LLMName)
 	if err != nil {
 		return "", fmt.Errorf("cannot get ollama: %w", err)
 	}
@@ -181,11 +181,11 @@ func (m VectorStoreModel) GenerateContent(ctx context.Context, messages []llms.M
 	// return chains.Run(ctx, c, text, chains.WithStreamingFunc(streamingFunc))
 }
 
-func (m *VectorStoreModel) getChroma(ctx context.Context) (vectorstores.VectorStore, error) {
+func (m *VectorStoreModel) getChroma(ctx context.Context, slog *slog.Logger) (vectorstores.VectorStore, error) {
 	if m.vectorStore != nil {
 		return m.vectorStore, nil
 	}
-	e, err := m.getEmbedder(ctx)
+	e, err := m.getEmbedder(ctx, slog)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create embedder: %w", err)
 	}
@@ -201,11 +201,11 @@ func (m *VectorStoreModel) getChroma(ctx context.Context) (vectorstores.VectorSt
 	return &store, nil
 }
 
-func (m *VectorStoreModel) getEmbedder(ctx context.Context) (*embeddings.EmbedderImpl, error) {
+func (m *VectorStoreModel) getEmbedder(ctx context.Context, slog *slog.Logger) (*embeddings.EmbedderImpl, error) {
 	if m.embedder != nil {
 		return m.embedder, nil
 	}
-	llm, err := model.GetOllamaClient(ctx, m.config.ModelEmbedding())
+	llm, err := model.GetOllamaClient(ctx, slog, m.config.ModelEmbedding())
 	if err != nil {
 		return nil, fmt.Errorf("cannot create llm client: %w", err)
 	}
