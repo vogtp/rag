@@ -36,21 +36,18 @@ var allInOneTstStartCmd = &cobra.Command{
 	Aliases:      []string{"a", "full"},
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		defer func(start time.Time) { fmt.Printf("Duration %s\n", time.Since(start)) }(time.Now())
+		defer func(start time.Time) { fmt.Printf("Duration %s\n", time.Since(start).Truncate(time.Second)) }(time.Now())
 		tt, err := loadTestData()
 		if err != nil {
+			return err
+		}
+		if err := deleteVecDBCollecions(cmd.Context(), getSlog(), tt); err != nil {
 			return err
 		}
 		if err := createVecDBCollecions(cmd.Context(), getSlog(), tt); err != nil {
 			return err
 		}
-		retErr := searchTestData(cmd.Context(), getSlog(), tt)
-		if err := deleteVecDBCollecions(cmd.Context(), getSlog(), tt); err != nil {
-			if retErr == nil {
-				retErr = err
-			}
-		}
-		return retErr
+		return searchTestData(cmd.Context(), getSlog(), tt)
 	},
 }
 
@@ -60,7 +57,7 @@ var createTstStartCmd = &cobra.Command{
 	Aliases:      []string{"c"},
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		defer func(start time.Time) { fmt.Printf("Duration %s\n", time.Since(start)) }(time.Now())
+		defer func(start time.Time) { fmt.Printf("Duration %s\n", time.Since(start).Truncate(time.Second)) }(time.Now())
 		tt, err := loadTestData()
 		if err != nil {
 			return err
@@ -75,7 +72,7 @@ var deleteTstStartCmd = &cobra.Command{
 	Aliases:      []string{"rm", "del"},
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		defer func(start time.Time) { fmt.Printf("Duration %s\n", time.Since(start)) }(time.Now())
+		defer func(start time.Time) { fmt.Printf("Duration %s\n", time.Since(start).Truncate(time.Second)) }(time.Now())
 		tt, err := loadTestData()
 		if err != nil {
 			return err
@@ -87,6 +84,8 @@ var deleteTstStartCmd = &cobra.Command{
 func createVecDBCollecions(ctx context.Context, slog *slog.Logger, tt *testData) error {
 	fmt.Println("Creating collections")
 	for _, col := range tt.Collections() {
+		start := time.Now()
+		fmt.Printf("\nEmbedding %s (%s)\n", col.CollectionName(), col.Source.Parts)
 		if err := col.Embbed(ctx, slog); err != nil {
 			return err
 		}
@@ -102,13 +101,12 @@ func createVecDBCollecions(ctx context.Context, slog *slog.Logger, tt *testData)
 		if err != nil {
 			return err
 		}
-		fmt.Printf("Embedded %s (%s) -> %v documents\n", col.CollectionName(), col.Source.Parts, cnt)
+		fmt.Printf("\nEmbedded %s (%s) -> %v documents %s\n", col.CollectionName(), col.Source.Parts, cnt, time.Since(start).Truncate(time.Second))
 	}
 	return nil
 }
 
 func deleteVecDBCollecions(ctx context.Context, slog *slog.Logger, tt *testData) error {
-	fmt.Println("Deleting collections")
 	for _, c := range tt.Setup.Collections {
 		vecDB, err := vecdb.New(ctx, slog, c.Model.Embedding)
 		if err != nil {
