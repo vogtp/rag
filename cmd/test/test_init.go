@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/vogtp/rag/pkg/usercfg"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
-	"golang.org/x/exp/slices"
 )
 
 const (
@@ -30,11 +30,18 @@ func Init(rootCmd *cobra.Command) {
 var includedCollections []string
 
 func excludeCollection(col *usercfg.Collection) bool {
-	e := len(includedCollections) > 0 && slices.Contains(includedCollections, col.CollectionName())
-	if !e {
-		fmt.Printf("Excluded collection %q it is not in %v\n", col.CollectionName(), includedCollections)
+	if len(includedCollections) < 1 {
+		return false
 	}
-	return !e
+	for _, c := range includedCollections {
+		if strings.HasPrefix(col.CollectionName(), c) {
+			return false
+		}
+	}
+
+	// 	fmt.Printf("Excluded collection %q it is not in %v\n", col.CollectionName(), includedCollections)
+
+	return true
 }
 
 var tstCmd = &cobra.Command{
@@ -43,9 +50,9 @@ var tstCmd = &cobra.Command{
 	Aliases: []string{"t", "tst"},
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		includedCollections = args
-		if len(includedCollections) > 0 {
-			fmt.Printf("Working only on collections %v\n", includedCollections)
-		}
+		// if len(includedCollections) > 0 {
+		// 	fmt.Printf("Working only on collections %v\n", includedCollections)
+		// }
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return cmd.Usage()
