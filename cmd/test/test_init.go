@@ -4,12 +4,13 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/spf13/cobra"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 )
 
-const testDataFile = "cmd/test/ignore_testdata.yml"
+var testDataFile = "cmd/test/ignore_testdata.yml"
 
 func Init(rootCmd *cobra.Command) {
 	rootCmd.AddCommand(tstCmd)
@@ -35,6 +36,7 @@ var allInOneTstStartCmd = &cobra.Command{
 	Aliases:      []string{"a", "full"},
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		defer func(start time.Time) { fmt.Printf("Duration %s", time.Since(start)) }(time.Now())
 		tt, err := loadTestData()
 		if err != nil {
 			return err
@@ -58,6 +60,7 @@ var createTstStartCmd = &cobra.Command{
 	Aliases:      []string{"c"},
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		defer func(start time.Time) { fmt.Printf("Duration %s", time.Since(start)) }(time.Now())
 		tt, err := loadTestData()
 		if err != nil {
 			return err
@@ -72,6 +75,7 @@ var deleteTstStartCmd = &cobra.Command{
 	Aliases:      []string{"rm", "del"},
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		defer func(start time.Time) { fmt.Printf("Duration %s", time.Since(start)) }(time.Now())
 		tt, err := loadTestData()
 		if err != nil {
 			return err
@@ -81,7 +85,6 @@ var deleteTstStartCmd = &cobra.Command{
 }
 
 func createVecDBCollecions(ctx context.Context, slog *slog.Logger, tt *testData) error {
-
 	fmt.Println("Creating collections")
 	for _, col := range tt.Collections() {
 		if err := col.Embbed(ctx, slog); err != nil {

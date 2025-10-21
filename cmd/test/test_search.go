@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
@@ -18,6 +19,7 @@ var searchTstStartCmd = &cobra.Command{
 	Aliases:      []string{"s"},
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		defer func(start time.Time) { fmt.Printf("Duration %s\n", time.Since(start)) }(time.Now())
 		ctx := cmd.Context()
 		slog := getSlog()
 		tt, err := loadTestData()
