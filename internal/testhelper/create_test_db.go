@@ -76,6 +76,9 @@ func CompareSource(t *testing.T, ts *usercfg.SourceSystem, s *usercfg.SourceSyst
 	if ts.Parts != s.Parts {
 		t.Errorf("sourcesystem not the correct Parts: want %s have %s", ts.Parts, s.Parts)
 	}
+	if ts.QueryRetryMax != 3 {
+		t.Errorf("sourcesystem not the correct QueryRetryMax: want %v have %v", ts.QueryRetryMax, 3)
+	}
 }
 
 var (

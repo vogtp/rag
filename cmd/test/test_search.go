@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"slices"
 	"strings"
 	"time"
 
@@ -41,6 +42,9 @@ func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
 	for _, col := range tt.Collections() {
 		fmt.Printf("* %s\n", col.DisplayName())
 		for _, t := range tt.Tests {
+			if !slices.Contains(t.Collections, col.CollectionName()) {
+				continue
+			}
 			var resOut strings.Builder
 			var tstErr error
 			docs, err := col.SearchVecDB(ctx, log, col.CollectionName(), t.Question, maxResult)
@@ -81,7 +85,7 @@ func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
 				tick = "⚠"
 				retErr = tstErr
 			}
-			fmt.Printf("  %q: %s\n%s\n", t.Question, tick, resOut.String())
+			fmt.Printf("  %q in %s: %s\n%s\n", t.Question, col.CollectionName(), tick, resOut.String())
 		}
 	}
 	return retErr
