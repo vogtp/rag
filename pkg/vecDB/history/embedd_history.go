@@ -7,7 +7,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/vogtp/rag/pkg/cfg"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 )
 
@@ -16,18 +15,18 @@ const (
 )
 
 type emeddHistory struct {
-	slog                 *slog.Logger
-	collectionName       string
-	history              map[string]time.Time
-	minAge               time.Duration
+	slog            *slog.Logger
+	collectionName  string
+	history         map[string]time.Time
+	minAge          time.Duration
 	updateIntervall time.Duration
 }
 
-func New(slog *slog.Logger, rag cfg.RagConfig) vecdb.Filter {
+func New(slog *slog.Logger, collectionName string, updateIntervall time.Duration) vecdb.Filter {
 	return &emeddHistory{
-		slog:                 slog,
-		collectionName:       rag.CollectionName(),
-		updateIntervall: rag.UpdateIntervall(),
+		slog:            slog,
+		collectionName:  collectionName,
+		updateIntervall: updateIntervall,
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/logger"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
@@ -36,15 +37,13 @@ var vecDbEmbbedPathCmd = &cobra.Command{
 			slog.Info(fmt.Sprintf("Updating collection %s took %s", collectionName, time.Since(t)))
 		}(start)
 		ctx := cmd.Context()
-		dcfg := cfg.DefaultRagCfg()
-		dcfg.VecdbInt.CollectionName = collectionName
 		slog := logger.New()
-		client, err := vecdb.New(ctx, slog, dcfg.ModelEmbedding(), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx, slog)))
+		client, err := vecdb.New(ctx, slog, viper.GetString(cfg.ModelEmbedding), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx, slog)))
 		if err != nil {
 			return fmt.Errorf("create vector DB: %w", err)
 		}
 
-		_, err = client.Embedd(ctx, slog, dcfg, filesystem.Generate(ctx, path), history.New(slog, dcfg))
+		_, err = client.Embedd(ctx, slog, collectionName, filesystem.Generate(ctx, path), history.New(slog, collectionName, viper.GetDuration(cfg.VecDBUpdateIntervall)))
 		return err
 	},
 }

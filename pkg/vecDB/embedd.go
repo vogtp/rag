@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"log/slog"
 	sl "log/slog"
+	"strings"
 	"time"
 
 	"github.com/amikos-tech/chroma-go/types"
-	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/logger"
 )
 
@@ -37,8 +37,7 @@ func parseTime(t string) (time.Time, error) {
 	return time.Parse(timeFormat, t)
 }
 
-func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, config cfg.RagConfig, in <-chan *EmbeddDocument, filters ...Filter) (int, error) {
-	collectionName := config.CollectionName()
+func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName string, in <-chan *EmbeddDocument, filters ...Filter) (int, error) {
 	if len(collectionName) < 1 {
 		slog.Info("No collections name given")
 		return 0, fmt.Errorf("no collection name to embed to")
@@ -62,6 +61,10 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, config cfg.RagCon
 	docUpdated := 0
 
 	for d := range in {
+		if strings.HasPrefix(d.Title, "Arbeitszeit, Ferien & unbezahlter Urlaub") {
+			//FIXME only for debug
+			slog.Error("DEBUG found Arbeitszeit, Ferien & unbezahlter Urlaub")
+		}
 		slog = slogBase.With(sl.Group("RecordID", sl.String(d.IDMetaKey, d.IDMetaValue)))
 		for _, f := range filters {
 			if !f.ShouldEmbedd(d) {

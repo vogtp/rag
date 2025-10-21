@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/logger"
 	"github.com/vogtp/rag/pkg/scraper"
@@ -50,13 +51,11 @@ func scapper2vecDB(ctx context.Context, url string, collectionName string) error
 		return err
 	}
 
-	dcfg := cfg.DefaultRagCfg()
-	dcfg.VecdbInt.CollectionName = collectionName
 	slog := logger.New()
-	client, err := vecdb.New(ctx, slog, dcfg.ModelEmbedding(), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx, slog)))
+	client, err := vecdb.New(ctx, slog, viper.GetString(cfg.ModelEmbedding), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx, slog)))
 	if err != nil {
 		return fmt.Errorf("Failed to create vector DB: %w", err)
 	}
-	_, err = client.Embedd(ctx, slog, dcfg, docsChannel, history.New(slog, dcfg))
+	_, err = client.Embedd(ctx, slog, collectionName, docsChannel, history.New(slog, collectionName, viper.GetDuration(cfg.VecDBUpdateIntervall)))
 	return err
 }

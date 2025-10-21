@@ -132,7 +132,7 @@ func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger) error {
 	if err != nil {
 		return err
 	}
-	cnt, err := vecDB.Embedd(ctx, slog, c, docsChan, history.New(slog, c))
+	cnt, err := vecDB.Embedd(ctx, slog, c.CollectionName(), docsChan, history.New(slog, c.CollectionName(), c.UpdateIntervall()))
 	if err != nil {
 		return err
 	}
