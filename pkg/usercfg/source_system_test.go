@@ -23,7 +23,6 @@ func TestSourceSystem_splitParts(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.parts, func(t *testing.T) {
-			// TODO: construct the receiver type.
 			var s SourceSystem = SourceSystem{Parts: tt.parts}
 			got := s.splitParts()
 			if !slices.Equal(got, tt.want) {

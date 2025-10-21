@@ -37,11 +37,6 @@ func TestServer_BearerToken_AllFromRequest(t *testing.T) {
 	if len(models) < 1 {
 		t.Errorf("found no models")
 	}
-	// FIXME what is the difference between Models() and ListCollections()
-	// -> cleanup interface
-	// for _, c := range models {
-	// 	t.Error(c.GetName())
-	// }
 }
 
 func TestServer_OIDCUser_AllFromRequest(t *testing.T) {
@@ -66,9 +61,4 @@ func TestServer_OIDCUser_AllFromRequest(t *testing.T) {
 	if len(models) < 1 {
 		t.Errorf("found no models")
 	}
-	// FIXME what is the difference between Models() and ListCollections()
-	// -> cleanup interface
-	// for _, c := range models {
-	// 	t.Error(c.GetName())
-	// }
 }

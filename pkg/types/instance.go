@@ -15,7 +15,6 @@ type Instance interface {
 
 	Model(name string) (Model, error)
 
-	//FIXME models and list collections should be the same
 	Models(ctx context.Context) []Model
 	ListCollections(ctx context.Context, slog *slog.Logger) ([]*chroma.Collection, error)
 
