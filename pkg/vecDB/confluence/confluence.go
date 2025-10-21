@@ -28,12 +28,13 @@ func New(ctx context.Context, slog *slog.Logger, config cfg.ConfluenceCfg) (type
 	baseURL := config.BaseURL
 	baseURL = strings.TrimRight(baseURL, "/")
 	conf := confluence{
-		slog:       slog.With("confluence_url", baseURL),
-		baseURL:    baseURL,
-		out:        make(chan *vecdb.EmbeddDocument, 10),
-		accessKey:  config.Key,
-		queryLimit: 100,
-		spaces:     config.Spaces,
+		slog:          slog.With("confluence_url", baseURL),
+		baseURL:       baseURL,
+		out:           make(chan *vecdb.EmbeddDocument, 10),
+		accessKey:     config.Key,
+		queryLimit:    100,
+		spaces:        config.Spaces,
+		QueryRetryMax: 3,
 	}
 	if err := conf.init(); err != nil {
 		return nil, err
@@ -42,14 +43,15 @@ func New(ctx context.Context, slog *slog.Logger, config cfg.ConfluenceCfg) (type
 }
 
 type confluence struct {
-	slog       *slog.Logger
-	baseURL    string
-	out        chan *vecdb.EmbeddDocument
-	api        *conflu.API
-	accessKey  string
-	queryLimit int
-	spaces     []string
-	mu         sync.Mutex
+	slog          *slog.Logger
+	baseURL       string
+	out           chan *vecdb.EmbeddDocument
+	api           *conflu.API
+	accessKey     string
+	queryLimit    int
+	spaces        []string
+	mu            sync.Mutex
+	QueryRetryMax int
 }
 
 func (c *confluence) init() error {
@@ -98,7 +100,7 @@ func (c *confluence) querySpace(ctx context.Context, spaceKey string) {
 	start := 0
 	total := 0
 	retryCnt := 0
-	retryMax := 3
+
 	retryDelay := 500 * time.Millisecond
 	for {
 		slogPage := slogSpace.With(slog.Group("paging", "start", start, "limit", c.queryLimit))
@@ -115,11 +117,11 @@ func (c *confluence) querySpace(ctx context.Context, spaceKey string) {
 		if err != nil {
 			// FIXME handle unauthorised errors
 			retryCnt++
-			if retryCnt > retryMax {
-				slogPage.Error("Max Retries reached, cannot get confluence content...", "err", err, "start_index", start, "retryCnt", retryCnt, "retryMax", retryMax, "retryDelay", retryDelay)
+			if retryCnt > c.QueryRetryMax {
+				slogPage.Error("Max Retries reached, cannot get confluence content...", "err", err, "start_index", start, "retryCnt", retryCnt, "retryMax", c.QueryRetryMax, "retryDelay", retryDelay)
 				return
 			}
-			slogPage.Warn("Cannot get confluence content... retrying...", "err", err, "start_index", start, "retryCnt", retryCnt, "retryMax", retryMax, "retryDelay", retryDelay)
+			slogPage.Warn("Cannot get confluence content... retrying...", "err", err, "start_index", start, "retryCnt", retryCnt, "retryMax", c.QueryRetryMax, "retryDelay", retryDelay)
 			time.Sleep(retryDelay * time.Duration(retryCnt))
 			continue
 		}

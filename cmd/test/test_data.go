@@ -16,8 +16,9 @@ type testData struct {
 }
 
 type testDataTest struct {
-	Question string           `yaml:"Question"`
-	Results  []testDataResult `yaml:"Results"`
+	Question    string           `yaml:"Question"`
+	Collections []string         `yaml:"Collections"`
+	Results     []testDataResult `yaml:"Results"`
 }
 
 type testDataResult struct {
@@ -67,6 +68,7 @@ func tdCol2DB(c testDataCol) *usercfg.Collection {
 			URL:   c.Confluence.BaseURL,
 			Key:   c.Confluence.Key,
 			Parts: strings.Join(c.Confluence.Spaces, ","),
+			QueryRetryMax: 1,
 		},
 	}
 }
