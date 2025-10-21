@@ -37,10 +37,10 @@ func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
 		h.doDot = false
 		log = slog.New(h)
 	}
-	maxResult := 7
+	maxResult := 15
 	var retErr error
 	for _, col := range tt.Collections() {
-		if excludeCollection(&col){
+		if excludeCollection(&col) {
 			continue
 		}
 		fmt.Printf("* %s\n", col.DisplayName())
@@ -81,6 +81,26 @@ func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
 							tstErr = testFailedError
 						}
 					}
+				}
+				if tstErr != nil {
+					fmt.Fprintf(&resOut, "%sFound docs:\n", intent)
+					intent := fmt.Sprintf("  %s", intent)
+					for _, d := range docs {
+						url := d.URL
+						maxLen := 100
+						if len(url) > maxLen {
+							spacer := "[...]"
+							maxLen = maxLen - len(spacer)
+							url = fmt.Sprintf("%s%s%s", url[:maxLen/2], spacer, url[len(url)-maxLen/2:])
+							// fmt.Fprintf(&resOut, "%s %v\n%s %v\n", d.URL, len(d.URL), url, len(url))
+						}
+						title := d.Title
+						if len(title) > 40 {
+							title = title[:40]
+						}
+						fmt.Fprintf(&resOut, "%s %-40s %s\n", intent, title, url)
+					}
+					
 				}
 			}
 			tick := "✅"
