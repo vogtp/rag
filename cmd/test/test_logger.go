@@ -52,11 +52,23 @@ func (h testSlogHandler) Enabled(ctx context.Context, level slog.Level) bool {
 }
 
 func (h testSlogHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
-	return &testSlogHandler{Handler: h.Handler.WithAttrs(attrs), w: h.w}
+	return &testSlogHandler{
+		Handler:        h.Handler.WithAttrs(attrs),
+		w:              h.w,
+		doDot:          h.doDot,
+		logFileHandler: h.logFileHandler,
+		logFile:        h.logFile,
+	}
 }
 
 func (h testSlogHandler) WithGroup(name string) slog.Handler {
-	return &testSlogHandler{Handler: h.Handler.WithGroup(name), w: h.w}
+	return &testSlogHandler{
+		Handler:        h.Handler.WithGroup(name),
+		w:              h.w,
+		doDot:          h.doDot,
+		logFileHandler: h.logFileHandler,
+		logFile:        h.logFile,
+	}
 }
 
 func (h testSlogHandler) Handle(ctx context.Context, r slog.Record) (err error) {
