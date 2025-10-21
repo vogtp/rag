@@ -33,6 +33,7 @@ func getSlog() *slog.Logger {
 	if err == nil {
 		testHanlder.logFileHandler = slog.NewJSONHandler(logFile, &logOpts)
 		testHanlder.logFile = logFile
+		slog.New(testHanlder.logFileHandler).Error("Start")
 	} else {
 		fmt.Printf("Cannot create test log: %v", err)
 	}
@@ -85,7 +86,6 @@ func (h testSlogHandler) Handle(ctx context.Context, r slog.Record) (err error) 
 		if err := h.logFileHandler.Handle(ctx, r); err != nil {
 			fmt.Fprintf(h.logFile, "logFileHandler err: %v", err)
 		}
-		slog.New(h.logFileHandler).Error("Start")
 	}
 	if r.Level == slog.LevelError {
 		return h.Handler.Handle(ctx, r)
