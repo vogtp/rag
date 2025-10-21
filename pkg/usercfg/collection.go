@@ -136,11 +136,15 @@ func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger) error {
 	if err != nil {
 		return err
 	}
-	i, err := vecDB.Embedd(ctx, slog, c, docsChan)
+	cnt, err := vecDB.Embedd(ctx, slog, c, docsChan)
 	if err != nil {
 		return err
 	}
-	slog.Warn("Finished embedding", "doc.count", i, "duration", time.Since(start).String())
+	log:=slog.Warn
+	if cnt < 10 {
+		log=slog.Error
+	}
+	log("Finished embedding", "doc.count", cnt, "duration", time.Since(start).String())
 	return nil
 }
 
