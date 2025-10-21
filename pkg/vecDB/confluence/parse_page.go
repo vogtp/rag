@@ -1,8 +1,11 @@
 package confluence
 
 import (
+	"bytes"
+	"io"
 	"log/slog"
 	"net/url"
+	"os"
 	"regexp"
 	"strings"
 
@@ -14,8 +17,28 @@ var (
 )
 
 func parsePage(slog *slog.Logger, p string) (string, []string) {
-	// retrun html2text.HTML2Text(p)
+
+	// capture stdout since one of the libs writes to it
+	old := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
 	markdown, err := htmltomarkdown.ConvertString(p)
+
+	// read output
+	outC := make(chan string)
+	go func() {
+		var buf bytes.Buffer
+		io.Copy(&buf, r)
+		outC <- buf.String()
+	}()
+	w.Close()
+	os.Stdout = old
+	out := <-outC
+	if len(out) > 0 {
+		slog.Warn("HTML to MD convert output", "output", out)
+	}
+
 	if err != nil {
 		slog.Error("cannot encode html to markdown", "err", err)
 		return p, []string{}

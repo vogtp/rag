@@ -1,4 +1,4 @@
-package vecdb
+package history
 
 import (
 	"encoding/json"
@@ -6,6 +6,9 @@ import (
 	"log/slog"
 	"os"
 	"time"
+
+	"github.com/vogtp/rag/pkg/cfg"
+	vecdb "github.com/vogtp/rag/pkg/vecDB"
 )
 
 const (
@@ -20,7 +23,15 @@ type emeddHistory struct {
 	vecDBUpdateIntervall time.Duration
 }
 
-func (eh *emeddHistory) shouldEmbedd(d *EmbeddDocument) bool {
+func New(slog *slog.Logger, rag cfg.RagConfig) vecdb.Filter {
+	return &emeddHistory{
+		slog:                 slog,
+		collectionName:       rag.CollectionName(),
+		vecDBUpdateIntervall: rag.VecDBUpdateIntervall(),
+	}
+}
+
+func (eh *emeddHistory) ShouldEmbedd(d *vecdb.EmbeddDocument) bool {
 	if err := eh.init(); err != nil {
 		slog.Warn("Error init the embedd history", "err", err)
 		return true
@@ -39,7 +50,7 @@ func (eh *emeddHistory) shouldEmbedd(d *EmbeddDocument) bool {
 	return b
 }
 
-func (eh *emeddHistory) reqisterEmedded(d *EmbeddDocument) {
+func (eh *emeddHistory) ReqisterEmedded(d *vecdb.EmbeddDocument) {
 	if err := eh.init(); err != nil {
 		slog.Warn("Error init the embedd history", "err", err)
 		return
@@ -57,8 +68,8 @@ func (eh *emeddHistory) init() error {
 	if eh.slog == nil {
 		eh.slog = slog.Default()
 	}
-	if err:=os.MkdirAll(HistoryCacheDirName, os.ModePerm); err != nil {
-		slog.Error("cannot create history cache dir", "err",err,"HistoryCacheDirName",HistoryCacheDirName)
+	if err := os.MkdirAll(HistoryCacheDirName, os.ModePerm); err != nil {
+		slog.Error("cannot create history cache dir", "err", err, "HistoryCacheDirName", HistoryCacheDirName)
 	}
 	interval := eh.vecDBUpdateIntervall
 	if interval > 24*time.Hour || interval < time.Hour {
@@ -69,12 +80,12 @@ func (eh *emeddHistory) init() error {
 	return eh.load()
 }
 
-func (eh emeddHistory) key(d *EmbeddDocument) string {
+func (eh emeddHistory) key(d *vecdb.EmbeddDocument) string {
 	return fmt.Sprintf("%s.%s", d.IDMetaKey, d.IDMetaValue)
 }
 
 func (eh emeddHistory) filename() string {
-	return fmt.Sprintf("%s/%s.json",HistoryCacheDirName, eh.collectionName)
+	return fmt.Sprintf("%s/%s.json", HistoryCacheDirName, eh.collectionName)
 }
 
 func (eh *emeddHistory) load() error {

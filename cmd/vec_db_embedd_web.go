@@ -9,6 +9,7 @@ import (
 	"github.com/vogtp/rag/pkg/logger"
 	"github.com/vogtp/rag/pkg/scraper"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
+	"github.com/vogtp/rag/pkg/vecDB/history"
 )
 
 var vecDbEmbbedScrapCmd = &cobra.Command{
@@ -56,6 +57,6 @@ func scapper2vecDB(ctx context.Context, url string, collectionName string) error
 	if err != nil {
 		return fmt.Errorf("Failed to create vector DB: %w", err)
 	}
-	_, err = client.Embedd(ctx, slog, dcfg, docsChannel)
+	_, err = client.Embedd(ctx, slog, dcfg, docsChannel, history.New(slog, dcfg))
 	return err
 }

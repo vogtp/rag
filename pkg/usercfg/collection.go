@@ -15,6 +15,7 @@ import (
 	"github.com/vogtp/rag/pkg/types"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 	"github.com/vogtp/rag/pkg/vecDB/confluence"
+	"github.com/vogtp/rag/pkg/vecDB/history"
 	"github.com/vogtp/rag/pkg/web/bearer"
 	"gorm.io/gorm"
 )
@@ -136,7 +137,7 @@ func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger) error {
 	if err != nil {
 		return err
 	}
-	cnt, err := vecDB.Embedd(ctx, slog, c, docsChan)
+	cnt, err := vecDB.Embedd(ctx, slog, c, docsChan, history.New(slog, c))
 	if err != nil {
 		return err
 	}

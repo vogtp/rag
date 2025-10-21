@@ -37,7 +37,7 @@ func parseTime(t string) (time.Time, error) {
 	return time.Parse(timeFormat, t)
 }
 
-func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, config cfg.RagConfig, in <-chan *EmbeddDocument) (int, error) {
+func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, config cfg.RagConfig, in <-chan *EmbeddDocument, filters ...Filter) (int, error) {
 	collectionName := config.CollectionName()
 	if len(collectionName) < 1 {
 		slog.Info("No collections name given")
@@ -50,23 +50,23 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, config cfg.RagCon
 	if err != nil {
 		return 0, err
 	}
-
-	coll, err := v.CreateCollection(ctx, collectionName, map[string]interface{}{MetaIsRag: true, MetaCreated: time.Now().Unix})
+	coll, err := v.GetCollection(ctx, collectionName)
 	if err != nil {
-		slog.Error("cannot create collection", "collectionName", collectionName, "err", err)
-		return 0, fmt.Errorf("failed to create collection: %v", err)
+		coll, err = v.CreateCollection(ctx, collectionName, map[string]interface{}{MetaIsRag: true, MetaCreated: time.Now().Unix})
+		if err != nil {
+			slog.Error("cannot create collection", "collectionName", collectionName, "err", err)
+			return 0, fmt.Errorf("failed to create collection: %v", err)
+		}
 	}
 	coll.Metadata[MetaUpdated] = time.Now()
 	docUpdated := 0
-	history := emeddHistory{
-		slog:                 slog,
-		collectionName:       collectionName,
-		vecDBUpdateIntervall: config.VecDBUpdateIntervall(),
-	}
+
 	for d := range in {
 		slog = slogBase.With(sl.Group("RecordID", sl.String(d.IDMetaKey, d.IDMetaValue)))
-		if !history.shouldEmbedd(d) {
-			continue
+		for _, f := range filters {
+			if !f.ShouldEmbedd(d) {
+				continue
+			}
 		}
 		res, err := coll.Get(ctx, map[string]interface{}{d.IDMetaKey: d.IDMetaValue}, nil, nil, nil)
 		if err != nil {
@@ -150,7 +150,9 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, config cfg.RagCon
 				continue
 			}
 		}
-		history.reqisterEmedded(d)
+		for _, f := range filters {
+			f.ReqisterEmedded(d)
+		}
 		docUpdated++
 	}
 

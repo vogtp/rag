@@ -10,6 +10,7 @@ import (
 	"github.com/vogtp/rag/pkg/logger"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 	"github.com/vogtp/rag/pkg/vecDB/filesystem"
+	"github.com/vogtp/rag/pkg/vecDB/history"
 )
 
 var vecDbEmbbedCmd = &cobra.Command{
@@ -43,7 +44,7 @@ var vecDbEmbbedPathCmd = &cobra.Command{
 			return fmt.Errorf("create vector DB: %w", err)
 		}
 
-		_, err = client.Embedd(ctx, slog, dcfg, filesystem.Generate(ctx, path))
+		_, err = client.Embedd(ctx, slog, dcfg, filesystem.Generate(ctx, path), history.New(slog, dcfg))
 		return err
 	},
 }
