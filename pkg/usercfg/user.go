@@ -106,11 +106,6 @@ func (u *User) UpdateIntervall() time.Duration {
 	return d
 }
 
-// FIXME remove
-func (u *User) VecDBUpdateIntervall() time.Duration {
-	return u.UpdateIntervall()
-}
-
 func (u *User) Confluence() *cfg.ConfluenceCfg {
 	return &cfg.ConfluenceCfg{}
 }

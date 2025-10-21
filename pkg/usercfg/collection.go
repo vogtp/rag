@@ -89,11 +89,6 @@ func (c *Collection) UpdateIntervall() time.Duration {
 	return c.DBUpdateIntervall
 }
 
-// FIXME remove
-func (c *Collection) VecDBUpdateIntervall() time.Duration {
-	return c.UpdateIntervall()
-}
-
 func (c *Collection) Confluence() *cfg.ConfluenceCfg {
 	return c.Source.Confluence()
 }
@@ -141,9 +136,9 @@ func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger) error {
 	if err != nil {
 		return err
 	}
-	log:=slog.Warn
+	log := slog.Warn
 	if cnt < 10 {
-		log=slog.Error
+		log = slog.Error
 	}
 	log("Finished embedding", "doc.count", cnt, "duration", time.Since(start).String())
 	return nil

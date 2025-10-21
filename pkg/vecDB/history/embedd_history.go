@@ -20,14 +20,14 @@ type emeddHistory struct {
 	collectionName       string
 	history              map[string]time.Time
 	minAge               time.Duration
-	vecDBUpdateIntervall time.Duration
+	updateIntervall time.Duration
 }
 
 func New(slog *slog.Logger, rag cfg.RagConfig) vecdb.Filter {
 	return &emeddHistory{
 		slog:                 slog,
 		collectionName:       rag.CollectionName(),
-		vecDBUpdateIntervall: rag.VecDBUpdateIntervall(),
+		updateIntervall: rag.UpdateIntervall(),
 	}
 }
 
@@ -71,7 +71,7 @@ func (eh *emeddHistory) init() error {
 	if err := os.MkdirAll(HistoryCacheDirName, os.ModePerm); err != nil {
 		slog.Error("cannot create history cache dir", "err", err, "HistoryCacheDirName", HistoryCacheDirName)
 	}
-	interval := eh.vecDBUpdateIntervall
+	interval := eh.updateIntervall
 	if interval > 24*time.Hour || interval < time.Hour {
 		interval = time.Hour
 	}
