@@ -39,6 +39,7 @@ func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
 	}
 	maxResult := 15
 	var retErr error
+	var resultSummary strings.Builder
 	for _, col := range tt.Collections() {
 		if excludeCollection(&col) {
 			continue
@@ -100,7 +101,7 @@ func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
 						}
 						fmt.Fprintf(&resOut, "%s %-40s %s\n", intent, title, url)
 					}
-					
+
 				}
 			}
 			tick := "✅"
@@ -109,8 +110,10 @@ func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
 				retErr = tstErr
 			}
 			fmt.Printf("  %q in %s: %s\n%s\n", t.Question, col.CollectionName(), tick, resOut.String())
+			fmt.Fprintf(&resultSummary,"%q in %s: %s\n", t.Question, col.CollectionName(), tick)
 		}
 	}
+	fmt.Println(resultSummary.String())
 	return retErr
 }
 
