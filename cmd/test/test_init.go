@@ -36,7 +36,7 @@ var allInOneTstStartCmd = &cobra.Command{
 	Aliases:      []string{"a", "full"},
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		defer func(start time.Time) { fmt.Printf("Duration %s", time.Since(start)) }(time.Now())
+		defer func(start time.Time) { fmt.Printf("Duration %s\n", time.Since(start)) }(time.Now())
 		tt, err := loadTestData()
 		if err != nil {
 			return err
@@ -60,7 +60,7 @@ var createTstStartCmd = &cobra.Command{
 	Aliases:      []string{"c"},
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		defer func(start time.Time) { fmt.Printf("Duration %s", time.Since(start)) }(time.Now())
+		defer func(start time.Time) { fmt.Printf("Duration %s\n", time.Since(start)) }(time.Now())
 		tt, err := loadTestData()
 		if err != nil {
 			return err
@@ -75,7 +75,7 @@ var deleteTstStartCmd = &cobra.Command{
 	Aliases:      []string{"rm", "del"},
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		defer func(start time.Time) { fmt.Printf("Duration %s", time.Since(start)) }(time.Now())
+		defer func(start time.Time) { fmt.Printf("Duration %s\n", time.Since(start)) }(time.Now())
 		tt, err := loadTestData()
 		if err != nil {
 			return err

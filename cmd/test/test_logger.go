@@ -27,6 +27,7 @@ func getSlog() *slog.Logger {
 	testHanlder := testSlogHandler{
 		Handler: handler,
 		w:       logWriter,
+		doDot:   true,
 	}
 	logFile, err := os.Create("ignore_test.log")
 	if err == nil {
@@ -40,31 +41,32 @@ func getSlog() *slog.Logger {
 
 type testSlogHandler struct {
 	slog.Handler
+	doDot          bool
 	logFileHandler slog.Handler
 	logFile        *os.File
 	w              io.Writer
 }
 
-func (h *testSlogHandler) Enabled(ctx context.Context, level slog.Level) bool {
+func (h testSlogHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	return h.Handler.Enabled(ctx, level)
 }
 
-func (h *testSlogHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+func (h testSlogHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	return &testSlogHandler{Handler: h.Handler.WithAttrs(attrs), w: h.w}
 }
 
-func (h *testSlogHandler) WithGroup(name string) slog.Handler {
+func (h testSlogHandler) WithGroup(name string) slog.Handler {
 	return &testSlogHandler{Handler: h.Handler.WithGroup(name), w: h.w}
 }
 
-func (h *testSlogHandler) Handle(ctx context.Context, r slog.Record) (err error) {
-	switch r.Level {
-	case slog.LevelInfo:
-		_, err = h.w.Write([]byte("."))
-	case slog.LevelWarn:
-		_, err = h.w.Write([]byte("!"))
-	default:
-		err = h.Handler.Handle(ctx, r)
+func (h testSlogHandler) Handle(ctx context.Context, r slog.Record) (err error) {
+	if h.doDot {
+		switch r.Level {
+		case slog.LevelInfo:
+			_, err = h.w.Write([]byte("."))
+		case slog.LevelWarn:
+			_, err = h.w.Write([]byte("!"))
+		}
 	}
 	//write log file
 	if h.logFileHandler != nil {
@@ -72,6 +74,9 @@ func (h *testSlogHandler) Handle(ctx context.Context, r slog.Record) (err error)
 			fmt.Fprintf(h.logFile, "logFileHandler err: %v", err)
 		}
 		slog.New(h.logFileHandler).Error("Start")
+	}
+	if r.Level == slog.LevelError {
+		return h.Handler.Handle(ctx, r)
 	}
 	return
 }

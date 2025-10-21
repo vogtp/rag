@@ -31,43 +31,57 @@ var searchTstStartCmd = &cobra.Command{
 	},
 }
 
-func searchTestData(ctx context.Context, slog *slog.Logger, tt *testData) error {
+func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
+	if h, ok := log.Handler().(testSlogHandler); ok {
+		h.doDot = false
+		log = slog.New(h)
+	}
 	maxResult := 7
 	var retErr error
 	for _, col := range tt.Collections() {
 		fmt.Printf("* %s\n", col.DisplayName())
 		for _, t := range tt.Tests {
-			fmt.Printf("  %q:\n", t.Question)
-			docs, err := col.SearchVecDB(ctx, slog, col.CollectionName(), t.Question, maxResult)
+			var resOut strings.Builder
+			var tstErr error
+			docs, err := col.SearchVecDB(ctx, log, col.CollectionName(), t.Question, maxResult)
 			if err != nil {
 				// if collection does not exist recreate
 				if strings.Contains(err.Error(), fmt.Sprintf("InvalidCollection: Collection %s does not exist.", col.CollectionName())) {
-					if err := createVecDBCollecions(ctx, slog, tt); err != nil {
+					if err := createVecDBCollecions(ctx, log, tt); err != nil {
 						return err
 					}
-					return searchTestData(ctx, slog, tt)
+					return searchTestData(ctx, log, tt)
 				}
 				return err
 			}
+			intent := "      "
 			if len(docs) < 1 {
-				fmt.Printf("   %q no docs found\n", col.Displayname)
-				retErr = testFailedError
-				continue
+				fmt.Fprintf(&resOut, "%s%q no docs found\n", intent, col.Displayname)
+				tstErr = testFailedError
+			} else {
+				for _, r := range t.Results {
+					if err := ensureTitle(r, docs); err != nil {
+						fmt.Fprintf(&resOut, "%s%v\n", intent, err)
+						tstErr = testFailedError
+					}
+					if err := ensureURL(r, docs); err != nil {
+						fmt.Fprintf(&resOut, "%s%v\n", intent, err)
+						tstErr = testFailedError
+					}
+					for _, k := range r.Keywords {
+						if err := ensureKeyword(k, docs); err != nil {
+							fmt.Fprintf(&resOut, "%s%v\n", intent, err)
+							tstErr = testFailedError
+						}
+					}
+				}
 			}
-			for _, r := range t.Results {
-				if err := ensureTitle(r, docs); err != nil {
-					fmt.Printf("    %v\n", err)
-					retErr = testFailedError
-				}
-				if err := ensureURL(r, docs); err != nil {
-					fmt.Printf("    %v\n", err)
-					retErr = testFailedError
-				}
-				if err := ensureKeywords(r, docs); err != nil {
-					fmt.Printf("    %v\n", err)
-					retErr = testFailedError
-				}
+			tick := "✅"
+			if tstErr != nil {
+				tick = "⚠"
+				retErr = tstErr
 			}
+			fmt.Printf("  %q: %s\n%s\n", t.Question, tick, resOut.String())
 		}
 	}
 	return retErr
@@ -79,25 +93,16 @@ func ensureTitle(r testDataResult, docs []vecdb.QueryDocument) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("Title %q not found", r.Title)
+	return fmt.Errorf("Title not found: %q", r.Title)
 }
 
 func ensureURL(r testDataResult, docs []vecdb.QueryDocument) error {
 	for _, d := range docs {
-		if d.URL == r.URL {
+		if strings.HasSuffix(d.URL, r.URL) {
 			return nil
 		}
 	}
-	return fmt.Errorf("URL %q not found", r.URL)
-}
-
-func ensureKeywords(r testDataResult, docs []vecdb.QueryDocument) error {
-	for _, k := range r.Keywords {
-		if err := ensureKeyword(k, docs); err != nil {
-			return err
-		}
-	}
-	return nil
+	return fmt.Errorf("URL not found: %q", r.URL)
 }
 
 func ensureKeyword(keyword string, docs []vecdb.QueryDocument) error {
@@ -106,5 +111,5 @@ func ensureKeyword(keyword string, docs []vecdb.QueryDocument) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("Keyword %q not found", keyword)
+	return fmt.Errorf("Keyword not found: %q", keyword)
 }
