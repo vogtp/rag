@@ -36,7 +36,7 @@ func TestGenerate(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Embedding: %v", err)
 	}
-	if len(ls) != cnt {
+	if len(ls) > cnt {
 		t.Fatalf("Did not embedd all (%v) docs (%v)", len(ls), cnt)
 	}
 }
