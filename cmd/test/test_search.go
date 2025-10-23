@@ -88,7 +88,7 @@ func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
 					if tstErr == testFailedKeywordsNotFoundError {
 						for _, d := range docs {
 							if strings.HasSuffix(d.URL, r.URL) {
-								fmt.Fprintf(&resOut, "Content of %s:\n%s\n", r.Title, d.Content)
+								fmt.Fprintf(&resOut, "Content of %s:\n%s\n", r.Title, d.EmbedContent)
 								fmt.Fprintf(&resOut, "Document of %s:\n%s\n", r.Title, d.Document)
 
 							}
@@ -148,7 +148,7 @@ func ensureURL(r testDataResult, docs []vecdb.QueryDocument) error {
 
 func ensureKeyword(keyword string, docs []vecdb.QueryDocument) error {
 	for _, d := range docs {
-		if strings.Contains(d.Content, keyword) {
+		if strings.Contains(d.EmbedContent, keyword) {
 			return nil
 		}
 	}

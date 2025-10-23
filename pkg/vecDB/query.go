@@ -13,12 +13,12 @@ type QueryResult struct {
 
 // QueryDocument is a document found in the vectorDB
 type QueryDocument struct {
-	Content  string
-	Document string
-	Modified string
-	URL      string
-	Title    string
-	IDField  string
+	EmbedContent string // Content is the part of the document used for the embedding
+	Document     string // Document is the original
+	Modified     string
+	URL          string
+	Title        string
+	IDField      string
 }
 
 // Query searches the vectorDB
@@ -40,7 +40,7 @@ func (v *VecDB) Query(ctx context.Context, collection string, queryTexts []strin
 		}
 		for i := range qr.Documents[idx] {
 			doc := QueryDocument{
-				Content: qr.Documents[idx][i],
+				EmbedContent: qr.Documents[idx][i],
 			}
 			metaData := qr.Metadatas[idx][i]
 			if m, ok := metaData[MetaUpdated].(string); ok {

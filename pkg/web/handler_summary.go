@@ -48,7 +48,7 @@ func (srv *Server) handleSummary(w http.ResponseWriter, r *http.Request) {
 	}
 	content := []llms.MessageContent{
 		llms.TextParts(llms.ChatMessageTypeSystem, systemMsg),
-		llms.TextParts(llms.ChatMessageTypeHuman, doc.Content),
+		llms.TextParts(llms.ChatMessageTypeHuman, doc.EmbedContent),
 	}
 	completion, err := llm.GenerateContent(ctx, content, llms.WithTemperature(0.001))
 	if err != nil {
