@@ -119,7 +119,7 @@ func (m VectorStoreModel) GenerateContent(ctx context.Context, slog *slog.Logger
 		slog.Warn("No history", "err", err)
 	}
 
-	res, err := m.vecDB.Query(ctx, m.Collection, []string{text}, 5)
+	res, err := m.vecDB.Query(ctx, m.Collection, []string{text}, cfg.CntSeachResults)
 	if err != nil {
 		return "", fmt.Errorf("query vector DB: %w", err)
 	}
@@ -131,7 +131,7 @@ func (m VectorStoreModel) GenerateContent(ctx context.Context, slog *slog.Logger
 
 	knowledge.WriteString("Anwser the next question based the the following knowledge:\n")
 	for _, d := range res[0].Documents {
-		knowledge.WriteString(fmt.Sprintf("<knowledge href=%q >%s</knowledge>\n", d.URL, d.Content))
+		knowledge.WriteString(fmt.Sprintf("<knowledge href=%q >%s</knowledge>\n", d.URL, d.Document))
 	}
 	knowledge.WriteString("Always reference the used knowledge by the name and link to the href tag\n")
 
