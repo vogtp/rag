@@ -135,17 +135,16 @@ func createVecDBCollecions(ctx context.Context, slog *slog.Logger, tt *testData)
 	return nil
 }
 
-func deleteVecDBCollecions(ctx context.Context, slog *slog.Logger, tt *testData) error {
+func deleteVecDBCollecions(ctx context.Context, log *slog.Logger, tt *testData) error {
 	for _, c := range tt.Collections() {
 		if excludeCollection(&c) {
 			continue
 		}
-		vecDB, err := vecdb.New(ctx, slog, c.ModelEmbedding())
+		vecDB, err := vecdb.New(ctx, log, c.ModelEmbedding())
 		if err != nil {
 			return err
 		}
 		if err := vecDB.DeleteCollection(ctx, c.CollectionName()); err != nil {
-			slog.Warn("Cannot delete collection", "collection", c.CollectionName(), "err", err)
 			continue
 		}
 		fmt.Printf("Deleted %s\n", c.CollectionName())
