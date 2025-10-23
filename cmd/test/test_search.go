@@ -12,7 +12,10 @@ import (
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 )
 
-var testFailedError = fmt.Errorf("Tests failed")
+var (
+	testFailedDocuemntNotFoundError = fmt.Errorf("Tests failed: Document not found")
+	testFailedKeywordsNotFoundError = fmt.Errorf("Tests failed: Keyword not found")
+)
 
 var searchTstStartCmd = &cobra.Command{
 	Use:          "search",
@@ -65,25 +68,34 @@ func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
 			intent := "      "
 			if len(docs) < 1 {
 				fmt.Fprintf(&resOut, "%s%q no docs found\n", intent, col.Displayname)
-				tstErr = testFailedError
+				tstErr = testFailedDocuemntNotFoundError
 			} else {
 				for _, r := range t.Results {
 					if err := ensureTitle(r, docs); err != nil {
 						fmt.Fprintf(&resOut, "%s%v\n", intent, err)
-						tstErr = testFailedError
+						tstErr = testFailedDocuemntNotFoundError
 					}
 					if err := ensureURL(r, docs); err != nil {
 						fmt.Fprintf(&resOut, "%s%v\n", intent, err)
-						tstErr = testFailedError
+						tstErr = testFailedDocuemntNotFoundError
 					}
 					for _, k := range r.Keywords {
 						if err := ensureKeyword(k, docs); err != nil {
 							fmt.Fprintf(&resOut, "%s%v\n", intent, err)
-							tstErr = testFailedError
+							tstErr = testFailedKeywordsNotFoundError
+						}
+					}
+					if tstErr == testFailedKeywordsNotFoundError {
+						for _, d := range docs {
+							if strings.HasSuffix(d.URL, r.URL) {
+								fmt.Fprintf(&resOut, "Content of %s:\n%s\n", r.Title, d.Content)
+								fmt.Fprintf(&resOut, "Document of %s:\n%s\n", r.Title, d.Document)
+
+							}
 						}
 					}
 				}
-				if tstErr != nil {
+				if tstErr == testFailedDocuemntNotFoundError {
 					fmt.Fprintf(&resOut, "%sFound docs:\n", intent)
 					intent := fmt.Sprintf("  %s", intent)
 					for _, d := range docs {
@@ -101,7 +113,6 @@ func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
 						}
 						fmt.Fprintf(&resOut, "%s %-40s %s\n", intent, title, url)
 					}
-
 				}
 			}
 			tick := "✅"
@@ -110,7 +121,7 @@ func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
 				retErr = tstErr
 			}
 			fmt.Printf("  %q in %s: %s\n%s\n", t.Question, col.CollectionName(), tick, resOut.String())
-			fmt.Fprintf(&resultSummary,"%q in %s: %s\n", t.Question, col.CollectionName(), tick)
+			fmt.Fprintf(&resultSummary, "%q in %s: %s\n", t.Question, col.CollectionName(), tick)
 		}
 	}
 	fmt.Println(resultSummary.String())
