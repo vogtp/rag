@@ -11,6 +11,8 @@ import (
 )
 
 func getSlog() *slog.Logger {
+	// viper.Set(cfg.LogJson, true)
+	// return logger.New()
 	var logWriter io.Writer = os.Stderr
 	logOpts := slog.HandlerOptions{
 		Level:     slog.LevelInfo,
@@ -57,7 +59,7 @@ func (h testSlogHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 		Handler:        h.Handler.WithAttrs(attrs),
 		w:              h.w,
 		doDot:          h.doDot,
-		logFileHandler: h.logFileHandler,
+		logFileHandler: h.logFileHandler.WithAttrs(attrs),
 		logFile:        h.logFile,
 	}
 }
@@ -67,7 +69,7 @@ func (h testSlogHandler) WithGroup(name string) slog.Handler {
 		Handler:        h.Handler.WithGroup(name),
 		w:              h.w,
 		doDot:          h.doDot,
-		logFileHandler: h.logFileHandler,
+		logFileHandler: h.logFileHandler.WithGroup(name),
 		logFile:        h.logFile,
 	}
 }
