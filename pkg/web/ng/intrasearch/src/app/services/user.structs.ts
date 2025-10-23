@@ -84,6 +84,7 @@ class SourceSystem {
 	URL: string;
 	Key: string;
 	Parts: string;
+	QueryRetryMax: number;
 
 	constructor(data?: any) {
 		const d: any = (data && typeof data === 'object') ? ToObject(data) : {};
@@ -97,6 +98,7 @@ class SourceSystem {
 		this.URL = ('URL' in d) ? d.URL as string : '';
 		this.Key = ('Key' in d) ? d.Key as string : '';
 		this.Parts = ('Parts' in d) ? d.Parts as string : '';
+		this.QueryRetryMax = ('QueryRetryMax' in d) ? d.QueryRetryMax as number : 0;
 	}
 
 	toObject(): any {
@@ -106,6 +108,7 @@ class SourceSystem {
 		cfg.UpdatedAt = 'string';
 		cfg.CollectionID = 'number';
 		cfg.Type = 'number';
+		cfg.QueryRetryMax = 'number';
 		return ToObject(this, cfg);
 	}
 }
