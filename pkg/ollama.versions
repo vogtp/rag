@@ -1,0 +1,2 @@
+export OLLAMA_VERSION="0.11.8" && /usr/local/bin/update_ollama.sh # -> embeddings required but some input tokens were not marked as outputs -> overriding
+export OLLAMA_VERSION="0.7.1" && /usr/local/bin/update_ollama.sh # -> 

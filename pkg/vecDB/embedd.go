@@ -25,16 +25,32 @@ const (
 	MetaTitle   = "title"
 )
 
-const timeFormat = "2006-01-02 15:04:05.999999999 -0700"
+const (
+	timeFormat  = "2006-01-02 15:04:05.999999999 -0700"
+	timeFormat2 = "2006-01-02 15:04:05"
+)
 
 // const timeFormat = "2006-01-02 15:04:05.999999999 -0700 MST"
 // 2025-09-11 16:30:36.875593874 +0200 CEST m=+207.045403821
 // 2006-01-02 15:04:05.999999999 -0700
+// 2025-10-23 10:29:07.4234687 +0200 CEST m=+133.822645301
 func parseTime(t string) (time.Time, error) {
 	if len(t) > len(timeFormat) {
 		t = t[:len(timeFormat)]
 	}
-	return time.Parse(timeFormat, t)
+	t1, err := time.Parse(timeFormat, t)
+	if err == nil {
+		return t1, nil
+	}
+	t = t[:len(timeFormat)-1]
+	t1, err = time.Parse(timeFormat, t)
+	if err == nil {
+		return t1, nil
+	}
+	if len(t) > len(timeFormat2) {
+		t = t[:len(timeFormat2)]
+	}
+	return time.Parse(timeFormat2, t)
 }
 
 func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName string, in <-chan *EmbeddDocument, filters ...Filter) (int, error) {
@@ -42,9 +58,8 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 		slog.Info("No collections name given")
 		return 0, fmt.Errorf("no collection name to embed to")
 	}
-	slog = slog.With("collection", collectionName)
-	slogBase := slog
-	slog.Warn("Starting embedding", logger.Stacktrace())
+	slogBase := slog.With("collection", collectionName)
+	slogBase.Warn("Starting embedding", logger.Stacktrace())
 	embedFunc, err := v.GetEmbeddingFunc()
 	if err != nil {
 		return 0, err
@@ -53,7 +68,7 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 	if err != nil {
 		coll, err = v.CreateCollection(ctx, collectionName, map[string]interface{}{MetaIsRag: true, MetaCreated: time.Now().Unix})
 		if err != nil {
-			slog.Error("cannot create collection", "collectionName", collectionName, "err", err)
+			slogBase.Error("cannot create collection", "collectionName", collectionName, "err", err)
 			return 0, fmt.Errorf("failed to create collection: %v", err)
 		}
 	}
@@ -61,11 +76,11 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 	docUpdated := 0
 
 	for d := range in {
+		slog = slogBase.With(sl.Group("doc", sl.Group("RecordID", sl.String(d.IDMetaKey, d.IDMetaValue)), sl.String("title", d.Title)))
 		if strings.HasPrefix(d.Title, "Arbeitszeit, Ferien & unbezahlter Urlaub") {
 			//FIXME only for debug
-			slog.Error("DEBUG found Arbeitszeit, Ferien & unbezahlter Urlaub")
+			slog.Debug("DEBUG found Arbeitszeit, Ferien & unbezahlter Urlaub")
 		}
-		slog = slogBase.With(sl.Group("RecordID", sl.String(d.IDMetaKey, d.IDMetaValue)))
 		for _, f := range filters {
 			if !f.ShouldEmbedd(d) {
 				continue
@@ -83,7 +98,7 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 			if u, ok := m[MetaUpdated].(string); ok {
 				t, err := parseTime(u)
 				if err != nil {
-					slog.Info("Cannot parse update time", "time", u)
+					slog.Info("Cannot parse update time", "update_time", u)
 					skipFile = false
 				}
 				if d.Modified.After(t) {
@@ -101,15 +116,15 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 			continue
 		}
 		for _, s := range d.Split(slog) {
+
 			rs, err := types.NewRecordSet(
 				types.WithEmbeddingFunction(embedFunc),
-				types.WithIDGenerator(types.NewULIDGenerator()),
+				// types.WithIDGenerator(types.NewULIDGenerator()),
 			)
 			if err != nil {
 				slog.Warn("cannot create record set", "err", err)
 				continue
 			}
-
 			recOpts := []types.Option{
 				types.WithDocument(s),
 				types.WithID(d.IDMetaValue),
@@ -147,7 +162,10 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 				slog.Debug("Using IDs from existing document")
 			}
 			slog.DebugContext(ctx, "Embedding document")
-			_, err = coll.Upsert(ctx, rs.GetEmbeddings(), rs.GetMetadatas(), rs.GetDocuments(), ids)
+			embs := rs.GetEmbeddings()
+			mds := rs.GetMetadatas()
+			docs := rs.GetDocuments()
+			_, err = coll.Upsert(ctx, embs, mds, docs, ids)
 			if err != nil {
 				slog.Warn("cannot add document", "err", err)
 				continue
@@ -165,7 +183,7 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 		return docUpdated, fmt.Errorf("error counting documents: %w", qrerr)
 	}
 
-	slog.Info("Finished embedding", "docsCount", countDocs, "docsUpdates", docUpdated)
+	slogBase.Info("Finished embedding", "docsCount", countDocs, "docsUpdates", docUpdated)
 
 	return docUpdated, nil
 }
