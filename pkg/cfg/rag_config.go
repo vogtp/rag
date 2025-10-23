@@ -7,6 +7,8 @@ import (
 const (
 	DefaultVecDBUpdateIntervall = 24 * time.Hour
 	MinVecDBUpdateIntervall     = time.Hour
+
+	CntSeachResults = 7
 )
 
 type RagConfig interface {

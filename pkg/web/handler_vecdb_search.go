@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/vogtp/rag/pkg/cfg"
 )
 
 func (srv *Server) vecDBsearch(w http.ResponseWriter, r *http.Request) {
@@ -23,7 +24,7 @@ func (srv *Server) vecDBsearch(w http.ResponseWriter, r *http.Request) {
 	maxResults, err := strconv.Atoi(maxResStr)
 	if err != nil {
 		slog.Info("Cannot convert max Results to int", "err", err)
-		maxResults = 10
+		maxResults = cfg.CntSeachResults
 	}
 
 	slog = srv.slog.With("collection", collection, "query", query, "maxResults", maxResults)

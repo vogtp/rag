@@ -90,7 +90,7 @@ var vecDbSearchCmd = &cobra.Command{
 			return fmt.Errorf("Failed to create vector DB: %w", err)
 		}
 
-		res, err := client.Query(ctx, collectionName, []string{search}, 15)
+		res, err := client.Query(ctx, collectionName, []string{search}, cfg.CntSeachResults)
 		if err != nil {
 			return fmt.Errorf("Failed to query vector DB: %w", err)
 		}
