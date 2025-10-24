@@ -18,13 +18,19 @@ import (
 	"github.com/vogtp/rag/pkg/vecDB/pdf"
 )
 
+type Config struct {
+	Key     string   `yaml:"key"`
+	BaseURL string   `yaml:"baseURL"`
+	Spaces  []string `yaml:"spaces"`
+}
+
 // GetDocuments retrives confluence spaces and generates vecdb.EmbeddDocuments
 func (c *confluence) GetDocuments(ctx context.Context, _ *slog.Logger) (chan *vecdb.EmbeddDocument, error) {
 	go c.query(ctx)
 	return c.out, nil
 }
 
-func New(ctx context.Context, slog *slog.Logger, config cfg.ConfluenceCfg) (types.DocRetriver, error) {
+func New(ctx context.Context, slog *slog.Logger, config Config) (types.DocRetriver, error) {
 	baseURL := config.BaseURL
 	baseURL = strings.TrimRight(baseURL, "/")
 	conf := confluence{

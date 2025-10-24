@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/vecDB/confluence"
 	"gorm.io/gorm"
 )
 
@@ -49,8 +49,8 @@ func (s SourceSystem) splitParts() []string {
 	return retParts
 }
 
-func (s SourceSystem) Confluence() *cfg.ConfluenceCfg {
-	return &cfg.ConfluenceCfg{
+func (s SourceSystem) confluence() *confluence.Config {
+	return &confluence.Config{
 		BaseURL: s.URL,
 		Key:     s.Key,
 		Spaces:  s.splitParts(),

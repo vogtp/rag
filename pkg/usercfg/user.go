@@ -31,7 +31,6 @@ type User struct {
 }
 
 var _ (types.Instance) = (*User)(nil)
-var _ (cfg.RagConfig) = (*User)(nil)
 
 func (u User) LogValue() slog.Value {
 	return slog.GroupValue(
@@ -111,10 +110,6 @@ func (u *User) UpdateIntervall() time.Duration {
 		d = min(d, intervall)
 	}
 	return d
-}
-
-func (u *User) Confluence() *cfg.ConfluenceCfg {
-	return &cfg.ConfluenceCfg{}
 }
 
 func (u *User) Embbed(ctx context.Context, slog *slog.Logger, filters ...vecdb.Filter) error {

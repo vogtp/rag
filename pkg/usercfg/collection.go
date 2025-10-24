@@ -42,7 +42,6 @@ type Collection struct {
 }
 
 var _ (types.Instance) = (*Collection)(nil)
-var _ (cfg.RagConfig) = (*Collection)(nil)
 
 func (c Collection) LogValue() slog.Value {
 	return slog.GroupValue(
@@ -91,10 +90,6 @@ func (c *Collection) UpdateIntervall() time.Duration {
 		c.DBUpdateIntervall = cfg.DefaultVecDBUpdateIntervall
 	}
 	return c.DBUpdateIntervall
-}
-
-func (c *Collection) Confluence() *cfg.ConfluenceCfg {
-	return c.Source.Confluence()
 }
 
 func (c *Collection) getVecDb(ctx context.Context, slog *slog.Logger) (*vecdb.VecDB, error) {
@@ -154,7 +149,7 @@ func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger, filters ...v
 
 func (c *Collection) GetDocuments(ctx context.Context, slog *slog.Logger) (chan *vecdb.EmbeddDocument, error) {
 	slog = slog.With("collection", c)
-	confl, err := confluence.New(ctx, slog, *c.Confluence())
+	confl, err := confluence.New(ctx, slog, *c.Source.confluence())
 	if err != nil {
 		return nil, fmt.Errorf("create confluence: %w", err)
 	}
