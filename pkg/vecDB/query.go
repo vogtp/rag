@@ -3,6 +3,7 @@ package vecdb
 import (
 	"context"
 	"fmt"
+	"log/slog"
 )
 
 // QueryResult is the result of a vectorDB search it contains one or more documents
@@ -19,6 +20,13 @@ type QueryDocument struct {
 	URL          string
 	Title        string
 	IDField      string
+}
+
+func (qd QueryDocument) LogValue() slog.Value {
+	return slog.GroupValue(
+		slog.String("title", qd.Title),
+		slog.String("URL", qd.URL),
+	)
 }
 
 // Query searches the vectorDB
