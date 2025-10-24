@@ -32,7 +32,7 @@ run: generate ng-build
 	$(GO_CMD) run . --log.source web start --log.json --log.level warn | jq -R 'fromjson? | .' 
 
 .PHONY: build
-build: generate ng-build test
+build: test-go generate ng-build 
 	$(GO_CMD) build $(build_flags) -tags prod -o ./build/ragctl . 
 
 .PHONY: generate
