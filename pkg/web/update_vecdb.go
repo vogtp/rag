@@ -3,6 +3,7 @@ package web
 import (
 	"context"
 	"time"
+	sl "log/slog"
 
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
@@ -24,7 +25,7 @@ func (srv *Server) schedulePeriodicVecDBUpdates(ctx context.Context) {
 	}
 	for _, rag := range ragger.GetAllRags(ctx) {
 		updateIntervall := rag.UpdateIntervall()
-		slog := srv.slog.With("rag", rag.DisplayName(), "updateIntervall", updateIntervall.String())
+		slog := srv.slog.With(sl.Group("rag", "displayName", rag.DisplayName(), "updateIntervall", updateIntervall.String() ))
 		if updateIntervall < cfg.MinVecDBUpdateIntervall {
 			slog.Warn("Not starting periodic vector DB updates since update intervall is too short")
 			continue
