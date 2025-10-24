@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	sl "log/slog"
 	"strings"
 	"time"
 
@@ -58,7 +57,7 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 		slog.Info("No collections name given")
 		return 0, fmt.Errorf("no collection name to embed to")
 	}
-	slogBase := slog.With("collection", collectionName)
+	slogBase := slog
 	slogBase.Warn("Starting embedding", logger.Stacktrace())
 	embedFunc, err := v.GetEmbeddingFunc()
 	if err != nil {
@@ -76,7 +75,7 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 	docUpdated := 0
 
 	for d := range in {
-		slog = slogBase.With(sl.Group("doc", sl.Group("RecordID", sl.String(d.IDMetaKey, d.IDMetaValue)), sl.String("title", d.Title)))
+		slog = slogBase.With("doc", d)
 		if strings.HasPrefix(d.Title, "Arbeitszeit, Ferien & unbezahlter Urlaub") {
 			//FIXME only for debug
 			slog.Debug("DEBUG found Arbeitszeit, Ferien & unbezahlter Urlaub")
@@ -115,16 +114,46 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 			slog.Info("document allready exists and not updated")
 			continue
 		}
-		for _, s := range d.Split(slog) {
+		rs, err := types.NewRecordSet(
+			types.WithEmbeddingFunction(embedFunc),
+			// types.WithIDGenerator(types.NewULIDGenerator()),
+		)
+		if err != nil {
+			slog.Warn("cannot create record set", "err", err)
+			continue
+		}
+		recOpts := []types.Option{
+			types.WithDocument(d.Document),
+			types.WithID(d.IDMetaValue),
+			types.WithMetadata(MetaOrigDoc, d.Document),
+			types.WithMetadata(d.IDMetaKey, d.IDMetaValue),
+			types.WithMetadata(MetaIDKey, d.IDMetaKey),
+			types.WithMetadata(MetaUpdated, d.Modified.String()),
+		}
+		if len(d.URL) > 0 {
+			recOpts = append(recOpts, types.WithMetadata(MetaURL, d.URL))
+		}
+		if len(d.Title) > 0 {
+			recOpts = append(recOpts, types.WithMetadata(MetaTitle, d.Title))
+		}
+		for k, v := range d.MetaData {
+			recOpts = append(recOpts, types.WithMetadata(k, v))
+		}
+		rs.WithRecord(recOpts...)
 
-			rs, err := types.NewRecordSet(
-				types.WithEmbeddingFunction(embedFunc),
-				// types.WithIDGenerator(types.NewULIDGenerator()),
-			)
-			if err != nil {
-				slog.Warn("cannot create record set", "err", err)
+		_, err = rs.BuildAndValidate(ctx)
+		if err != nil {
+			slog.Debug("cannot validate document", "err", err, "rs", rs)
+			if err.Error() == "document cannot be empty" {
+				slog.Info("document not validated", "err", err)
 				continue
 			}
+			slog.Warn("document not validated", "err", err)
+			continue
+			//return fmt.Errorf("error validating record set: %s \n", err)
+		}
+		for _, s := range d.Split(slog) {
+
 			recOpts := []types.Option{
 				types.WithDocument(s),
 				types.WithID(d.IDMetaValue),
@@ -155,21 +184,21 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 				continue
 				//return fmt.Errorf("error validating record set: %s \n", err)
 			}
-			// Add the records to the collection
-			ids := rs.GetIDs()
-			if len(ids) == len(res.Ids) {
-				ids = res.Ids
-				slog.Debug("Using IDs from existing document")
-			}
-			slog.DebugContext(ctx, "Embedding document")
-			embs := rs.GetEmbeddings()
-			mds := rs.GetMetadatas()
-			docs := rs.GetDocuments()
-			_, err = coll.Upsert(ctx, embs, mds, docs, ids)
-			if err != nil {
-				slog.Warn("cannot add document", "err", err)
-				continue
-			}
+		}
+		// Add the records to the collection
+		ids := rs.GetIDs()
+		if len(ids) == len(res.Ids) {
+			ids = res.Ids
+			slog.Debug("Using IDs from existing document")
+		}
+		slog.DebugContext(ctx, "Embedding document")
+		embs := rs.GetEmbeddings()
+		mds := rs.GetMetadatas()
+		docs := rs.GetDocuments()
+		_, err = coll.Upsert(ctx, embs, mds, docs, ids)
+		if err != nil {
+			slog.Warn("cannot add document", "err", err)
+			continue
 		}
 		for _, f := range filters {
 			f.ReqisterEmedded(d)
