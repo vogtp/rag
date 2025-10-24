@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/usercfg"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 	"github.com/vogtp/rag/pkg/vecDB/noopfilter"
@@ -46,6 +48,7 @@ var tstCmd = &cobra.Command{
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		includedCollections = args
 		fmt.Printf("Start %s\n", time.Now().Format(time.DateTime))
+		viper.Set(cfg.HTTPUserAgent, "go-rag-test")
 		// if len(includedCollections) > 0 {
 		// 	fmt.Printf("Working only on collections %v\n", includedCollections)
 		// }
