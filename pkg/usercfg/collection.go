@@ -161,7 +161,7 @@ func (c *Collection) ListCollections(ctx context.Context, slog *slog.Logger) ([]
 	if err != nil {
 		return nil, fmt.Errorf("cannot create vecDB for %q: %w", c.Collectionname, err)
 	}
-	cols, err := vecDB.ListAllCollections(ctx)
+	cols, err := vecDB.ListCollections(ctx, c.Collectionname)
 	if err != nil {
 		return nil, err
 	}
