@@ -44,7 +44,7 @@ test: test-go test-integration
 
 .PHONY: test-integration
 test-integration:
-	$(GO_CMD) test test all
+	$(GO_CMD) run . test all
 
 .PHONY: test-go
 test-go:
