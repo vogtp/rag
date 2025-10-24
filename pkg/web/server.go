@@ -30,7 +30,7 @@ type Server struct {
 
 	ragMgr     rag.Handler
 	lastEmbedd map[string]time.Time
-	docCache   docChace
+	docCache   docCache
 }
 
 // New creates a new webserver

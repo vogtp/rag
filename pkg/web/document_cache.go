@@ -9,31 +9,31 @@ import (
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 )
 
-type queryDoc struct {
+type queryDocument struct {
 	*vecdb.QueryDocument
 	UUID   uuid.UUID
 	access time.Time
 }
 
-type docChace struct {
+type docCache struct {
 	mu    sync.RWMutex
-	cache map[uuid.UUID]queryDoc
+	cache map[uuid.UUID]queryDocument
 }
 
-func newDocCache() docChace {
-	return docChace{
-		cache: make(map[uuid.UUID]queryDoc),
+func newDocCache() docCache {
+	return docCache{
+		cache: make(map[uuid.UUID]queryDocument),
 	}
 }
 
-func (dc *docChace) add(d *queryDoc) {
+func (dc *docCache) add(d *queryDocument) {
 	d.access = time.Now()
 	dc.mu.RLock()
 	dc.cache[d.UUID] = *d
 	dc.mu.RUnlock()
 }
 
-func (dc *docChace) get(id uuid.UUID) (*queryDoc, error) {
+func (dc *docCache) get(id uuid.UUID) (*queryDocument, error) {
 	dc.mu.Lock()
 	defer dc.mu.Unlock()
 	d, ok := dc.cache[id]
@@ -46,7 +46,7 @@ func (dc *docChace) get(id uuid.UUID) (*queryDoc, error) {
 	return &d, nil
 }
 
-func (dc *docChace) cleanup() {
+func (dc *docCache) cleanup() {
 	for uuid, d := range dc.cache {
 		if time.Since(d.access) < 10*time.Minute {
 			continue

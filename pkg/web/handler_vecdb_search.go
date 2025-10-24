@@ -10,6 +10,13 @@ import (
 	"github.com/vogtp/rag/pkg/cfg"
 )
 
+type CollectionSearchResponse struct {
+	*commonData
+	Collection string
+	Query      string
+	Documents  []queryDocument
+}
+
 func (srv *Server) vecDBsearch(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	collection := r.PathValue("collection")
@@ -35,12 +42,7 @@ func (srv *Server) vecDBsearch(w http.ResponseWriter, r *http.Request) {
 
 	slog = slog.With("maxResults", maxResults)
 	slog.Info("Collection search requested")
-	var data = struct {
-		*commonData
-		Collection string
-		Query      string
-		Documents  []queryDoc
-	}{
+	var data = CollectionSearchResponse{
 		commonData: srv.common(fmt.Sprintf("Search: %s", collection), r),
 		Collection: collection,
 		Query:      query,
@@ -66,7 +68,7 @@ func (srv *Server) vecDBsearch(w http.ResponseWriter, r *http.Request) {
 		// }
 		// docs = slices.CompactFunc(docs, cmpFunc)
 		keyMap := make(map[string]int)
-		data.Documents = make([]queryDoc, 0, len(docs))
+		data.Documents = make([]queryDocument, 0, len(docs))
 		for _, d := range docs {
 			c, found := keyMap[d.IDField]
 			keyMap[d.IDField] = c + 1
@@ -75,7 +77,7 @@ func (srv *Server) vecDBsearch(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 
-			qd := queryDoc{
+			qd := queryDocument{
 				QueryDocument: &d,
 				UUID:          uuid.New(),
 			}

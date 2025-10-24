@@ -59,11 +59,11 @@ func (srv *Server) handleSummary(w http.ResponseWriter, r *http.Request) {
 	summary := completion.Choices[0].Content
 	summary = clipDeepSeekThinking(model, summary)
 	resp := struct {
-		*queryDoc
+		*queryDocument
 		Summary string
 	}{
-		queryDoc: doc,
-		Summary:  summary,
+		queryDocument: doc,
+		Summary:       summary,
 	}
 	srv.render(w, r, "summary.gohtml", resp)
 }
