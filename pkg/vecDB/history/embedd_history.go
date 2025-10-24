@@ -41,11 +41,7 @@ func (eh *emeddHistory) ShouldEmbedd(d *vecdb.EmbeddDocument) bool {
 	}
 	last := time.Since(h)
 	b := last > eh.minAge
-	log := eh.slog.Info
-	if b {
-		log = eh.slog.Debug
-	}
-	log("should embedd", "should", b, "age", last.String(), "last", h.String())
+	eh.slog.Debug("should embedd", "should", b, "age", last.String(), "last", h.String())
 	return b
 }
 
