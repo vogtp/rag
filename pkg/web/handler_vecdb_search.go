@@ -13,21 +13,27 @@ import (
 func (srv *Server) vecDBsearch(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	collection := r.PathValue("collection")
+	slog := srv.slog.With("collection", collection)
 	if err := r.ParseForm(); err != nil {
-		srv.slog.Warn("Internal server error: parse http form ", "err", err)
+		slog.Warn("Internal server error: parse http form ", "err", err)
 		srv.Error(w, r, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	query := r.FormValue("query")
+	slog = slog.With("query", query)
+
+	maxResults := cfg.CntSeachResults
 	maxResStr := r.FormValue("maxResults")
-	slog := srv.slog.With("collection", collection, "query", query, "maxResults", maxResStr)
-	maxResults, err := strconv.Atoi(maxResStr)
-	if err != nil {
-		slog.Info("Cannot convert max Results to int", "err", err)
-		maxResults = cfg.CntSeachResults
+	if len(maxResStr) > 0 {
+		var err error
+		maxResults, err = strconv.Atoi(maxResStr)
+		if err != nil {
+			slog.Info("Cannot convert max Results to int", "err", err)
+			maxResults = cfg.CntSeachResults
+		}
 	}
 
-	slog = srv.slog.With("collection", collection, "query", query, "maxResults", maxResults)
+	slog = slog.With("maxResults", maxResults)
 	slog.Info("Collection search requested")
 	var data = struct {
 		*commonData
