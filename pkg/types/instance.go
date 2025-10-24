@@ -12,11 +12,12 @@ import (
 
 type Instance interface {
 	DisplayName() string
+	CollectionName() string
 
 	Model(name string) (Model, error)
 
 	Models(ctx context.Context) []Model
-	ListCollections(ctx context.Context, slog *slog.Logger, ) ([]*chroma.Collection, error)
+	ListCollections(ctx context.Context, slog *slog.Logger) ([]*chroma.Collection, error)
 
 	LLM() string
 

@@ -41,6 +41,10 @@ func (i *instanceList) DisplayName() string {
 	return i.name
 }
 
+func (i *instanceList) CollectionName() string {
+	return i.name
+}
+
 func (i *instanceList) Model(name string) (m types.Model, err error) {
 	for _, r := range i.rags {
 		m, err = r.Model(name)
