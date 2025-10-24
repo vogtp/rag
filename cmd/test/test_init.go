@@ -35,9 +35,7 @@ func excludeCollection(col *usercfg.Collection) bool {
 			return false
 		}
 	}
-
 	// 	fmt.Printf("Excluded collection %q it is not in %v\n", col.CollectionName(), includedCollections)
-
 	return true
 }
 
@@ -47,6 +45,7 @@ var tstCmd = &cobra.Command{
 	Aliases: []string{"t", "tst"},
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		includedCollections = args
+		fmt.Printf("Start %s\n", time.Now().Format(time.DateTime))
 		// if len(includedCollections) > 0 {
 		// 	fmt.Printf("Working only on collections %v\n", includedCollections)
 		// }
@@ -114,6 +113,7 @@ func createVecDBCollecions(ctx context.Context, slog *slog.Logger, tt *testData)
 			continue
 		}
 		start := time.Now()
+		fmt.Printf("Start %s\n", start.Format(time.DateTime))
 		fmt.Printf("\nEmbedding %s (%s)\n", col.CollectionName(), col.Source.Parts)
 		if err := col.Embbed(ctx, slog, noopfilter.New()); err != nil {
 			return err
