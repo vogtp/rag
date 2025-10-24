@@ -11,10 +11,12 @@ import (
 	"github.com/sashabaranov/go-openai"
 	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/usercfg"
+	"github.com/vogtp/rag/pkg/web"
 )
 
 func main() {
 	generate("./intrasearch/src/app/services/user.structs.ts", usercfg.User{})
+	generate("./intrasearch/src/app/services/api-response.structs.ts", web.CollectionSearchResponse{})
 	generate("./intrasearch/src/app/components/chat/interfaces/openai.structs.ts", openai.ChatCompletionResponse{}, openai.ChatCompletionRequest{})
 	version := fmt.Sprintf("%v.%v.%v (%v)", cfg.VersionMajor, cfg.VersionMinor, cfg.VersionPatch, time.Now().Format("2006-01-02T15:04:05"))
 
@@ -24,7 +26,7 @@ func generate(fileName string, types ...any) {
 	s2ts := struct2ts.New(&struct2ts.Options{
 		// NoConstructor:    true,
 		// NoToObject:       true,
-		// NoHelpers:        true,
+		NoHelpers:        true,
 	})
 	f, err := os.Create(fileName)
 	if err != nil {
@@ -40,7 +42,6 @@ func generate(fileName string, types ...any) {
 	if err := s2ts.RenderTo(f); err != nil {
 		fmt.Printf("Cannot render ts structs: %v", err)
 	}
-	//s2ts.RenderTo(os.Stdout)
 }
 
 func injectStrings(fileName string, strs ...string) {
