@@ -22,6 +22,14 @@ type EmbeddDocument struct {
 	MetaData map[string]any
 }
 
+func (e EmbeddDocument) LogValue() slog.Value {
+	return slog.GroupValue(
+		slog.Group("RecordID", slog.String(e.IDMetaKey, e.IDMetaValue)),
+		slog.String("title", e.Title),
+		slog.String("URL", e.URL),
+	)
+}
+
 func (e EmbeddDocument) Split(slog *slog.Logger) []string {
 	splitter := textsplitter.NewMarkdownTextSplitter(textsplitter.WithChunkSize(1 * 1024))
 	s, err := splitter.SplitText(e.Document)

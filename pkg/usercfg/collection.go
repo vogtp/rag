@@ -44,6 +44,14 @@ type Collection struct {
 var _ (types.Instance) = (*Collection)(nil)
 var _ (cfg.RagConfig) = (*Collection)(nil)
 
+func (c Collection) LogValue() slog.Value {
+	return slog.GroupValue(
+		slog.String("DisplayName", c.Displayname),
+		slog.String("CollecitonName", c.Collectionname),
+		slog.Int("UserID", int(c.UserID)),
+	)
+}
+
 func (c *Collection) DisplayName() string {
 	return c.Displayname
 }
@@ -97,7 +105,7 @@ func (c *Collection) getVecDb(ctx context.Context, slog *slog.Logger) (*vecdb.Ve
 	if c.vecDB != nil {
 		return c.vecDB, nil
 	}
-	v, err := vecdb.New(ctx, slog.With("collection", c.Collectionname), c.ModelEmbedding())
+	v, err := vecdb.New(ctx, slog.With("collection", c), c.ModelEmbedding())
 	if err != nil {
 		return nil, fmt.Errorf("cannot connect to chroma: %w", err)
 	}
@@ -106,6 +114,7 @@ func (c *Collection) getVecDb(ctx context.Context, slog *slog.Logger) (*vecdb.Ve
 }
 
 func (c *Collection) SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error) {
+	slog = slog.With("collection", c)
 	vecDB, err := c.getVecDb(ctx, slog)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create vecDB for %q: %w", c.Collectionname, err)
@@ -122,7 +131,7 @@ func (c *Collection) Authorise(w http.ResponseWriter, r *http.Request) bool {
 }
 
 func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger, filters ...vecdb.Filter) error {
-	slog = slog.With("collectionname", c.Collectionname)
+	slog = slog.With("collection", c)
 	start := time.Now()
 	docsChan, err := c.GetDocuments(ctx, slog)
 	if len(filters) == 0 {
@@ -148,7 +157,7 @@ func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger, filters ...v
 }
 
 func (c *Collection) GetDocuments(ctx context.Context, slog *slog.Logger) (chan *vecdb.EmbeddDocument, error) {
-	slog = slog.With("collection", c.Collectionname)
+	slog = slog.With("collection", c)
 	confl, err := confluence.New(ctx, slog, *c.Confluence())
 	if err != nil {
 		return nil, fmt.Errorf("create confluence: %w", err)
@@ -157,6 +166,7 @@ func (c *Collection) GetDocuments(ctx context.Context, slog *slog.Logger) (chan 
 }
 
 func (c *Collection) ListCollections(ctx context.Context, slog *slog.Logger) ([]*chroma.Collection, error) {
+	slog = slog.With("collection", c)
 	vecDB, err := c.getVecDb(ctx, slog)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create vecDB for %q: %w", c.Collectionname, err)

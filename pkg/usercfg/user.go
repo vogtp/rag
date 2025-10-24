@@ -33,6 +33,13 @@ type User struct {
 var _ (types.Instance) = (*User)(nil)
 var _ (cfg.RagConfig) = (*User)(nil)
 
+func (u User) LogValue() slog.Value {
+	return slog.GroupValue(
+		slog.String("Name", u.Name),
+		slog.Int("UserID", int(u.ID)),
+	)
+}
+
 // Collection returns a collection by CollectionName or DisplayName
 func (u *User) Collection(n string) *Collection {
 	for _, c := range u.Collections {
@@ -111,11 +118,11 @@ func (u *User) Confluence() *cfg.ConfluenceCfg {
 }
 
 func (u *User) Embbed(ctx context.Context, slog *slog.Logger, filters ...vecdb.Filter) error {
-	slog = slog.With("username", u.Name)
+	slog = slog.With("user", u)
 	for _, c := range u.Collections {
 		go func(c *Collection) {
 			if err := c.Embbed(ctx, slog, filters...); err != nil {
-				slog.Warn("Cannot embed user collection", "err", err, "collection", c.DisplayName())
+				slog.Warn("Cannot embed user collection", "err", err, "collection", c)
 			}
 		}(&c)
 	}
@@ -123,7 +130,7 @@ func (u *User) Embbed(ctx context.Context, slog *slog.Logger, filters ...vecdb.F
 }
 
 func (u *User) GetDocuments(ctx context.Context, slog *slog.Logger) (chan *vecdb.EmbeddDocument, error) {
-	slog = slog.With("username", u.Name)
+	slog = slog.With("user", u)
 	c := make(chan *vecdb.EmbeddDocument, 10)
 	go func() {
 		defer close(c)
@@ -132,7 +139,7 @@ func (u *User) GetDocuments(ctx context.Context, slog *slog.Logger) (chan *vecdb
 			wg.Go(func() {
 				cc, err := col.GetDocuments(ctx, slog)
 				if err != nil {
-					slog.Warn("Cannot get documents of user collection", "err", err, "collection", col.DisplayName())
+					slog.Warn("Cannot get documents of user collection", "err", err, "collection", col)
 					return
 				}
 				for doc := range cc {
@@ -146,12 +153,12 @@ func (u *User) GetDocuments(ctx context.Context, slog *slog.Logger) (chan *vecdb
 }
 
 func (u *User) ListCollections(ctx context.Context, slog *slog.Logger) ([]*chroma.Collection, error) {
-	slog = slog.With("username", u.Name)
+	slog = slog.With("user", u)
 	cols := make([]*chroma.Collection, 0)
 	for _, c := range u.Collections {
 		c, err := c.ListCollections(ctx, slog)
 		if err != nil {
-			slog.Warn("Cannot list collections of user", "err", err)
+			slog.Warn("Cannot list collections of user", "err", err, "collection", c)
 		}
 		cols = append(cols, c...)
 	}
@@ -162,7 +169,7 @@ func (u *User) ListCollections(ctx context.Context, slog *slog.Logger) ([]*chrom
 }
 
 func (u *User) SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error) {
-	slog = slog.With("username", u.Name)
+	slog = slog.With("user", u)
 	docs := make([]vecdb.QueryDocument, 0)
 	for _, c := range u.Collections {
 		c, err := c.SearchVecDB(ctx, slog, collection, query, maxResults)
