@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"os"
 	"slices"
 	"strings"
 	"time"
@@ -86,11 +87,17 @@ func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
 						}
 					}
 					if tstErr == testFailedKeywordsNotFoundError {
-						for _, d := range docs {
+						for i, d := range docs {
 							if strings.HasSuffix(d.URL, r.URL) {
-								fmt.Fprintf(&resOut, "Content of %s:\n%s\n", r.Title, d.EmbedContent)
-								fmt.Fprintf(&resOut, "Document of %s:\n%s\n", r.Title, d.Document)
-
+								filename := fmt.Sprintf("ignore_doc_content_%v.txt", i)
+								f, err := os.Create(filename)
+								if err != nil {
+									fmt.Printf("Cannot create file %q: %v", filename, err)
+									continue
+								}
+								fmt.Fprintf(f, "Document of %s:\nURL: %s\nKeywords: %+v\n%s\n", r.Title, r.URL,r.Keywords, d.Document)
+								f.Close()
+								fmt.Fprintf(&resOut, "Saved %s with content of %s\n", filename, d.Title)
 							}
 						}
 					}
@@ -148,7 +155,7 @@ func ensureURL(r testDataResult, docs []vecdb.QueryDocument) error {
 
 func ensureKeyword(keyword string, docs []vecdb.QueryDocument) error {
 	for _, d := range docs {
-		if strings.Contains(d.EmbedContent, keyword) {
+		if strings.Contains(d.Document, keyword) {
 			return nil
 		}
 	}
