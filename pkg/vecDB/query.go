@@ -20,6 +20,7 @@ type QueryDocument struct {
 	URL          string
 	Title        string
 	IDField      string
+	Distance     float32
 }
 
 func (qd QueryDocument) LogValue() slog.Value {
@@ -49,6 +50,7 @@ func (v *VecDB) Query(ctx context.Context, collection string, queryTexts []strin
 		for i := range qr.Documents[idx] {
 			doc := QueryDocument{
 				EmbedContent: qr.Documents[idx][i],
+				Distance:     qr.Distances[idx][i],
 			}
 			metaData := qr.Metadatas[idx][i]
 			if m, ok := metaData[MetaUpdated].(string); ok {
