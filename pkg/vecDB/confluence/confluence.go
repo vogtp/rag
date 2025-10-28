@@ -36,7 +36,7 @@ func New(ctx context.Context, slog *slog.Logger, config Config) (types.DocRetriv
 	conf := confluence{
 		slog:          slog.With("confluence_url", baseURL),
 		baseURL:       baseURL,
-		out:           make(chan *vecdb.EmbeddDocument, 10),
+		out:           make(chan *vecdb.EmbeddDocument, 3),
 		accessKey:     config.Key,
 		queryLimit:    100,
 		spaces:        config.Spaces,
