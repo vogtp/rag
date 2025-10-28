@@ -24,6 +24,6 @@ func Stacktrace() slog.Attr {
 	}
 	t:=strings.ReplaceAll(traceLines[len(traceLines)-1], "\t","  ")
 	lines:=strings.Split( t, "\n")
-	return slog.Any(logkey, lines[3:])
+	return slog.Any(logkey, lines[3:len(lines)-1])
 
 }
