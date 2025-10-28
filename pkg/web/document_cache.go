@@ -47,12 +47,12 @@ func (dc *docCache) get(id uuid.UUID) (*queryDocument, error) {
 }
 
 func (dc *docCache) cleanup() {
+	dc.mu.Lock()
+	defer dc.mu.Unlock()
 	for uuid, d := range dc.cache {
 		if time.Since(d.access) < 10*time.Minute {
 			continue
 		}
-		dc.mu.Lock()
 		delete(dc.cache, uuid)
-		dc.mu.Unlock()
 	}
 }
