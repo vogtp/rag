@@ -24,9 +24,9 @@ func main() {
 }
 func generate(fileName string, types ...any) {
 	s2ts := struct2ts.New(&struct2ts.Options{
-		// NoConstructor:    true,
-		// NoToObject:       true,
-		NoHelpers:        true,
+		NoConstructor: true,
+		NoToObject:    true,
+		NoHelpers:     true,
 	})
 	f, err := os.Create(fileName)
 	if err != nil {
