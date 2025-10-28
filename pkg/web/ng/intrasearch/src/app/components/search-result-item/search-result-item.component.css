@@ -37,3 +37,7 @@ pre {
 mat-card {
     margin-bottom: 7px;
 }
+
+small {
+    padding-right: 7px;
+}

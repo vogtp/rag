@@ -10,7 +10,8 @@
         <p class="max-line-3">{{ doc?.Summary }}</p>
     </mat-card-content>
     <mat-card-footer class="card-footer">
-        <p><small>Modified: {{doc?.Modified | slice:0:16}}</small></p>
+        <p><small>Modified: {{doc?.Modified | slice:0:16}}</small>
+        <small>Distance: {{doc?.Distance}}</small></p>
         <small style="display: flex;">
             <mat-card-actions>
                 <button mat-button (click)="toggleShowPage()" type="checkbox">{{showPageButton}}</button>
@@ -24,7 +25,7 @@
                     {{ doc?.Document }}
             </pre>
             <pre *ngIf="showContent" class="content mat-mdc-card" id="divshow">
-                                {{ doc?.Content }}
+                                {{ doc?.EmbedContent }}
             </pre>
         </small>
     </mat-card-footer>

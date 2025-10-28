@@ -33,12 +33,13 @@ export interface CollectionSearchResponse {
 
 export interface Document {
   UUID: string;
-  Content: string;
+  EmbedContent: string;
   Document: string;
   Summary: string;
   Modified: string;
   URL: string;
   Title: string;
+  Distance: string;
 }
 
 /*
