@@ -44,7 +44,7 @@ test: test-go test-integration
 
 .PHONY: test-integration
 test-integration:
-	$(GO_CMD) run . test all
+	$(GO_CMD) run . test all #--pprof.file profile_ragctl_test_all
 
 .PHONY: test-go
 test-go:
