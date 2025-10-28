@@ -116,7 +116,7 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 		}
 		rs, err := types.NewRecordSet(
 			types.WithEmbeddingFunction(embedFunc),
-			// types.WithIDGenerator(types.NewULIDGenerator()),
+			//types.WithIDGenerator(types.NewULIDGenerator()),
 		)
 		if err != nil {
 			slog.Warn("cannot create record set", "err", err)
@@ -149,14 +149,14 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 				continue
 			}
 			slog.Warn("document not validated", "err", err)
-			continue
+			//continue
 			//return fmt.Errorf("error validating record set: %s \n", err)
 		}
-		for _, s := range d.Split(slog) {
+		for i, s := range d.Split(slog) {
 
 			recOpts := []types.Option{
 				types.WithDocument(s),
-				types.WithID(d.IDMetaValue),
+				types.WithID(fmt.Sprintf("%s_idx:%d", d.IDMetaValue, i)),
 				types.WithMetadata(MetaOrigDoc, d.Document),
 				types.WithMetadata(d.IDMetaKey, d.IDMetaValue),
 				types.WithMetadata(MetaIDKey, d.IDMetaKey),
