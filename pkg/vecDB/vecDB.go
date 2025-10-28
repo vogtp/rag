@@ -21,7 +21,6 @@ type VecDB struct {
 	embedFunc       types.EmbeddingFunction
 	ollamaAddr      string
 	embeddingsModel string
-	// config          *cfg.RagConfig
 }
 
 // New creates a vectorDB
@@ -60,7 +59,11 @@ func (v *VecDB) CreateCollection(ctx context.Context, name string, metadata map[
 	if err != nil {
 		return nil, err
 	}
-	return v.chroma.CreateCollection(ctx, name, nil, true, embedFunc, types.L2)
+
+	// types.IP     -> doc 0 dist: 0.3435346
+	// types.COSINE -> doc 0 dist: 0.34353453
+	// types.L2     -> doc 0 dist: 0.68706906
+	return v.chroma.CreateCollection(ctx, name, nil, true, embedFunc, types.COSINE)
 }
 
 // GetCollection returns a collection
