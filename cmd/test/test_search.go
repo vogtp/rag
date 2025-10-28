@@ -95,14 +95,14 @@ func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
 									fmt.Printf("Cannot create file %q: %v", filename, err)
 									continue
 								}
-								fmt.Fprintf(f, "Document of %s:\nURL: %s\nKeywords: %+v\n%s\n", r.Title, r.URL,r.Keywords, d.Document)
+								fmt.Fprintf(f, "Document of %s:\nURL: %s\nKeywords: %+v\n%s\n", r.Title, r.URL, r.Keywords, d.Document)
 								f.Close()
 								fmt.Fprintf(&resOut, "Saved %s with content of %s\n", filename, d.Title)
 							}
 						}
 					}
 				}
-				if tstErr == testFailedDocuemntNotFoundError {
+				if tstErr == testFailedDocuemntNotFoundError || true {
 					fmt.Fprintf(&resOut, "%sFound docs:\n", intent)
 					intent := fmt.Sprintf("  %s", intent)
 					for _, d := range docs {
@@ -136,8 +136,9 @@ func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
 }
 
 func ensureTitle(r testDataResult, docs []vecdb.QueryDocument) error {
-	for _, d := range docs {
+	for i, d := range docs {
 		if d.Title == r.Title {
+			fmt.Printf("          Found title in doc %v dist: %v\n", i, d.Distance)
 			return nil
 		}
 	}
@@ -145,8 +146,9 @@ func ensureTitle(r testDataResult, docs []vecdb.QueryDocument) error {
 }
 
 func ensureURL(r testDataResult, docs []vecdb.QueryDocument) error {
-	for _, d := range docs {
+	for i, d := range docs {
 		if strings.HasSuffix(d.URL, r.URL) {
+			fmt.Printf("          Found URL in doc %v dist: %v\n", i, d.Distance)
 			return nil
 		}
 	}
