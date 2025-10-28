@@ -8,7 +8,6 @@ import (
 	"os/signal"
 	"runtime/pprof"
 	"sync"
-	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -53,29 +52,31 @@ func prof(ctx context.Context) {
 		log.Fatal(err)
 	}
 	defer pprof.StopCPUProfile()
-	last := time.Now()
-	intervall := time.Minute
-	ticker := time.NewTicker(intervall)
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case <-ticker.C:
-			now := time.Now()
-			inter := time.Since(last)
-			err = pprof.WriteHeapProfile(memFile)
-			pprof.StopCPUProfile()
-			// err = pprof.StartCPUProfile(f)
-			delta := inter - intervall
-			fmt.Printf("%s - %s PProf Update: %s - %s = %s err=%v\n", now.Format(time.TimeOnly), time.Now().Format(time.TimeOnly), inter.Truncate(time.Millisecond), intervall, delta.Truncate(time.Millisecond), err)
-			if err := cpuFile.Sync(); err != nil {
-				fmt.Printf("CPU profile sync error: %s\n", err)
-			}
-			if err := memFile.Sync(); err != nil {
-				fmt.Printf("Memory profile sync error: %s\n", err)
-			}
-			last = now
-			panic("profiles")
-		}
-	}
+	defer pprof.WriteHeapProfile(memFile)
+
+	<-ctx.Done()
+	// last := time.Now()
+	// intervall := time.Minute
+	// ticker := time.NewTicker(intervall)
+	// for {
+	// 	select {
+	// 	case <-ctx.Done():
+	// 		return
+	// 	case <-ticker.C:
+	// 		now := time.Now()
+	// 		inter := time.Since(last)
+	// 		err = pprof.WriteHeapProfile(memFile)
+	// 		pprof.StopCPUProfile()
+	// 		// err = pprof.StartCPUProfile(f)
+	// 		delta := inter - intervall
+	// 		fmt.Printf("%s - %s PProf Update: %s - %s = %s err=%v\n", now.Format(time.TimeOnly), time.Now().Format(time.TimeOnly), inter.Truncate(time.Millisecond), intervall, delta.Truncate(time.Millisecond), err)
+	// 		if err := cpuFile.Sync(); err != nil {
+	// 			fmt.Printf("CPU profile sync error: %s\n", err)
+	// 		}
+	// 		if err := memFile.Sync(); err != nil {
+	// 			fmt.Printf("Memory profile sync error: %s\n", err)
+	// 		}
+	// 		last = now
+	// 	}
+	// }
 }
