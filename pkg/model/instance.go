@@ -115,7 +115,8 @@ func (m instanceModel) GenerateContent(ctx context.Context, slog *slog.Logger, m
 	knowledge.WriteString("Anwser the next question based the the following knowledge:\n")
 	for _, d := range res {
 		slog.Info("Adding knowledge", "knowledge", d)
-		knowledge.WriteString(fmt.Sprintf("<knowledge href=%q >%s</knowledge>\n", d.URL, d.Document))
+		//knowledge.WriteString(fmt.Sprintf("<knowledge href=%q >%s</knowledge>\n", d.URL, d.Document))
+		knowledge.WriteString(fmt.Sprintf("<knowledge href=%q >%s</knowledge>\n", d.URL, d.EmbedContent))
 	}
 	knowledge.WriteString("Always reference the used knowledge by the name and link to the href tag\n")
 
