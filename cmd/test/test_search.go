@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/vogtp/rag/pkg/cfg"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 )
 
@@ -41,7 +42,7 @@ func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
 		h.doDot = false
 		log = slog.New(h)
 	}
-	maxResult := 15
+	maxResult := cfg.CntSeachResults
 	var retErr error
 	var resultSummary strings.Builder
 	for _, col := range tt.Collections() {
@@ -102,7 +103,7 @@ func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
 						}
 					}
 				}
-				if tstErr == testFailedDocuemntNotFoundError || true {
+				if tstErr == testFailedDocuemntNotFoundError {
 					fmt.Fprintf(&resOut, "%sFound docs:\n", intent)
 					intent := fmt.Sprintf("  %s", intent)
 					for _, d := range docs {
