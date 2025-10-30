@@ -1,8 +1,7 @@
 log:
   level: info
-  source:
-    true
-    #  json: true
+  source: true
+  json: true
 web:
   listen: ":4444"
 oidc:
@@ -15,7 +14,7 @@ ollama:
     - "http://ollama.host.example.com:11434"
 model:
 #  embedding: "bge-m3"
-#  default: "deepseek-r1:32b"
+#  default: "mistral"
 vecdb:
   update_intervall: 24h
 chroma:
@@ -25,9 +24,5 @@ chroma:
     port: "8000"
     image: "chromadb/chroma:latest"
 confluence:
-  key: "CONFLUENCE_API_KEY"
   baseURL: "https://confluence.example.net/"
   #maxAge: 7*356*24h
-  spaces:
-    - "SPACE_KEY"
-    - "AN_OTHER_SPACE"

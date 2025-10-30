@@ -47,15 +47,11 @@ const (
 	// ChromaContainerImage chroma container to pull
 	ChromaContainerImage = "chroma.container.image"
 
-	// ConfluenceKey is the confluence access token
-	ConfluenceKey = "confluence.key"
 	// ConfluenceBaseURL is the base URL of the confluence instance
 	ConfluenceBaseURL = "confluence.baseURL"
-	// ConfluenceSpaces defines the spaces to scrap
-	ConfluenceSpaces = "confluence.spaces"
 	// ConfluenceMaxAge is the maximum age a confluence page can have to be included in
 	ConfluenceMaxAge = "confluence.maxAge"
-	//VecDBUpdateIntervall is the intervall the vectorDB is updated
+	// VecDBUpdateIntervall is the intervall the vectorDB is updated
 	VecDBUpdateIntervall = "vecdb.update_intervall"
 	//VecDBUpdateDelay is the delay before the vectorDB update is started
 	VecDBUpdateDelay = "vecdb.update_delay"
@@ -95,12 +91,8 @@ func init() {
 
 	pflag.String(ModelLLM, "gpt-oss", "The default LLM model")
 	pflag.String(ModelEmbedding, "bge-m3", "The default model used for embeddings")
-	// pflag.String(ModelEmbedding, "mxbai-embed-large", "The default model used for embeddings")
-	//pflag.String(ModelEmbedding, "nomic-embed-text", "The default model used for embeddings")
 
-	pflag.String(ConfluenceKey, "", "The confluence access token")
 	pflag.String(ConfluenceBaseURL, "", "The confluence access token")
-	pflag.StringSlice(ConfluenceSpaces, nil, "The confluence spaces to scrap")
 	pflag.Duration(ConfluenceMaxAge, DefaultConfluenceMaxAge, "The maximum age a confluence page can have to be included in")
 	pflag.Duration(VecDBUpdateIntervall, DefaultVecDBUpdateIntervall, "the intervall the vectorDB is updated")
 	pflag.Duration(VecDBUpdateDelay, time.Minute, " the delay before the vectorDB update is started")
