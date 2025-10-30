@@ -10,7 +10,6 @@ import (
 
 func addDB() {
 	rootCmd.AddCommand(dbCmd)
-	dbCmd.AddCommand(dbGormCmd)
 	dbCmd.AddCommand(dbUserCmd)
 	dbCmd.AddCommand(dbCleanupCmd)
 }
@@ -55,19 +54,6 @@ var dbUserCmd = &cobra.Command{
 		fmt.Printf("Count:\n Users: %v\n Collections: %v\n", len(users), colCnt)
 
 		return nil
-	},
-}
-
-var dbGormCmd = &cobra.Command{
-	Use:          "migrate",
-	Short:        "migrate to gorm",
-	Aliases:      []string{"gorm"},
-	Long:         ``,
-	SilenceUsage: true,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		ctx := cmd.Context()
-
-		return usercfg.Migrate2Gorm(ctx, logger.New())
 	},
 }
 

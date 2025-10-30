@@ -1,6 +1,0 @@
-type Query {
-  """
-  Query the Incidents (or better its summaries)
-  """
-  Users(Name: String): [ Space! ]
-}

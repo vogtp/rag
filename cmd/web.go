@@ -46,9 +46,6 @@ func startWeb(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("start http server: %w", err)
 	}
-	if err = usercfg.Migrate2Gorm(ctx, slog); err != nil { //FIXME 20251014 remove when migrated
-		return err
-	}
 	return api.Run(ctx)
 }
 
