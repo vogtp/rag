@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"strings"
 	"time"
 
 	"github.com/amikos-tech/chroma-go/types"
@@ -76,10 +75,6 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 
 	for d := range in {
 		slog = slogBase.With("doc", d)
-		if strings.HasPrefix(d.Title, "Arbeitszeit, Ferien & unbezahlter Urlaub") {
-			//FIXME only for debug
-			slog.Debug("DEBUG found Arbeitszeit, Ferien & unbezahlter Urlaub")
-		}
 		for _, f := range filters {
 			if !f.ShouldEmbedd(d) {
 				continue
