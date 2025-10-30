@@ -130,7 +130,7 @@ func (m instanceModel) GenerateContent(ctx context.Context, slog *slog.Logger, m
 
 	messages = append(messages, last)
 
-	llm, err := GetOllamaClient(ctx, slog, m.backend.LLM())
+	llm, err := GetBackendModel(ctx, slog, m.backend.LLM())
 	if err != nil {
 		return "", fmt.Errorf("cannot get ollama: %w", err)
 	}

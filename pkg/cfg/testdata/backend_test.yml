@@ -1,14 +1,15 @@
 log:
   level: info
-  source: true
-  json: true
 web:
   listen: ":4444"
+http:
+  user_agent: "rag-test"
 oidc:
-  client_id: "OIDC_CLIENT_ID"
-  client_secret: "S3cret"
-  issuer: "https://example.net/auth/endpoint"
+  client_id: "TestCliendID"
+  client_secret: "Secret"
+  issuer: "https://idp.example.com:443/auth/"
   redirect_uri: "http://localhost:4444/auth/callback"
+
 backends:
   - name: ollama
     api:
@@ -19,11 +20,13 @@ backends:
         type: embedding
       - name: qwen3
         type: llm
-      - name: llama3.2
-        type: llm
       - name: mistral
         type: llm
+      - name: mxbai-embed-large
+        type: embedding
       - name: nomic-embed-text
+        type: embedding
+      - name: embeddinggemma
         type: embedding
   - name: LiteLLM
     api:
@@ -35,20 +38,12 @@ backends:
         type: llm
       - name: GLM-4.5V-FP8
         type: image2txt
-ollama:
-  hosts:
-    - "http://ollama.host.example.com:11434"
-model:
-#  embedding: "bge-m3"
-#  default: "mistral"
-vecdb:
-  update_intervall: 24h
+
 chroma:
-  url: "http://localhost:8000"
   container:
     name: "chroma"
     port: "8000"
-    image: "chromadb/chroma:latest"
-confluence:
-  baseURL: "https://confluence.example.net/"
-  #maxAge: 7*356*24h
+vecdb:
+  update_intervall: 24h
+  update_delay: 24ms
+  collection_name: "rag"

@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/vogtp/langchaingo/llms"
+	"github.com/vogtp/rag/pkg/model"
 )
 
 const (
@@ -39,11 +40,11 @@ func (srv *Server) handleSummary(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	model := srv.rag(r).LLM()
-	llm, err := getOllamaClient(ctx, slog, model)
+	modelName := srv.rag(r).LLM()
+	llm, err := model.GetBackendModel(ctx, slog, modelName)
 	if err != nil {
-		slog.Warn("Cannot connect to ollama", "err", err)
-		srv.Error(w, r, fmt.Sprintf("Cannot connect to ollama: %v", err), http.StatusInternalServerError)
+		slog.Warn("Cannot connect to backend", "err", err)
+		srv.Error(w, r, fmt.Sprintf("Cannot connect to backend: %v", err), http.StatusInternalServerError)
 		return
 	}
 	content := []llms.MessageContent{
@@ -52,12 +53,12 @@ func (srv *Server) handleSummary(w http.ResponseWriter, r *http.Request) {
 	}
 	completion, err := llm.GenerateContent(ctx, content, llms.WithTemperature(0.001))
 	if err != nil {
-		slog.Warn("Cannot gernerate ollama content", "err", err)
+		slog.Warn("Cannot gernerate content", "err", err)
 		srv.Error(w, r, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	summary := completion.Choices[0].Content
-	summary = clipDeepSeekThinking(model, summary)
+	summary = clipDeepSeekThinking(modelName, summary)
 	resp := struct {
 		*queryDocument
 		Summary string
