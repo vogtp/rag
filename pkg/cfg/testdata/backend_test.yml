@@ -30,7 +30,7 @@ backends:
         type: embedding
   - name: LiteLLM
     api:
-      URL: "https://llm.example.net/litellm"
+      URL: "https://llm.example.net/litellm/"
       key: "myLiteLLMKey"
       type: openai
     models:

@@ -58,7 +58,10 @@ func GetBackends() (*Backends, error) {
 	}
 	var err error
 	for i, be := range beLst {
-		beLst[i].API.APIType = be.API.APIType.FromString(be.API.Type)
+		api := be.API
+		api.APIType = api.APIType.FromString(be.API.Type)
+		api.URL = strings.TrimRight(api.URL, "/")
+		beLst[i].API = api
 		if be.API.APIType == BackendApiTypeUnknown {
 			err = fmt.Errorf("unknown backend api type %q: %w", be.API.Type, err)
 		}
