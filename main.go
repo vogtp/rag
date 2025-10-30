@@ -52,7 +52,7 @@ func prof(ctx context.Context) {
 		log.Fatal(err)
 	}
 	defer pprof.StopCPUProfile()
-	defer pprof.WriteHeapProfile(memFile)
+	defer pprof.WriteHeapProfile(memFile) //nolint
 
 	<-ctx.Done()
 	// last := time.Now()
