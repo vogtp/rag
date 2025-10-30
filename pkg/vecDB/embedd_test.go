@@ -35,7 +35,6 @@ func Test_parseTime(t *testing.T) {
 			if tt.wantErr {
 				t.Fatal("parseTime() succeeded unexpectedly")
 			}
-			// TODO: update the condition below to compare got with tt.want.
 			if got.Year() != tt.y || int(got.Month()) != tt.m || got.Day() != tt.d || got.Hour() != tt.h || got.Minute() != tt.min || got.Second() != tt.s {
 				t.Errorf("parseTime() = %s", got)
 			}

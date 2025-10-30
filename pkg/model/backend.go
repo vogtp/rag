@@ -38,7 +38,7 @@ func GetBackendModel(ctx context.Context, slog *slog.Logger, llmName string) (Ge
 	}
 }
 
-func getOllamaClient(ctx context.Context, slog *slog.Logger, bm *cfg.BackendModel) (GenericModel, error) {
+func getOllamaClient(_ context.Context, slog *slog.Logger, bm *cfg.BackendModel) (GenericModel, error) {
 	slog.Info("connecting to ollama", "LLM", bm.Name, "url", bm.API.URL)
 	opts := []ollama.Option{
 		ollama.WithModel(bm.Name),
@@ -50,7 +50,7 @@ func getOllamaClient(ctx context.Context, slog *slog.Logger, bm *cfg.BackendMode
 	return ollama.New(opts...)
 }
 
-func getOpenAIClient(ctx context.Context, slog *slog.Logger, bm *cfg.BackendModel) (GenericModel, error) {
+func getOpenAIClient(_ context.Context, slog *slog.Logger, bm *cfg.BackendModel) (GenericModel, error) {
 	slog.Info("connecting to an openAI compatible API", "LLM", bm.Name, "url", bm.API.URL)
 	opts := []llmopenai.Option{
 		llmopenai.WithModel(bm.Name),

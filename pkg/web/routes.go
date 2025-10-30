@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
-	"net/http/pprof"
 
 	"github.com/vogtp/go-angular"
 )
@@ -26,11 +25,8 @@ func (srv *Server) routes() error {
 	srv.oidcMux.HandleFunc("/summary/{uuid}", srv.handleSummary)
 	srv.oidcMux.HandleFunc("/user/", srv.handleUser)
 
-	// srv.oidcMux.Handle("/graphql/", usercfg.HttpHandler())
-	// srv.oidcMux.Handle("/graphiql/", playground.Handler("RAG", "/graphql/"))
-
 	//srv.routesPprof()
-
+	
 	return nil
 }
 
@@ -44,11 +40,10 @@ func (srv *Server) routesOpenAiAPI(apiBasePath string) {
 
 }
 
-// nolint
-func (srv *Server) routesPprof() {
-	srv.mux.HandleFunc("GET /debug/pprof/", pprof.Index)
-	srv.mux.HandleFunc("GET /debug/pprof/cmdline", pprof.Cmdline)
-	srv.mux.HandleFunc("GET /debug/pprof/profile", pprof.Profile)
-	srv.mux.HandleFunc("GET /debug/pprof/symbol", pprof.Symbol)
-	srv.mux.HandleFunc("GET /debug/pprof/trace", pprof.Trace)
-}
+// func (srv *Server) routesPprof() {
+// 	srv.mux.HandleFunc("GET /debug/pprof/", pprof.Index)
+// 	srv.mux.HandleFunc("GET /debug/pprof/cmdline", pprof.Cmdline)
+// 	srv.mux.HandleFunc("GET /debug/pprof/profile", pprof.Profile)
+// 	srv.mux.HandleFunc("GET /debug/pprof/symbol", pprof.Symbol)
+// 	srv.mux.HandleFunc("GET /debug/pprof/trace", pprof.Trace)
+// }
