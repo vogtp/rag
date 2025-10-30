@@ -119,8 +119,8 @@ func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
 						if len(title) > 40 {
 							title = title[:40]
 						}
-						title = d.Title
-						url = d.URL
+						// title = d.Title
+						// url = d.URL
 						fmt.Fprintf(&resOut, "%s %-40s %s\n", intent, title, url)
 					}
 				}
