@@ -62,7 +62,7 @@ func (c *Container) EnsureStarted(ctx context.Context) (func(ctx context.Context
 		return c.stopContainer(ctx, id)
 	}
 	if running {
-		c.slog.Info("Container already running")
+		c.slog.Debug("Container already running")
 		return stopContainer, nil
 	}
 	c.slog.Info("Starting container")

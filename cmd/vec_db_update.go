@@ -30,7 +30,7 @@ var vecDbUpdate = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		slog.Info("Found collections to update, doing one at a time", "count", len(cols))
+		// slog.Info("Found collections to update, doing one at a time", "count", len(cols))
 		for _, c := range cols {
 			slog.Info("Embedding collection", "collection", c, "next update", c.NextDBUpdate.Format(time.DateTime))
 			// returning here is correct since we only want to update one collection at a time
