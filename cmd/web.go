@@ -19,7 +19,7 @@ func addWeb() {
 var webCmd = &cobra.Command{
 	Use:     "web",
 	Short:   "Manage RAG web server",
-	Aliases: []string{"w", "rag", "r"},
+	Aliases: []string{"w", "rag", "r", "http"},
 }
 
 var webStartCmd = &cobra.Command{
@@ -40,7 +40,7 @@ func startWeb(ctx context.Context) error {
 	}
 	userCfg, err := usercfg.Create(ctx, slog, usercfg.DBFileName)
 	if err != nil {
-		return  err
+		return err
 	}
 	api, err := web.New(ctx, slog, userCfg)
 	if err != nil {
