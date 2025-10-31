@@ -36,6 +36,7 @@ type Collection struct {
 	Genmodel          string        `gorm:"column:gen_model"`
 	Embedmodel        string        `gorm:"column:embed_model"`
 	DBUpdateIntervall time.Duration `gorm:"column:update_intervall"`
+	NextDBUpdate      time.Time     `gorm:"column:update_next"`
 
 	Source SourceSystem `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 
@@ -161,6 +162,9 @@ func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger, filters ...v
 		log = slog.Error
 	}
 	log("Finished embedding", "doc.count", cnt, "duration", time.Since(start).String())
+	if _, err := gorm.G[Collection](dbInstance.db).Where("id = ?", c.ID).Update(ctx, "update_next", time.Now().Add(c.UpdateIntervall())); err != nil {
+		slog.Error("Cannot set next update on collecion", "err", err)
+	}
 	return nil
 }
 

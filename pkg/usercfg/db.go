@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"time"
 
 	slogGorm "github.com/orandin/slog-gorm"
 	"github.com/vogtp/rag/pkg/logger"
@@ -45,7 +46,8 @@ func Create(ctx context.Context, sl *slog.Logger, name string) (*DataBase, error
 	if err := db.AutoMigrate(&User{}, &Collection{}, &SourceSystem{}); err != nil {
 		return nil, fmt.Errorf("automigration DB: %w", err)
 	}
-	return &DataBase{db: db, slog: sl, srvCtx: ctx}, nil
+	dbInstance = &DataBase{db: db, slog: sl, srvCtx: ctx}
+	return dbInstance, nil
 }
 
 func (d *DataBase) Add(ctx context.Context, u *User) error {
@@ -59,6 +61,9 @@ func (d *DataBase) Add(ctx context.Context, u *User) error {
 			if ec := eu.Collection(c.Collectionname); ec != nil {
 				c.ID = ec.ID
 				c.Source.ID = ec.Source.ID
+				if c.Source.Parts != ec.Source.Parts {
+					c.NextDBUpdate = time.Now()
+				}
 				u.Collections[i] = c
 			}
 		}
@@ -100,11 +105,13 @@ func (d *DataBase) User(ctx context.Context, name string) (*User, error) {
 }
 
 func (d *DataBase) UserByAPIKey(ctx context.Context, key string) ([]User, error) {
-	usrs, err := d.usr().Where("api_key = ?", key).Find(ctx)
-	return usrs, err
+	return d.usr().Where("api_key = ?", key).Find(ctx)
 }
 
 func (d *DataBase) CollectionByAPIKey(ctx context.Context, key string) ([]Collection, error) {
-	cols, err := d.col().Where("api_key = ?", key).Find(ctx)
-	return cols, err
+	return d.col().Where("api_key = ?", key).Find(ctx)
+}
+
+func (d *DataBase) CollectionsToUpdate(ctx context.Context, t time.Time) ([]Collection, error) {
+	return d.col().Where("update_next < ? OR update_next is NULL", t).Order("update_next asc").Find(ctx)
 }

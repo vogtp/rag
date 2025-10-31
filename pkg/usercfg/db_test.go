@@ -3,6 +3,7 @@ package usercfg_test
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/vogtp/rag/internal/testhelper"
 	"github.com/vogtp/rag/pkg/usercfg"
@@ -76,5 +77,20 @@ func TestDataBase_Add(t *testing.T) {
 		if c.Source.Parts != fmt.Sprintf(partsFmt, i, i) {
 			t.Errorf("collection source parts not correct: %v -> %s", i, c.Source.Parts)
 		}
+	}
+}
+
+func TestDataBase_CollectionNextUpdate(t *testing.T) {
+	ctx := t.Context()
+	db, _ := testhelper.GetDB(t)
+	cols, err := db.CollectionsToUpdate(ctx, time.Now())
+	if err != nil {
+		t.Fatalf("query users: %v", err)
+	}
+	if len(cols) != 1 {
+		t.Errorf("Wrong number of collections to update found: %d want:1", len(cols))
+	}
+	if cols[0].Displayname != "TestDisplayNameUser1" {
+		t.Errorf("Wrong collection found: %q", cols[0].Collectionname)
 	}
 }

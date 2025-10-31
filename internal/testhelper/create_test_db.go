@@ -3,6 +3,7 @@ package testhelper
 import (
 	"log/slog"
 	"testing"
+	"time"
 
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
@@ -94,6 +95,7 @@ var (
 			Collectionname: "TestCollectionNameUser1",
 			APIKey:         "TestAPIKeyUser1",
 			Source:         SourceUser1,
+			NextDBUpdate:   time.Now().Add(-2 * time.Hour),
 		},
 	}
 	SourceUser1 = usercfg.SourceSystem{
@@ -114,6 +116,7 @@ var (
 			Collectionname: "TestCollectionNameUser2",
 			APIKey:         "TestAPIKeyUser2",
 			Source:         SourceUser2,
+			NextDBUpdate:   time.Now().Add(2 * time.Hour),
 		},
 	}
 	SourceUser2 = usercfg.SourceSystem{
