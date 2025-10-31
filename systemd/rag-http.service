@@ -1,0 +1,12 @@
+[Unit]
+Description=RAG HTTP Server
+
+[Service]
+WorkingDirectory=/srv/rag
+ExecStart=/srv/rag/ragctl web start --log.source --log.json
+TimeoutStopSec=5
+Restart=always
+RestartSec=1s
+
+[Install]
+WantedBy=multi-user.target
