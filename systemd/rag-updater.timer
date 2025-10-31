@@ -1,0 +1,10 @@
+[Unit]
+Description=RAG Collection update service
+
+[Timer]
+OnStartupSec=6s
+OnUnitInactiveSec=3s
+Unit=%i.service
+
+[Install]
+WantedBy=multi-user.target

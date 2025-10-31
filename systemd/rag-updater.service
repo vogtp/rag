@@ -1,0 +1,9 @@
+[Unit]
+Description=RAG Collection update service
+
+[Service]
+WorkingDirectory=/srv/rag
+ExecStart=/srv/rag/ragctl vecdb update --log.source --log.json
+
+[Install]
+WantedBy=multi-user.target
