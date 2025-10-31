@@ -33,6 +33,7 @@ class Collection {
 	Genmodel: string = '';
 	Embedmodel: string = '';
 	DBUpdateIntervall: number = 0;
+	NextDBUpdate: Date = new Date();
 	Source: SourceSystem = new SourceSystem();
 }
 
