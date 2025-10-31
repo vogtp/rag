@@ -162,8 +162,11 @@ func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger, filters ...v
 		log = slog.Error
 	}
 	log("Finished embedding", "doc.count", cnt, "duration", time.Since(start).String())
-	if _, err := gorm.G[Collection](dbInstance.db).Where("id = ?", c.ID).Update(ctx, "update_next", time.Now().Add(c.UpdateIntervall())); err != nil {
-		slog.Error("Cannot set next update on collecion", "err", err)
+	if dbInstance != nil {
+		// this should only happen from tests
+		if _, err := gorm.G[Collection](dbInstance.db).Where("id = ?", c.ID).Update(ctx, "update_next", time.Now().Add(c.UpdateIntervall())); err != nil {
+			slog.Error("Cannot set next update on collecion", "err", err)
+		}
 	}
 	return nil
 }
