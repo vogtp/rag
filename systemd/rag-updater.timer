@@ -3,7 +3,7 @@ Description=RAG Collection update service
 
 [Timer]
 OnStartupSec=6s
-OnUnitInactiveSec=3s
+OnUnitActiveSec=3s
 Unit=%i.service
 
 [Install]
