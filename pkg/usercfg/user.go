@@ -60,6 +60,10 @@ func (u *User) CollectionName() string {
 	return u.Name
 }
 
+func (u *User) Owner() string {
+	return u.Name
+}
+
 func (u *User) Model(name string) (m types.Model, err error) {
 	var retErr error
 	for _, c := range u.Collections {

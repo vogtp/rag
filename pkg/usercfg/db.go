@@ -19,8 +19,9 @@ const (
 )
 
 type DataBase struct {
-	db   *gorm.DB
-	slog *slog.Logger
+	db     *gorm.DB
+	srvCtx context.Context
+	slog   *slog.Logger
 }
 
 var dbInstance *DataBase
@@ -44,7 +45,7 @@ func Create(ctx context.Context, sl *slog.Logger, name string) (*DataBase, error
 	if err := db.AutoMigrate(&User{}, &Collection{}, &SourceSystem{}); err != nil {
 		return nil, fmt.Errorf("automigration DB: %w", err)
 	}
-	return &DataBase{db: db, slog: sl}, nil
+	return &DataBase{db: db, slog: sl, srvCtx: ctx}, nil
 }
 
 func (d *DataBase) Add(ctx context.Context, u *User) error {

@@ -63,6 +63,16 @@ func (i *instanceList) Models(ctx context.Context) []types.Model {
 	return m
 }
 
+func (i *instanceList) Owner() string {
+	for _, r := range i.rags {
+		o := r.Owner()
+		if len(o) > 0 && o != i.CollectionName() {
+			return o
+		}
+	}
+	return i.CollectionName()
+}
+
 func (i *instanceList) LLM() string {
 	for _, r := range i.rags {
 		llm := r.LLM()

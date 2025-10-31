@@ -27,6 +27,7 @@ type Collection struct {
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 
+	owner          string
 	UserID         uint   `gorm:"index;column:user_id"`
 	Displayname    string `gorm:"column:display_name"`                 // DisplayName is the name displayed to the user
 	Collectionname string `gorm:"index;unique;column:collection_name"` // CollectionName is the internal unique name of the collection
@@ -56,6 +57,22 @@ func (c *Collection) DisplayName() string {
 }
 
 func (c *Collection) CollectionName() string {
+	return c.Collectionname
+}
+
+func (c *Collection) Owner() string {
+	if len(c.owner) > 0 {
+		return c.owner
+	}
+	if dbInstance != nil {
+		u, err := gorm.G[User](dbInstance.db).Where("id = ?", c.UserID).First(dbInstance.srvCtx)
+		if err != nil {
+			dbInstance.slog.Warn("Cannot get user of collection", "col", c, "err", err)
+			return c.Collectionname
+		}
+		c.owner = u.Name
+		return c.owner
+	}
 	return c.Collectionname
 }
 

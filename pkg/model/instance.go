@@ -48,7 +48,7 @@ func (m instanceModel) ToOpenAI() openai.Model {
 		// CreatedAt:  0,
 		ID:      m.backend.CollectionName(),
 		Object:  "VectorStoreModel",
-		OwnedBy: m.backend.CollectionName(), // FIXME get name from DB
+		OwnedBy: m.backend.Owner(),
 		Parent:  m.backend.LLM(),
 	}
 }

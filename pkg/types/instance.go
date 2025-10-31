@@ -13,6 +13,7 @@ import (
 type Instance interface {
 	DisplayName() string
 	CollectionName() string
+	Owner() string
 
 	Model(name string) (Model, error)
 
