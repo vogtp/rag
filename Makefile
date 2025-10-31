@@ -20,12 +20,14 @@ host_qm=its-a-hack.its.unibas.ch
 user_qm=vogtp
 path_qm=/srv/rag/
 service_qm=rag
+updater_qm=rag-updater
 # dev is localhost
 
 user=$(user_$(BRANCH))
 path=$(path_$(BRANCH))
 host=$(user_$(BRANCH))@$(host_$(BRANCH))
 service=$(service_$(BRANCH))
+updater=$(updater_$(BRANCH))
 
 .PHONY: run
 run: generate ng-build
@@ -67,21 +69,21 @@ ng-test:
 	cd pkg/web/ng/intrasearch/dist/intrasearch/browser/ ; ng test --no-watch --no-progress --browsers=ChromeHeadless
 
 .PHONY: remote-stop
-remote-stop: remote-stop-$(service)
+remote-stop: remote-stop-$(service) remote-stop-$(updater).timer remote-stop-$(updater)
 
 .PHONY: remote-stop-%
 remote-stop-%:
 	ssh root@$(host_$(BRANCH)) systemctl stop $*
 
 .PHONY: remote-start
-remote-start: remote-start-$(service)
+remote-start: remote-start-$(service) remote-start-$(updater).timer 
 
 .PHONY: remote-start-%
 remote-start-%:
 	ssh root@$(host_$(BRANCH)) systemctl start $*
 
 .PHONY: remote-restart
-remote-restart:	remote-stop-$(service) remote-start-$(service)
+remote-restart:	remote-stop remote-start
 
 
 .PHONY: remote-copy
@@ -101,7 +103,7 @@ diff-config: remote-copy-config
 deploy-config: remote-copy-config remote-restart
 
 .PHONY: deploy
-deploy: build remote-stop-$(service) remote-copy remote-copy-config remote-start-$(service) remote-autocomplete
+deploy: build remote-stop remote-copy remote-copy-config remote-start remote-autocomplete
 
 .PHONY: remote-autocomplete
 remote-autocomplete:
