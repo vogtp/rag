@@ -8,13 +8,13 @@ const (
 	// VersionMinor minor version
 	VersionMinor = 5
 	// VersionPatch patch level
-	VersionPatch = 2
+	VersionPatch = 3
 )
 
 var (
 	// BuildInfo contains the build timestamp
 	BuildInfo = "development"
-	
+
 	// Version string
 	Version = fmt.Sprintf("%v.%v.%v (%v)", VersionMajor, VersionMinor, VersionPatch, BuildInfo)
 )
