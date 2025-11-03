@@ -37,20 +37,6 @@ func New(ctx context.Context, slog *slog.Logger, usercfg *usercfg.DataBase) (Han
 	return m, nil
 }
 
-// GetAllRags returns a slice of all instance without any authentical
-// for internal use only
-func (h handler) GetAllRags(ctx context.Context) []types.Instance {
-	usrs, err := h.usercfg.Users(ctx)
-	if err != nil {
-		h.slog.Warn("Cannot query users rags", "err", err)
-	}
-	rags := make([]types.Instance, len(usrs))
-	for i, u := range usrs {
-		rags[i] = &u
-	}
-	return rags
-}
-
 func (h handler) FromRequest(ctx context.Context, r *http.Request) types.Instance {
 	username, _ := oidc.UserName(r)
 
@@ -59,7 +45,7 @@ func (h handler) FromRequest(ctx context.Context, r *http.Request) types.Instanc
 	rags := newInstanceList(h.slog, fmt.Sprintf("%s|%s", username, bt))
 
 	if len(username)+len(bt) < 1 {
-		h.slog.Warn("Neither user nor token authentication found in request", "request", r.Header)
+		h.slog.Warn("Neither user nor token authentication found in request", "request", r.Header, "username", username, "bearer", bt)
 	}
 
 	if len(username) > 1 {

@@ -86,7 +86,6 @@ func New(ctx context.Context, slog *slog.Logger, userCfg *usercfg.DataBase) (*Se
 
 // Run starts the webserver in foreground
 func (srv *Server) Run(ctx context.Context) error {
-	go srv.schedulePeriodicVecDBUpdates(ctx)
 
 	if err := srv.routes(); err != nil {
 		return err
