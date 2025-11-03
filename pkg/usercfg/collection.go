@@ -2,6 +2,7 @@ package usercfg
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -18,6 +19,10 @@ import (
 	"github.com/vogtp/rag/pkg/vecDB/history"
 	"github.com/vogtp/rag/pkg/web/bearer"
 	"gorm.io/gorm"
+)
+
+var (
+	ErrorEmbedAlreadyRunning = errors.New("Embedding already running.")
 )
 
 type Collection struct {
@@ -37,6 +42,7 @@ type Collection struct {
 	Embedmodel        string        `gorm:"column:embed_model"`
 	DBUpdateIntervall time.Duration `gorm:"column:update_intervall"`
 	NextDBUpdate      time.Time     `gorm:"column:update_next"`
+	StartDBUpdate     time.Time     `gorm:"column:update_start"`
 
 	Source SourceSystem `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 
@@ -140,6 +146,18 @@ func (c *Collection) Authorise(w http.ResponseWriter, r *http.Request) bool {
 }
 
 func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger, filters ...vecdb.Filter) error {
+	if !c.StartDBUpdate.IsZero() && time.Since(c.StartDBUpdate) < c.UpdateIntervall()/3 {
+		slog.Info("Embed allready running", "startdate", c.StartDBUpdate)
+		return nil
+	}
+	if dbInstance != nil {
+		// this should only be nil in  tests
+		c.StartDBUpdate = time.Now()
+		col := Collection{StartDBUpdate: c.StartDBUpdate}
+		if _, err := gorm.G[Collection](dbInstance.db).Where("id = ?", c.ID).Updates(ctx, col); err != nil {
+			slog.Error("Cannot set last update on collecion", "err", err)
+		}
+	}
 	slog = slog.With("collection", c)
 	start := time.Now()
 	docsChan, err := c.GetDocuments(ctx, slog)
@@ -163,8 +181,11 @@ func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger, filters ...v
 	}
 	log("Finished embedding", "doc.count", cnt, "duration", time.Since(start).String())
 	if dbInstance != nil {
-		// this should only happen from tests
-		if _, err := gorm.G[Collection](dbInstance.db).Where("id = ?", c.ID).Update(ctx, "update_next", time.Now().Add(c.UpdateIntervall())); err != nil {
+		// this should only be nil in  tests
+		c.NextDBUpdate = time.Now().Add(c.UpdateIntervall())
+		c.StartDBUpdate = time.Time{}
+		col := Collection{StartDBUpdate: c.StartDBUpdate, NextDBUpdate: c.NextDBUpdate}
+		if _, err := gorm.G[Collection](dbInstance.db).Where("id = ?", c.ID).Updates(ctx, col); err != nil {
 			slog.Error("Cannot set next update on collecion", "err", err)
 		}
 	}

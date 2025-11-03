@@ -34,7 +34,11 @@ var vecDbUpdate = &cobra.Command{
 		for _, c := range cols {
 			slog.Info("Embedding collection", "collection", c, "next update", c.NextDBUpdate.Format(time.DateTime))
 			// returning here is correct since we only want to update one collection at a time
-			return c.Embbed(ctx, slog)
+			err := c.Embbed(ctx, slog)
+			if err == usercfg.ErrorEmbedAlreadyRunning {
+				continue
+			}
+			return err
 		}
 		return nil
 	},

@@ -34,6 +34,7 @@ class Collection {
 	Embedmodel: string = '';
 	DBUpdateIntervall: number = 0;
 	NextDBUpdate: Date = new Date();
+	StartDBUpdate: Date = new Date();
 	Source: SourceSystem = new SourceSystem();
 }
 

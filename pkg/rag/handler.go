@@ -22,8 +22,6 @@ type GetAllRager interface {
 	GetAllRags(context.Context) []types.Instance
 }
 
-var _ (GetAllRager) = (*handler)(nil)
-
 type handler struct {
 	slog    *slog.Logger
 	usercfg *usercfg.DataBase
