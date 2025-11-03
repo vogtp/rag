@@ -23,7 +23,10 @@ func HandlerFunc(handler http.HandlerFunc) http.HandlerFunc {
 }
 
 func readBearer(w http.ResponseWriter, r *http.Request) (string, bool) {
-	if t, ok := Get(r); ok {
+	if r == nil {
+		return "", false
+	}
+	if t, ok := r.Context().Value(bearerCtxValue).(string); ok {
 		return t, ok
 	}
 	// Authorization: Bearer <token>
@@ -44,6 +47,17 @@ func Get(r *http.Request) (string, bool) {
 	if r == nil {
 		return "", false
 	}
-	s, ok := r.Context().Value(bearerCtxValue).(string)
-	return s, ok
+	if s, ok := r.Context().Value(bearerCtxValue).(string); ok {
+		return s, ok
+	}
+	// Authorization: Bearer <token>
+	ba := r.Header.Get("Authorization")
+	if !strings.HasPrefix(ba, "Bearer") {
+		return "", false
+	}
+	s := strings.Split(ba, " ")
+	if len(s) < 2 {
+		return "", false
+	}
+	return s[1], true
 }
