@@ -1,32 +1,33 @@
-<div style="padding: 7px;">
-    <p> User: {{userSettings!.Name}}</p>
-    <!-- <p><mat-slide-toggle [(ngModel)]="userSettings!.AdvancedUI">Show Advanced Options</mat-slide-toggle></p> -->
-</div>
-<div style="padding-bottom: 7px;">
-    <!-- <mat-form-field>
+<div style="margin-left: 5px;">
+    <div style="padding: 7px;">
+        <p> User: {{userSettings!.Name}}</p>
+        <!-- <p><mat-slide-toggle [(ngModel)]="userSettings!.AdvancedUI">Show Advanced Options</mat-slide-toggle></p> -->
+    </div>
+    <div style="padding-bottom: 7px;">
+        <!-- <mat-form-field>
         <mat-label>User</mat-label>
         <input matInput readonly [(ngModel)]="userSettings!.Name">
     </mat-form-field> -->
-    <mat-form-field id="userAPIKey" *ngIf="userSettings?.AdvancedUI">
-        <mat-label>API Key (for chatbots)</mat-label>
-        <input matInput [(ngModel)]="userSettings!.APIKey">
-        <mat-hint>This key can be used to acces the users collection with a chat ui at the
-            <a href="/api">endpoint</a>.</mat-hint>
-    </mat-form-field>
-</div>
-<div><mat-checkbox [(ngModel)]="userSettings!.AdvancedUI">Show Advanced Options</mat-checkbox></div>
-<div style="padding: 7px; padding-top: 20px; display: flex;">
-    <!-- <button (click)="debug()">
+        <mat-form-field id="userAPIKey" *ngIf="userSettings?.AdvancedUI">
+            <mat-label>API Key (for chatbots)</mat-label>
+            <input matInput [(ngModel)]="userSettings!.APIKey">
+            <mat-hint>This key can be used to acces the users collection with a chat ui at the
+                <a href="/api">endpoint</a>.</mat-hint>
+        </mat-form-field>
+    </div>
+    <div><mat-checkbox [(ngModel)]="userSettings!.AdvancedUI">Show Advanced Options</mat-checkbox></div>
+    <div style="padding: 7px; padding-top: 20px; display: flex;">
+        <!-- <button (click)="debug()">
         Debug
     </button> -->
-    <button style="margin-right: 14px;" (click)="onSaveClick()">
-        Save
-    </button>
-    <button (click)="addCollection()">
-        Add Collection
-    </button>
+        <button style="margin-right: 14px;" (click)="onSaveClick()">
+            Save
+        </button>
+        <button (click)="addCollection()">
+            Add Collection
+        </button>
+    </div>
 </div>
-
 <mat-tab-group>
     <div *ngFor="let cols of collections()!; let i = index">
         <mat-tab label="{{collections()![i]!.Displayname }}">
