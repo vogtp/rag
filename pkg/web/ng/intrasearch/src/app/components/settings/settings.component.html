@@ -31,7 +31,8 @@
 <mat-tab-group>
     <div *ngFor="let cols of collections()!; let i = index">
         <mat-tab label="{{collections()![i]!.Displayname }}">
-            <app-collection [(collection)]="collections()![i]!" />
+            <app-collection [(collection)]="collections()![i]!"
+                [advUI]="userSettings?.AdvancedUI ?? false" />
         </mat-tab>
     </div>
 </mat-tab-group>

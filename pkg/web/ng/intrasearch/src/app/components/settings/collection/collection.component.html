@@ -13,9 +13,19 @@
         <mat-form-field style="padding-bottom: 20px;">
             <mat-label>API Key (for chatbots)</mat-label>
             <input matInput [(ngModel)]="collection()!.APIKey">
-            <mat-hint style="vertical-align: middle;">This key can be used to acces this collection with a chat ui at the <a
-                    href="/api">endpoint</a>.</mat-hint>
+            <mat-hint style="vertical-align: middle;">This key can be used to acces this collection with a chat ui at
+                the <a href="/api">endpoint</a>.</mat-hint>
         </mat-form-field>
+        <div style="display: flex;">
+            <mat-form-field id="colGenModel" *ngIf="advUI">
+                <mat-label>LLM Model </mat-label>
+                <input matInput [(ngModel)]="collection()!.Genmodel">
+            </mat-form-field>
+            <mat-form-field id="colEmbedModel" *ngIf="advUI">
+                <mat-label>Embedding Model</mat-label>
+                <input matInput [(ngModel)]="collection()!.Embedmodel">
+            </mat-form-field>
+        </div>
         <mat-card appearance="outlined">
             <mat-card-header>
                 <!-- <mat-card-actions>
@@ -29,9 +39,9 @@
 
                 <mat-tab-group>
                     <!-- <div *ngFor="let src of collection()!.Sources; let i = index"> -->
-                        <mat-tab label="{{ collection()!.Source!.Name }}">
-                            <app-source [(source)]="collection()!.Source!" />
-                        </mat-tab>
+                    <mat-tab label="{{ collection()!.Source!.Name }}">
+                        <app-source [(source)]="collection()!.Source!" />
+                    </mat-tab>
                     <!-- </div> -->
                 </mat-tab-group>
             </mat-card-content>

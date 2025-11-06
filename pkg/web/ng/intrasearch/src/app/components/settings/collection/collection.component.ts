@@ -1,5 +1,4 @@
-import { NgFor } from '@angular/common';
-import { ChangeDetectionStrategy, Component, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, model } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -9,8 +8,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTreeModule } from '@angular/material/tree';
-import { Collection, SourceSystem } from '../../../services/user.structs';
+import { ConfigService } from '../../../services/config.service';
+import { Collection } from '../../../services/user.structs';
 import { SourceComponent } from '../source/source.component';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-collection',
@@ -28,6 +29,7 @@ import { SourceComponent } from '../source/source.component';
     MatTreeModule,
     MatIconModule,
     SourceComponent,
+    NgIf,
   ],
   templateUrl: './collection.component.html',
   styleUrl: './collection.component.css',
@@ -35,6 +37,7 @@ import { SourceComponent } from '../source/source.component';
 })
 export class CollectionComponent {
   collection = model<Collection>();
+  @Input() advUI: boolean = false;
 
   // addSource() {
   //   console.log('Add source');
