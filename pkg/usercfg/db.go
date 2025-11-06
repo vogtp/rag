@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 
 	slogGorm "github.com/orandin/slog-gorm"
@@ -58,20 +59,25 @@ func (d *DataBase) Add(ctx context.Context, u *User) error {
 	if eu, err := d.User(ctx, u.Name); err == nil && eu != nil {
 		u.ID = eu.ID
 		for i, c := range u.Collections {
+			c.UserID = u.ID
 			if ec := eu.Collection(c.Collectionname); ec != nil {
 				c.ID = ec.ID
 				c.Source.ID = ec.Source.ID
 				if c.Source.Parts != ec.Source.Parts {
 					c.NextDBUpdate = time.Now()
 				}
-				u.Collections[i] = c
 			}
+			c.Source.CollectionID = c.ID
+			u.Collections[i] = c
 		}
 	}
 	if err := d.db.Clauses(clause.OnConflict{UpdateAll: true}).Create(u).Error; err != nil {
 		return fmt.Errorf("adding user %q: %w", u.Name, err)
 	}
 	for _, c := range u.Collections {
+		if strings.EqualFold(c.Displayname, DefaultCollectionDisplayName) {
+			continue
+		}
 		if err := d.db.Clauses(clause.OnConflict{UpdateAll: true}).Create(&c).Error; err != nil {
 			return fmt.Errorf("adding user %q collection %q: %w", u.Name, c.Displayname, err)
 		}
@@ -113,5 +119,5 @@ func (d *DataBase) CollectionByAPIKey(ctx context.Context, key string) ([]Collec
 }
 
 func (d *DataBase) CollectionsToUpdate(ctx context.Context, t time.Time) ([]Collection, error) {
-	return d.col().Where("update_next < ? OR update_next is NULL", t).Order("update_next asc").Find(ctx)
+	return d.col().Where("update_next < ?", t.Format(time.DateTime)).Order("update_next asc").Find(ctx)
 }

@@ -15,12 +15,12 @@ import (
 )
 
 func main() {
-	generate("./intrasearch/src/app/services/user.structs.ts", usercfg.User{})
+	generate("./intrasearch/src/app/services/user.structs_gen.ts", usercfg.User{})
 	generate("./intrasearch/src/app/services/api-response.structs.ts", web.CollectionSearchResponse{})
 	generate("./intrasearch/src/app/components/chat/interfaces/openai.structs.ts", openai.ChatCompletionResponse{}, openai.ChatCompletionRequest{})
 	version := fmt.Sprintf("%v.%v.%v (%v)", cfg.VersionMajor, cfg.VersionMinor, cfg.VersionPatch, time.Now().Format("2006-01-02T15:04:05"))
 
-	injectStrings("./intrasearch/src/app/go.transfer.ts", "version", version)
+	injectStrings("./intrasearch/src/app/go.transfer.ts", "version", version, "DefaultCollectionDisplayName", usercfg.DefaultCollectionDisplayName)
 }
 func generate(fileName string, types ...any) {
 	s2ts := struct2ts.New(&struct2ts.Options{
@@ -54,6 +54,7 @@ func injectStrings(fileName string, strs ...string) {
 	fmt.Printf("Inject go strings to TS in %s\n", fileName)
 	for i := 0; i < len(strs); i += 2 {
 		fmt.Printf("  %s\n", strs[i])
-		fmt.Fprintf(f, `export const %s: string = "%s"`, strs[i], strs[i+1])
+		fmt.Fprintf(f, `export const %s: string = "%s";`, strs[i], strs[i+1])
+		fmt.Fprintln(f)
 	}
 }

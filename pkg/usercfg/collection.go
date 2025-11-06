@@ -22,7 +22,8 @@ import (
 )
 
 var (
-	ErrorEmbedAlreadyRunning = errors.New("Embedding already running.")
+	ErrorEmbedAlreadyRunning     = errors.New("Embedding already running.")
+	DefaultCollectionDisplayName = "New Collection (please change)"
 )
 
 type Collection struct {
@@ -34,7 +35,7 @@ type Collection struct {
 
 	owner          string
 	UserID         uint   `gorm:"index;column:user_id"`
-	Displayname    string `gorm:"column:display_name"`                 // DisplayName is the name displayed to the user
+	Displayname    string `gorm:"not null;column:display_name"`        // DisplayName is the name displayed to the user
 	Collectionname string `gorm:"index;unique;column:collection_name"` // CollectionName is the internal unique name of the collection
 	APIKey         string `gorm:"index;column:api_key"`
 
@@ -148,7 +149,7 @@ func (c *Collection) Authorise(w http.ResponseWriter, r *http.Request) bool {
 func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger, filters ...vecdb.Filter) error {
 	if !c.StartDBUpdate.IsZero() && time.Since(c.StartDBUpdate) < c.UpdateIntervall()/3 {
 		slog.Info("Embed allready running", "startdate", c.StartDBUpdate)
-		return nil
+		return ErrorEmbedAlreadyRunning
 	}
 	if dbInstance != nil {
 		// this should only be nil in  tests

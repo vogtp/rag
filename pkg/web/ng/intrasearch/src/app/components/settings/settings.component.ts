@@ -22,6 +22,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { SbbLoadingIndicatorModule } from '@sbb-esta/angular/loading-indicator';
+import { DefaultCollectionDisplayName } from '../../go.transfer';
 import { SettingsService } from '../../services/settings.service';
 import { Collection, SourceSystem, User } from '../../services/user.structs';
 import { CollectionComponent } from './collection/collection.component';
@@ -42,8 +43,8 @@ import { CollectionComponent } from './collection/collection.component';
     MatTabsModule,
     SbbLoadingIndicatorModule,
     MatBottomSheetModule,
-    NgIf
-],
+    NgIf,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css',
@@ -118,13 +119,14 @@ export class SettingsComponent {
 
   addCollection() {
     let col = new Collection();
-    col.Displayname = 'New Collection (please change)';
+    col.Displayname = DefaultCollectionDisplayName;
     let src = new SourceSystem();
-    src.Name = 'New Source (please change)';
+    //src.Name = 'New Source (please change)';
     let s = this.userSettings!.Collections![0].Source!;
     src.URL = s.URL;
     src.Type = s.Type;
     src.Name = s.Name;
+    src.Key = s.Key;
     col.Source = src;
     console.log(col);
     // let src = new SourceSystem();
