@@ -20,12 +20,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTabsModule } from '@angular/material/tabs';
 import { SbbLoadingIndicatorModule } from '@sbb-esta/angular/loading-indicator';
 import { DefaultCollectionDisplayName } from '../../go.transfer';
 import { SettingsService } from '../../services/settings.service';
 import { Collection, SourceSystem, User } from '../../services/user.structs';
 import { CollectionComponent } from './collection/collection.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-settings',
@@ -44,6 +46,8 @@ import { CollectionComponent } from './collection/collection.component';
     SbbLoadingIndicatorModule,
     MatBottomSheetModule,
     NgIf,
+    MatSlideToggleModule,
+    MatCheckboxModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './settings.component.html',

@@ -1,5 +1,6 @@
 <div style="padding: 7px;">
-    User: {{userSettings!.Name}}
+    <p> User: {{userSettings!.Name}}</p>
+    <!-- <p><mat-slide-toggle [(ngModel)]="userSettings!.AdvancedUI">Show Advanced Options</mat-slide-toggle></p> -->
 </div>
 <div style="padding-bottom: 7px;">
     <!-- <mat-form-field>
@@ -13,7 +14,7 @@
             <a href="/api">endpoint</a>.</mat-hint>
     </mat-form-field>
 </div>
-
+<div><mat-checkbox [(ngModel)]="userSettings!.AdvancedUI">Show Advanced Options</mat-checkbox></div>
 <div style="padding: 7px; padding-top: 20px; display: flex;">
     <!-- <button (click)="debug()">
         Debug
