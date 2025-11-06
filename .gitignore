@@ -27,4 +27,6 @@ ragctl.yml
 go.work*
 .embedd_history
 pkg/web/ng/intrasearch/src/app/go.transfer.ts
+pkg/web/ng/intrasearch/src/app/services/user.structs_gen.ts
 __debug_*
+*.session.sql
