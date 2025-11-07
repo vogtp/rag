@@ -15,6 +15,7 @@ host_main=its-a-hack.its.unibas.ch
 user_main=root
 path_main=/srv/intrasearch/
 service_main=intrasearch
+updater_main=intrasearch-updater
 # qa
 host_qm=its-a-hack.its.unibas.ch
 user_qm=vogtp
