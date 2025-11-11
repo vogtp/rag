@@ -78,7 +78,7 @@ func (srv *Server) loadUser(w http.ResponseWriter, r *http.Request) {
 				},
 			},
 		}
-		//user, err = srv.usercfgEnt.CreateUser(r.Context(), userName)
+		err = srv.usercfg.Add(r.Context(), user)
 	}
 	if err != nil {
 		srv.slog.Warn("Internal server error: get user ", "err", err)
