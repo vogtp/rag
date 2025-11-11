@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, Input, model } from '@angular/core';
+import { NgIf } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  model,
+} from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -8,10 +14,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTreeModule } from '@angular/material/tree';
-import { ConfigService } from '../../../services/config.service';
 import { Collection } from '../../../services/user.structs';
 import { SourceComponent } from '../source/source.component';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-collection',
