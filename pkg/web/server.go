@@ -49,11 +49,11 @@ func New(ctx context.Context, slog *slog.Logger, userCfg *usercfg.DataBase) (*Se
 		usercfg:    userCfg,
 	}
 	srv.httpSrv = &http.Server{
-		ReadTimeout:       10 * time.Second,
-		WriteTimeout:      30 * time.Second,
-		IdleTimeout:       30 * time.Second,
-		ReadHeaderTimeout: 1 * time.Second,
-		MaxHeaderBytes:    1 << 20,
+		ReadTimeout:       60 * time.Second,
+		WriteTimeout:      60 * time.Second,
+		IdleTimeout:       60 * time.Second,
+		ReadHeaderTimeout: 30 * time.Second,
+		//MaxHeaderBytes:    1 << 20,
 	}
 	addr := viper.GetString(cfg.WebListen)
 	srv.slog = srv.slog.With("listem_addr", addr)
