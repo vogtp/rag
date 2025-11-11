@@ -8,6 +8,8 @@ import (
 	"time"
 
 	slogGorm "github.com/orandin/slog-gorm"
+	"github.com/spf13/viper"
+	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/logger"
 	"github.com/vogtp/rag/pkg/vecDB/chroma"
 	"gorm.io/driver/sqlite"
@@ -107,6 +109,18 @@ func (d *DataBase) Users(ctx context.Context) ([]User, error) {
 
 func (d *DataBase) User(ctx context.Context, name string) (*User, error) {
 	u, err := d.usr().Where("name = ?", name).First(ctx)
+	for i,c:=range u.Collections{
+		if c.DBUpdateIntervall < time.Hour {
+			c.DBUpdateIntervall = viper.GetDuration(cfg.VecDBUpdateIntervall)
+		}
+		if len(c.Genmodel) < 1 {
+			c.Genmodel = viper.GetString(cfg.ModelLLM)
+		}
+		if len(c.Embedmodel) < 1 {
+			c.Embedmodel = viper.GetString(cfg.ModelEmbedding)
+		}
+		u.Collections[i] = c
+	}
 	return &u, err
 }
 
