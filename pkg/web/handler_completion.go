@@ -61,7 +61,7 @@ func (srv *Server) chatCompletionHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	defer func(t time.Time) {
-		slog.Info("Chat completion request finished", sl.GroupAttrs("duration", sl.String("human", time.Since(t).String()), sl.Int64("millies", time.Since(t).Milliseconds()), sl.Duration("duration", time.Since(t))))
+		slog.Info("Chat completion request finished", sl.GroupAttrs("duration", sl.String("human", time.Since(t).String()), sl.Int64("millies", time.Since(t).Milliseconds())))
 	}(start)
 	if req.Stream {
 		srv.handleCompletionStream(&req, ragModel, w, r)
