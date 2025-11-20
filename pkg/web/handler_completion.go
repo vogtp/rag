@@ -127,7 +127,7 @@ func (srv *Server) chatCompletionHandler(w http.ResponseWriter, r *http.Request)
 
 func (srv *Server) handleCompletionStream(req *openai.ChatCompletionRequest, ragModel types.Model, w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-
+	slog := srv.slog.With("request", r.URL.String())
 	msgs := make([]llms.MessageContent, 0, len(req.Messages)*3)
 	for i, m := range req.Messages {
 		srv.slog.Info("Chat message", "role", m.Role, "content", m.Content, "idx", i)
@@ -157,7 +157,7 @@ func (srv *Server) handleCompletionStream(req *openai.ChatCompletionRequest, rag
 	}()
 
 	srv.setStreamHeaders(w)
-	stream(ctx, w, func(w io.Writer) bool {
+	stream(ctx, slog, w, func(w io.Writer) bool {
 		data := []byte("data: ")
 		// chunk data
 		if chunk, ok := <-resChan; ok {
@@ -174,6 +174,7 @@ func (srv *Server) handleCompletionStream(req *openai.ChatCompletionRequest, rag
 			res := generateChatStreamResponse(ragModel, chunk)
 			paypload, err := json.Marshal(res)
 			if err != nil {
+				slog.Error("Streaming function cannot decode json", "err", err, "chunk", string(chunk))
 				if _, err := w.Write([]byte("data: [ERROR]\n\n")); err != nil {
 					slog.Warn("Cannot write streaming ERROR", "err", err)
 					return false
@@ -186,6 +187,7 @@ func (srv *Server) handleCompletionStream(req *openai.ChatCompletionRequest, rag
 			data = append(data, []byte("\n\n")...)
 			_, err = w.Write(data)
 			if err != nil {
+				slog.Error("Streaming function cannot write chunck to response", "err", err, "chunk", string(chunk))
 				if _, err := w.Write([]byte("data: [ERROR]\n\n")); err != nil {
 					slog.Warn("Cannot write streaming ERROR", "err", err)
 					return false
@@ -204,10 +206,11 @@ func (srv *Server) handleCompletionStream(req *openai.ChatCompletionRequest, rag
 	})
 }
 
-func stream(ctx context.Context, w http.ResponseWriter, step func(w io.Writer) bool) bool {
+func stream(ctx context.Context, slog *slog.Logger, w http.ResponseWriter, step func(w io.Writer) bool) bool {
 	for {
 		select {
 		case <-ctx.Done():
+			slog.Warn("stream func cancled by context", "err", ctx.Err().Error())
 			return true
 		default:
 			keepOpen := step(w)
