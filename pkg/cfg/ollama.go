@@ -26,6 +26,7 @@ func GetOllamaHost(ctx context.Context, slog *slog.Logger) string {
 		}
 	}
 	slog.Warn("No running ollama found")
+	panic("Ollama should nop tbe her")
 	return ""
 }
 

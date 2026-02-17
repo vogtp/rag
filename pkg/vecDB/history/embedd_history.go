@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	vecdb "github.com/vogtp/rag/pkg/vecDB"
+	"github.com/vogtp/rag/pkg/types"
 )
 
 const (
@@ -22,7 +22,7 @@ type emeddHistory struct {
 	updateIntervall time.Duration
 }
 
-func New(slog *slog.Logger, collectionName string, updateIntervall time.Duration) vecdb.Filter {
+func New(slog *slog.Logger, collectionName string, updateIntervall time.Duration) types.Filter {
 	return &emeddHistory{
 		slog:            slog,
 		collectionName:  collectionName,
@@ -30,7 +30,7 @@ func New(slog *slog.Logger, collectionName string, updateIntervall time.Duration
 	}
 }
 
-func (eh *emeddHistory) ShouldEmbedd(d *vecdb.EmbeddDocument) bool {
+func (eh *emeddHistory) ShouldEmbedd(d *types.EmbeddDocument) bool {
 	if err := eh.init(); err != nil {
 		slog.Warn("Error init the embedd history", "err", err)
 		return true
@@ -45,7 +45,7 @@ func (eh *emeddHistory) ShouldEmbedd(d *vecdb.EmbeddDocument) bool {
 	return b
 }
 
-func (eh *emeddHistory) ReqisterEmedded(d *vecdb.EmbeddDocument) {
+func (eh *emeddHistory) ReqisterEmedded(d *types.EmbeddDocument) {
 	if err := eh.init(); err != nil {
 		slog.Warn("Error init the embedd history", "err", err)
 		return
@@ -75,7 +75,7 @@ func (eh *emeddHistory) init() error {
 	return eh.load()
 }
 
-func (eh emeddHistory) key(d *vecdb.EmbeddDocument) string {
+func (eh emeddHistory) key(d *types.EmbeddDocument) string {
 	return fmt.Sprintf("%s.%s", d.IDMetaKey, d.IDMetaValue)
 }
 

@@ -17,6 +17,15 @@
                 the <a href="/api">endpoint</a>.</mat-hint>
         </mat-form-field>
         <div style="display: flex;">
+            <mat-form-field [(ngModel)]="collection()!.DBUpdateIntervall" *ngIf="advUI">
+                <mat-label>Update intervall {{collection()!.DBUpdateIntervall}}</mat-label>
+                <mat-select [(value)]="collection()!.DBUpdateIntervall">
+                    <mat-option value=43200000000000>12 Hours</mat-option>
+                    <mat-option value=86400000000000>Dayly</mat-option>
+                    <mat-option value=604800000000000>Weekly</mat-option>
+                    <mat-option value=2592000000000000>Monthly</mat-option>
+                </mat-select>
+            </mat-form-field>
             <mat-form-field id="colGenModel" *ngIf="advUI">
                 <mat-label>LLM Model </mat-label>
                 <input matInput [(ngModel)]="collection()!.Genmodel">

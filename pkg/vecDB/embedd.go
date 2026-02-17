@@ -8,6 +8,8 @@ import (
 
 	"github.com/amikos-tech/chroma-go/types"
 	"github.com/vogtp/rag/pkg/logger"
+	"github.com/vogtp/rag/pkg/model"
+	ragtypes "github.com/vogtp/rag/pkg/types"
 )
 
 const (
@@ -51,16 +53,21 @@ func parseTime(t string) (time.Time, error) {
 	return time.Parse(timeFormat2, t)
 }
 
-func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName string, in <-chan *EmbeddDocument, filters ...Filter) (int, error) {
+func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName string, in <-chan *ragtypes.EmbeddDocument, filters ...ragtypes.Filter) (int, error) {
 	if len(collectionName) < 1 {
 		slog.Info("No collections name given")
 		return 0, fmt.Errorf("no collection name to embed to")
 	}
 	slogBase := slog
+	v.GetEmbeddingFunc()
 	slogBase.Warn("Starting embedding", logger.Stacktrace())
-	embedFunc, err := v.GetEmbeddingFunc()
+	genModel, err := model.GetBackendModel(ctx, slog, v.embeddingsModel)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("get backend models: %w", err)
+	}
+	embedder, err := model.NewEmbedder(genModel)
+	if err != nil {
+		return 0, fmt.Errorf("creating embedder from model: %w", err)
 	}
 	coll, err := v.GetCollection(ctx, collectionName)
 	if err != nil {
@@ -110,7 +117,7 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 			continue
 		}
 		rs, err := types.NewRecordSet(
-			types.WithEmbeddingFunction(embedFunc),
+			types.WithEmbeddingFunction(embedder),
 			//types.WithIDGenerator(types.NewULIDGenerator()),
 		)
 		if err != nil {

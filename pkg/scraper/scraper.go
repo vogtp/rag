@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gocolly/colly"
+	"github.com/vogtp/rag/pkg/types"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 )
 
@@ -86,7 +87,7 @@ func (s Scraper) Description() string {
 //
 // The function takes a context.Context object for managing the execution
 // It returns a channel of documents.
-func (s Scraper) Call(ctx context.Context) (chan *vecdb.EmbeddDocument, error) {
+func (s Scraper) Call(ctx context.Context) (chan *types.EmbeddDocument, error) {
 	_, err := url.ParseRequestURI(s.baseURL)
 	if err != nil {
 		return nil, fmt.Errorf("cannot parse url %s: %w", s.baseURL, err)
@@ -106,12 +107,12 @@ func (s Scraper) Call(ctx context.Context) (chan *vecdb.EmbeddDocument, error) {
 	if err != nil {
 		return nil, fmt.Errorf("colly limit: %w", err)
 	}
-	docsChannel := make(chan *vecdb.EmbeddDocument, 10)
+	docsChannel := make(chan *types.EmbeddDocument, 10)
 	go s.call(ctx, c, docsChannel)
 	return docsChannel, nil
 }
 
-func (s Scraper) call(ctx context.Context, c *colly.Collector, docsOutput chan *vecdb.EmbeddDocument) {
+func (s Scraper) call(ctx context.Context, c *colly.Collector, docsOutput chan *types.EmbeddDocument) {
 	defer close(docsOutput)
 
 	var siteData stringBuilder
@@ -149,7 +150,7 @@ func (s Scraper) call(ctx context.Context, c *colly.Collector, docsOutput chan *
 			if description != "" {
 				siteData.WriteString("\nPage Description: " + description)
 			}
-			doc := vecdb.EmbeddDocument{
+			doc := types.EmbeddDocument{
 				IDMetaKey:   vecdb.MetaURL,
 				IDMetaValue: currentURL,
 				Title:       title,

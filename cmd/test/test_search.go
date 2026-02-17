@@ -11,7 +11,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/vogtp/rag/pkg/cfg"
-	vecdb "github.com/vogtp/rag/pkg/vecDB"
+	"github.com/vogtp/rag/pkg/types"
 )
 
 var (
@@ -138,7 +138,7 @@ func searchTestData(ctx context.Context, log *slog.Logger, tt *testData) error {
 	return retErr
 }
 
-func ensureTitle(r testDataResult, docs []vecdb.QueryDocument) error {
+func ensureTitle(r testDataResult, docs []types.QueryDocument) error {
 	for i, d := range docs {
 		if strings.HasPrefix(d.Title, r.Title) {
 			fmt.Printf("          Found title in doc %v dist: %v\n", i, d.Distance)
@@ -148,7 +148,7 @@ func ensureTitle(r testDataResult, docs []vecdb.QueryDocument) error {
 	return fmt.Errorf("Title not found: %q", r.Title)
 }
 
-func ensureURL(r testDataResult, docs []vecdb.QueryDocument) error {
+func ensureURL(r testDataResult, docs []types.QueryDocument) error {
 	for i, d := range docs {
 		if strings.HasSuffix(d.URL, r.URL) {
 			fmt.Printf("          Found URL in doc %v dist: %v\n", i, d.Distance)
@@ -158,7 +158,7 @@ func ensureURL(r testDataResult, docs []vecdb.QueryDocument) error {
 	return fmt.Errorf("URL not found: %q", r.URL)
 }
 
-func ensureKeyword(keyword string, docs []vecdb.QueryDocument) error {
+func ensureKeyword(keyword string, docs []types.QueryDocument) error {
 	for _, d := range docs {
 		if strings.Contains(d.Document, keyword) {
 			return nil
