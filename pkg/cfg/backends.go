@@ -12,7 +12,7 @@ const backendsKey = "backends"
 
 type Backend struct {
 	Name   string         `yaml:"name"`
-	API    BackendApi     `yaml:"api"`
+	API    *BackendApi    `yaml:"api"`
 	Models []BackendModel `yaml:"models"`
 }
 
@@ -45,7 +45,7 @@ type BackendApi struct {
 type BackendModel struct {
 	Name string `yaml:"name"`
 	Type string `yaml:"type"`
-	API  BackendApi
+	API  *BackendApi
 }
 
 func GetBackends() (*Backends, error) {
@@ -66,7 +66,7 @@ func GetBackends() (*Backends, error) {
 			err = fmt.Errorf("unknown backend api type %q: %w", be.API.Type, err)
 		}
 		for j := range be.Models {
-			be.Models[j].API = be.API
+			be.Models[j].API = api
 		}
 	}
 	backends = &Backends{backends: beLst}
