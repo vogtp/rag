@@ -14,7 +14,6 @@ func New() *cobra.Command {
 	logger.New()
 
 	addVecDB()
-	addOllama()
 	addWeb()
 	addDB()
 	test.Init(rootCmd)

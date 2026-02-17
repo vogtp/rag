@@ -147,8 +147,8 @@ func (c *Collection) Authorise(w http.ResponseWriter, r *http.Request) bool {
 }
 
 func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger, filters ...types.Filter) error {
-	if !c.StartDBUpdate.IsZero() && time.Since(c.StartDBUpdate) < c.UpdateIntervall()/3 {
-		slog.Info("Embed allready running", "startdate", c.StartDBUpdate)
+	if !c.StartDBUpdate.IsZero() && time.Since(c.StartDBUpdate) < c.UpdateIntervall()/30 {
+		slog.Info("Embed allready running", "startdate", c.StartDBUpdate, "time_since", time.Since(c.StartDBUpdate).String(), "update_intervall", c.UpdateIntervall().String())
 		return ErrorEmbedAlreadyRunning
 	}
 	if dbInstance != nil {

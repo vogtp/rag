@@ -8,7 +8,6 @@ import (
 
 	"github.com/amikos-tech/chroma-go/types"
 	"github.com/vogtp/rag/pkg/logger"
-	"github.com/vogtp/rag/pkg/model"
 	ragtypes "github.com/vogtp/rag/pkg/types"
 )
 
@@ -59,16 +58,12 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 		return 0, fmt.Errorf("no collection name to embed to")
 	}
 	slogBase := slog
-	v.GetEmbeddingFunc()
+	embedder, err := v.GetEmbeddingFunc(ctx)
+	if err != nil {
+		return 0, err
+	}
 	slogBase.Warn("Starting embedding", logger.Stacktrace())
-	genModel, err := model.GetBackendModel(ctx, slog, v.embeddingsModel)
-	if err != nil {
-		return 0, fmt.Errorf("get backend models: %w", err)
-	}
-	embedder, err := model.NewEmbedder(genModel)
-	if err != nil {
-		return 0, fmt.Errorf("creating embedder from model: %w", err)
-	}
+
 	coll, err := v.GetCollection(ctx, collectionName)
 	if err != nil {
 		coll, err = v.CreateCollection(ctx, collectionName, map[string]interface{}{MetaIsRag: true, MetaCreated: time.Now().Unix})
