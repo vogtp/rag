@@ -42,6 +42,9 @@ func (ew embedWrapper) EmbedDocuments(ctx context.Context, texts []string) ([]*t
 func (ew embedWrapper) EmbedQuery(ctx context.Context, text string) (*types.Embedding, error) {
 	e, err := ew.e.EmbedQuery(ctx, text)
 	if err != nil {
+		if ctx.Err() != nil {
+			return nil, err
+		}
 		//FIXME sort of hackish error handling
 		d := time.Second
 		if strings.Contains(err.Error(), "status code: 429") {
