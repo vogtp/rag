@@ -180,7 +180,8 @@ func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger, filters ...t
 	if cnt < 10 {
 		log = slog.Error
 	}
-	log("Finished embedding", "doc.count", cnt, "duration", time.Since(start).String())
+	d := time.Since(start)
+	log("Finished embedding", "doc.count", cnt, "duration", d.String(), "duration_s", d.Seconds())
 	if dbInstance != nil {
 		// this should only be nil in  tests
 		c.NextDBUpdate = time.Now().Add(c.UpdateIntervall())

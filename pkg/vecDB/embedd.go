@@ -204,12 +204,10 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 	}
 
 	// Count the number of documents in the collection
-	countDocs, qrerr := coll.Count(ctx)
+	_, qrerr := coll.Count(ctx)
 	if qrerr != nil {
 		return docUpdated, fmt.Errorf("error counting documents: %w", qrerr)
 	}
-
-	slogBase.Info("Finished embedding", "docsCount", countDocs, "docsUpdates", docUpdated)
 
 	return docUpdated, nil
 }
