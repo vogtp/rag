@@ -46,7 +46,7 @@ func getOllamaClient(_ context.Context, slog *slog.Logger, bm *cfg.BackendModel)
 		ollama.WithModel(bm.Name),
 		ollama.WithServerURL(bm.API.URL),
 	}
-	if rc := bm.API.RateLimitedHTTPClient(); rc != nil && rc != http.DefaultClient {
+	if rc := bm.API.RateLimitedHTTPClient(); rc != http.DefaultClient {
 		slog.Info("Using ratelimiting http client", "RequestsPerSec", bm.API.Requests_per_sec)
 		opts = append(opts, ollama.WithHTTPClient(rc))
 	}
@@ -63,9 +63,8 @@ func getOpenAIClient(_ context.Context, slog *slog.Logger, bm *cfg.BackendModel)
 		llmopenai.WithModel(bm.Name),
 		llmopenai.WithBaseURL(bm.API.URL),
 	}
-	rc := bm.API.RateLimitedHTTPClient()
-	if !(rc != nil && rc != http.DefaultClient) {
-		slog.Info("Using ratelimiting http client", "RequestsPerSec", bm.API.Requests_per_sec)
+	if rc := bm.API.RateLimitedHTTPClient(); rc != http.DefaultClient {
+		slog.Info("Using ratelimiting http client", "RequestsPerSec", bm.API.Requests_per_sec, logger.Stacktrace())
 		opts = append(opts, llmopenai.WithHTTPClient(rc))
 	}
 	if len(bm.API.Key) > 0 {
