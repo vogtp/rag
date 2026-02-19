@@ -11,6 +11,8 @@ import (
 	"github.com/vogtp/rag/pkg/cfg"
 )
 
+var level slog.LevelVar
+
 func New() *slog.Logger {
 	return Create(Level())
 }
@@ -19,14 +21,20 @@ func Level() slog.Level {
 	return LevelFromString(viper.GetString(cfg.LogLevel))
 }
 
+func SetLevel(lvl slog.Level) {
+	level.Set(lvl)
+}
+
 func Create(lvl slog.Level) *slog.Logger {
+	level = slog.LevelVar{}
+	level.Set(lvl)
 	logOpts := slog.HandlerOptions{
-		Level: lvl,
+		Level: &level,
 	}
 	logOpts.AddSource = viper.GetBool(cfg.LogSource)
 	logJson := viper.GetBool(cfg.LogJson)
 	if !(logJson || logOpts.AddSource) {
-		slog.SetLogLoggerLevel(lvl)
+		slog.SetLogLoggerLevel(level.Level())
 		return slog.Default()
 	}
 	if logOpts.AddSource {
