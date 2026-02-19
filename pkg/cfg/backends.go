@@ -3,9 +3,12 @@ package cfg
 //go:generate stringer -type=BackendApiType --trimprefix BackendApiType
 import (
 	"fmt"
+	"net/http"
 	"strings"
 
+	"github.com/graze/go-throttled"
 	"github.com/spf13/viper"
+	"golang.org/x/time/rate"
 )
 
 const backendsKey = "backends"
@@ -36,10 +39,11 @@ const (
 )
 
 type BackendApi struct {
-	URL     string `yaml:"URL"`
-	Key     string `yaml:"key"`
-	Type    string `yaml:"type"`
-	APIType BackendApiType
+	URL              string  `yaml:"URL"`
+	Key              string  `yaml:"key"`
+	Type             string  `yaml:"type"`
+	Requests_per_sec float64 `yaml:"requests_per_sec"`
+	APIType          BackendApiType
 }
 
 type BackendModel struct {
@@ -99,6 +103,9 @@ func (bes Backends) Model(name string) *BackendModel {
 	return nil
 }
 
-// func (bes Backends) Model(name string) (types.Model, error) {
-
-// }
+func (ba BackendApi) RateLimitedHTTPClient() *http.Client {
+	if ba.Requests_per_sec <= 0 {
+		return http.DefaultClient
+	}
+	return throttled.Client(rate.NewLimiter(rate.Limit(ba.Requests_per_sec), 1))
+}
