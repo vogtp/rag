@@ -3,6 +3,8 @@ package model
 import (
 	"context"
 	"log/slog"
+	"strings"
+	"time"
 
 	"github.com/amikos-tech/chroma-go/types"
 	lcEmbedd "github.com/vogtp/langchaingo/embeddings"
@@ -40,6 +42,16 @@ func (ew embedWrapper) EmbedDocuments(ctx context.Context, texts []string) ([]*t
 func (ew embedWrapper) EmbedQuery(ctx context.Context, text string) (*types.Embedding, error) {
 	e, err := ew.e.EmbedQuery(ctx, text)
 	if err != nil {
+		//FIXME sort of hackish error handling
+		d := time.Second
+		if strings.Contains(err.Error(), "status code: 429") {
+			d = time.Second * 10
+		}
+		slog.Info("EmbedQuery got error, will retry shortly", "err", err, "delay", d.String())
+		time.Sleep(d)
+		e, err = ew.e.EmbedQuery(ctx, text)
+	}
+	if err != nil {
 		return nil, err
 	}
 	return types.NewEmbeddingFromFloat32(e), nil
@@ -51,7 +63,7 @@ func (ew embedWrapper) EmbedRecords(ctx context.Context, records []*types.Record
 	for i, r := range records {
 		e, err = ew.EmbedQuery(ctx, r.Document)
 		if err != nil {
-			slog.Warn("EmedRecords got error embedding", "err", err)
+			slog.Warn("EmbedRecords got error embedding", "err", err)
 			if !force {
 				return err
 			}
