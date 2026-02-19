@@ -8,6 +8,7 @@ import (
 
 	"github.com/amikos-tech/chroma-go/types"
 	"github.com/vogtp/rag/pkg/logger"
+	ragtypes "github.com/vogtp/rag/pkg/types"
 )
 
 const (
@@ -51,17 +52,18 @@ func parseTime(t string) (time.Time, error) {
 	return time.Parse(timeFormat2, t)
 }
 
-func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName string, in <-chan *EmbeddDocument, filters ...Filter) (int, error) {
+func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName string, in <-chan *ragtypes.EmbeddDocument, filters ...ragtypes.Filter) (int, error) {
 	if len(collectionName) < 1 {
 		slog.Info("No collections name given")
 		return 0, fmt.Errorf("no collection name to embed to")
 	}
 	slogBase := slog
-	slogBase.Warn("Starting embedding", logger.Stacktrace())
-	embedFunc, err := v.GetEmbeddingFunc()
+	embedder, err := v.GetEmbeddingFunc(ctx)
 	if err != nil {
 		return 0, err
 	}
+	slogBase.Warn("Starting embedding", logger.Stacktrace())
+
 	coll, err := v.GetCollection(ctx, collectionName)
 	if err != nil {
 		coll, err = v.CreateCollection(ctx, collectionName, map[string]interface{}{MetaIsRag: true, MetaCreated: time.Now().Unix})
@@ -110,7 +112,7 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 			continue
 		}
 		rs, err := types.NewRecordSet(
-			types.WithEmbeddingFunction(embedFunc),
+			types.WithEmbeddingFunction(embedder),
 			//types.WithIDGenerator(types.NewULIDGenerator()),
 		)
 		if err != nil {
@@ -202,12 +204,10 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 	}
 
 	// Count the number of documents in the collection
-	countDocs, qrerr := coll.Count(ctx)
+	_, qrerr := coll.Count(ctx)
 	if qrerr != nil {
 		return docUpdated, fmt.Errorf("error counting documents: %w", qrerr)
 	}
-
-	slogBase.Info("Finished embedding", "docsCount", countDocs, "docsUpdates", docUpdated)
 
 	return docUpdated, nil
 }

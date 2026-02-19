@@ -41,7 +41,7 @@ type Collection struct {
 
 	Genmodel          string        `gorm:"column:gen_model"`
 	Embedmodel        string        `gorm:"column:embed_model"`
-	DBUpdateIntervall time.Duration `gorm:"column:update_intervall"`
+	DBUpdateIntervall time.Duration `gorm:"column:update_intervall" json:"format:units"`
 	NextDBUpdate      time.Time     `gorm:"column:update_next"`
 	StartDBUpdate     time.Time     `gorm:"column:update_start"`
 
@@ -129,7 +129,7 @@ func (c *Collection) getVecDb(ctx context.Context, slog *slog.Logger) (*vecdb.Ve
 	return c.vecDB, nil
 }
 
-func (c *Collection) SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error) {
+func (c *Collection) SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]types.QueryDocument, error) {
 	slog = slog.With("collection", c)
 	vecDB, err := c.getVecDb(ctx, slog)
 	if err != nil {
@@ -146,9 +146,9 @@ func (c *Collection) Authorise(w http.ResponseWriter, r *http.Request) bool {
 	return bearer.TokenAuth(c.APIKey).Authorise(w, r)
 }
 
-func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger, filters ...vecdb.Filter) error {
-	if !c.StartDBUpdate.IsZero() && time.Since(c.StartDBUpdate) < c.UpdateIntervall()/3 {
-		slog.Info("Embed allready running", "startdate", c.StartDBUpdate)
+func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger, filters ...types.Filter) error {
+	if !c.StartDBUpdate.IsZero() && time.Since(c.StartDBUpdate) < c.UpdateIntervall()/30 {
+		slog.Info("Embed allready running", "startdate", c.StartDBUpdate, "time_since", time.Since(c.StartDBUpdate).String(), "update_intervall", c.UpdateIntervall().String())
 		return ErrorEmbedAlreadyRunning
 	}
 	if dbInstance != nil {
@@ -180,7 +180,8 @@ func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger, filters ...v
 	if cnt < 10 {
 		log = slog.Error
 	}
-	log("Finished embedding", "doc.count", cnt, "duration", time.Since(start).String())
+	d := time.Since(start)
+	log("Finished embedding", "doc.count", cnt, "duration", d.String(), "duration_s", d.Seconds())
 	if dbInstance != nil {
 		// this should only be nil in  tests
 		c.NextDBUpdate = time.Now().Add(c.UpdateIntervall())
@@ -193,7 +194,7 @@ func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger, filters ...v
 	return nil
 }
 
-func (c *Collection) GetDocuments(ctx context.Context, slog *slog.Logger) (chan *vecdb.EmbeddDocument, error) {
+func (c *Collection) GetDocuments(ctx context.Context, slog *slog.Logger) (chan *types.EmbeddDocument, error) {
 	slog = slog.With("collection", c)
 	confl, err := confluence.New(ctx, slog, *c.Source.confluence())
 	if err != nil {

@@ -7,10 +7,9 @@ import (
 	"strings"
 
 	chroma "github.com/amikos-tech/chroma-go"
-	"github.com/amikos-tech/chroma-go/pkg/embeddings"
-	ollamaEmbedd "github.com/amikos-tech/chroma-go/pkg/embeddings/ollama"
 	"github.com/amikos-tech/chroma-go/types"
 	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/model"
 )
 
 // VecDB is a wrapper of a vectoDB
@@ -19,7 +18,6 @@ type VecDB struct {
 	chromaAddr      string
 	chroma          *chroma.Client
 	embedFunc       types.EmbeddingFunction
-	ollamaAddr      string
 	embeddingsModel string
 }
 
@@ -33,16 +31,10 @@ func New(ctx context.Context, slog *slog.Logger, embeddingsModel string, opts ..
 	for _, o := range opts {
 		o(v)
 	}
-	if len(v.ollamaAddr) < 1 {
-		v.ollamaAddr = cfg.GetOllamaHost(ctx, slog)
-	}
-	if len(v.ollamaAddr) < 1 {
-		return nil, fmt.Errorf("no running ollama found: %q", v.ollamaAddr)
-	}
 	if len(v.chromaAddr) < 1 {
 		return nil, fmt.Errorf("no chroma address given")
 	}
-	v.slog = slog.With("chroma_addr", v.chromaAddr, "ollama_addr", v.ollamaAddr)
+	v.slog = slog.With("chroma_addr", v.chromaAddr)
 
 	client, err := chroma.NewClient(chroma.WithBasePath(v.chromaAddr))
 	if err != nil {
@@ -55,7 +47,7 @@ func New(ctx context.Context, slog *slog.Logger, embeddingsModel string, opts ..
 
 // CreateCollection create a collection
 func (v *VecDB) CreateCollection(ctx context.Context, name string, metadata map[string]interface{}) (*chroma.Collection, error) {
-	embedFunc, err := v.GetEmbeddingFunc()
+	embedFunc, err := v.GetEmbeddingFunc(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +60,7 @@ func (v *VecDB) CreateCollection(ctx context.Context, name string, metadata map[
 
 // GetCollection returns a collection
 func (v *VecDB) GetCollection(ctx context.Context, name string) (*chroma.Collection, error) {
-	embedFunc, err := v.GetEmbeddingFunc()
+	embedFunc, err := v.GetEmbeddingFunc(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -76,21 +68,16 @@ func (v *VecDB) GetCollection(ctx context.Context, name string) (*chroma.Collect
 }
 
 // GetEmbeddingFunc load the embedding function from the llm
-func (v *VecDB) GetEmbeddingFunc() (types.EmbeddingFunction, error) {
-	if v.embedFunc != nil {
-		return v.embedFunc, nil
-	}
-	v.slog.Debug("Loading embedding function", "embeddingsModel", v.embeddingsModel)
-	embedFunc, err := ollamaEmbedd.NewOllamaEmbeddingFunction(
-		ollamaEmbedd.WithBaseURL(v.ollamaAddr),
-		ollamaEmbedd.WithModel(embeddings.EmbeddingModel(v.embeddingsModel)),
-	)
+func (v *VecDB) GetEmbeddingFunc(ctx context.Context) (types.EmbeddingFunction, error) {
+	genModel, err := model.GetBackendModel(ctx, v.slog, v.embeddingsModel)
 	if err != nil {
-		return nil, fmt.Errorf("creating ollama embedding %q function: %w", v.embeddingsModel, err)
+		return nil, fmt.Errorf("get backend models: %w", err)
 	}
-	wrapper := embeddingFunctionWrapper{embedFunc}
-	v.embedFunc = wrapper
-	return wrapper, nil
+	embedder, err := model.NewEmbedder(genModel)
+	if err != nil {
+		return nil, fmt.Errorf("creating embedder from model: %w", err)
+	}
+	return embedder, nil
 }
 
 // DeleteCollection delete a collection

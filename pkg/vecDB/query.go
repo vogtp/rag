@@ -3,31 +3,14 @@ package vecdb
 import (
 	"context"
 	"fmt"
-	"log/slog"
+
+	"github.com/vogtp/rag/pkg/types"
 )
 
 // QueryResult is the result of a vectorDB search it contains one or more documents
 type QueryResult struct {
 	Question  string
-	Documents []QueryDocument
-}
-
-// QueryDocument is a document found in the vectorDB
-type QueryDocument struct {
-	EmbedContent string // Content is the part of the document used for the embedding
-	Document     string // Document is the original
-	Modified     string
-	URL          string
-	Title        string
-	IDField      string
-	Distance     float32
-}
-
-func (qd QueryDocument) LogValue() slog.Value {
-	return slog.GroupValue(
-		slog.String("title", qd.Title),
-		slog.String("URL", qd.URL),
-	)
+	Documents []types.QueryDocument
 }
 
 // Query searches the vectorDB
@@ -45,10 +28,10 @@ func (v *VecDB) Query(ctx context.Context, collection string, queryTexts []strin
 	for idx, question := range queryTexts {
 		res := QueryResult{
 			Question:  question,
-			Documents: make([]QueryDocument, len(qr.Documents[idx])),
+			Documents: make([]types.QueryDocument, len(qr.Documents[idx])),
 		}
 		for i := range qr.Documents[idx] {
-			doc := QueryDocument{
+			doc := types.QueryDocument{
 				EmbedContent: qr.Documents[idx][i],
 				Distance:     qr.Distances[idx][i],
 			}

@@ -1,4 +1,4 @@
-package vecdb
+package types
 
 import (
 	"log/slog"

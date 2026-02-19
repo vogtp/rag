@@ -41,17 +41,22 @@ func excludeCollection(col *usercfg.Collection) bool {
 	return true
 }
 
+var startOfTest time.Time
 var tstCmd = &cobra.Command{
 	Use:     "test",
 	Short:   "Manage RAG web server",
 	Aliases: []string{"t", "tst"},
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		includedCollections = args
-		fmt.Printf("Start %s\n", time.Now().Format(time.DateTime))
+		startOfTest = time.Now()
+		fmt.Printf("Test start %s\n", startOfTest.Format(time.DateTime))
 		viper.Set(cfg.HTTPUserAgent, "go-rag-test")
 		// if len(includedCollections) > 0 {
 		// 	fmt.Printf("Working only on collections %v\n", includedCollections)
 		// }
+	},
+	PersistentPostRun: func(cmd *cobra.Command, args []string) {
+		fmt.Printf("Full tests duration: %s\n", time.Since(startOfTest))
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return cmd.Usage()
@@ -116,8 +121,7 @@ func createVecDBCollecions(ctx context.Context, slog *slog.Logger, tt *testData)
 			continue
 		}
 		start := time.Now()
-		fmt.Printf("Start %s\n", start.Format(time.DateTime))
-		fmt.Printf("\nEmbedding %s (%s)\n", col.CollectionName(), col.Source.Parts)
+		fmt.Printf("\n%s start embedding %s (%s)\n", start.Format(time.DateTime), col.CollectionName(), col.Source.Parts)
 		if err := col.Embbed(ctx, slog, noopfilter.New()); err != nil {
 			return err
 		}

@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	vecdb "github.com/vogtp/rag/pkg/vecDB"
+	"github.com/vogtp/rag/pkg/types"
 )
 
 type queryDocument struct {
-	*vecdb.QueryDocument
+	*types.QueryDocument
 	UUID   uuid.UUID
 	access time.Time
 }

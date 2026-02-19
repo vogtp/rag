@@ -38,7 +38,7 @@ var vecDbEmbbedPathCmd = &cobra.Command{
 		}(start)
 		ctx := cmd.Context()
 		slog := logger.New()
-		client, err := vecdb.New(ctx, slog, viper.GetString(cfg.ModelEmbedding), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx, slog)))
+		client, err := vecdb.New(ctx, slog, viper.GetString(cfg.ModelEmbedding))
 		if err != nil {
 			return fmt.Errorf("create vector DB: %w", err)
 		}

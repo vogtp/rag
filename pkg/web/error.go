@@ -3,7 +3,7 @@ package web
 import (
 	"net/http"
 
-	vecdb "github.com/vogtp/rag/pkg/vecDB"
+	"github.com/vogtp/rag/pkg/types"
 )
 
 // FIXME use or remove
@@ -13,7 +13,7 @@ func (srv *Server) Error(w http.ResponseWriter, r *http.Request, errStr string, 
 		*commonData
 		Error     string
 		Code      int
-		Documents []vecdb.QueryDocument
+		Documents []types.QueryDocument
 	}{
 		commonData: srv.common(errStr, r),
 		Error:      errStr,

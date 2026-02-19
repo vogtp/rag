@@ -18,7 +18,7 @@ func TestGenerate(t *testing.T) {
 	dir := "./testpdf"
 	viper.Set(cfg.VecDBColName, colName)
 	ctx := t.Context()
-	client, err := vecdb.New(ctx, slog.Default(), viper.GetString(cfg.ModelEmbedding), vecdb.WithChromaAddress("http://localhost:8000"), vecdb.WithOllamaAddress("https://llama-1.its.unibas.ch"))
+	client, err := vecdb.New(ctx, slog.Default(), viper.GetString(cfg.ModelEmbedding), vecdb.WithChromaAddress("http://localhost:8000"))
 	if err != nil {
 		t.Fatalf("Failed to create vector DB: %v", err)
 	}

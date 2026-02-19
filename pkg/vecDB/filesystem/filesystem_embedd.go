@@ -9,17 +9,18 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/vogtp/rag/pkg/types"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 	"github.com/vogtp/rag/pkg/vecDB/pdf"
 )
 
-func Generate(ctx context.Context, path string) chan *vecdb.EmbeddDocument {
-	out := make(chan *vecdb.EmbeddDocument, 1)
+func Generate(ctx context.Context, path string) chan *types.EmbeddDocument {
+	out := make(chan *types.EmbeddDocument, 1)
 	go walkPath(ctx, out, path)
 	return out
 }
 
-func walkPath(ctx context.Context, out chan *vecdb.EmbeddDocument, path string) {
+func walkPath(ctx context.Context, out chan *types.EmbeddDocument, path string) {
 	defer close(out)
 
 	err := filepath.WalkDir(path, func(path string, d fs.DirEntry, err error) error {
@@ -28,7 +29,7 @@ func walkPath(ctx context.Context, out chan *vecdb.EmbeddDocument, path string) 
 		}
 		if d == nil {
 			slog.Warn("Directory not present", "path", path, "dirEntry", d)
-			return fmt.Errorf("directory does not exist: %s",path)
+			return fmt.Errorf("directory does not exist: %s", path)
 		}
 		slog.Debug("Processing walkdir", "path", path, "dirEntry", d, "err", err)
 		if d.IsDir() {
@@ -41,7 +42,7 @@ func walkPath(ctx context.Context, out chan *vecdb.EmbeddDocument, path string) 
 			slog.Warn("cannot get info", "err", err)
 			return err
 		}
-		doc := vecdb.EmbeddDocument{
+		doc := types.EmbeddDocument{
 			IDMetaKey:   vecdb.MetaPath,
 			IDMetaValue: path,
 			Modified:    i.ModTime(),

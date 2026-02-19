@@ -34,6 +34,7 @@ import { SourceComponent } from '../source/source.component';
     MatIconModule,
     SourceComponent,
     NgIf,
+    MatSelectModule,
   ],
   templateUrl: './collection.component.html',
   styleUrl: './collection.component.css',

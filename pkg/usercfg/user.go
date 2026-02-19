@@ -12,7 +12,6 @@ import (
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/types"
-	vecdb "github.com/vogtp/rag/pkg/vecDB"
 	"gorm.io/gorm"
 )
 
@@ -116,7 +115,7 @@ func (u *User) UpdateIntervall() time.Duration {
 	return d
 }
 
-func (u *User) Embbed(ctx context.Context, slog *slog.Logger, filters ...vecdb.Filter) error {
+func (u *User) Embbed(ctx context.Context, slog *slog.Logger, filters ...types.Filter) error {
 	slog = slog.With("user", u)
 	for _, c := range u.Collections {
 		go func(c *Collection) {
@@ -128,9 +127,9 @@ func (u *User) Embbed(ctx context.Context, slog *slog.Logger, filters ...vecdb.F
 	return nil
 }
 
-func (u *User) GetDocuments(ctx context.Context, slog *slog.Logger) (chan *vecdb.EmbeddDocument, error) {
+func (u *User) GetDocuments(ctx context.Context, slog *slog.Logger) (chan *types.EmbeddDocument, error) {
 	slog = slog.With("user", u)
-	c := make(chan *vecdb.EmbeddDocument, 10)
+	c := make(chan *types.EmbeddDocument, 10)
 	go func() {
 		defer close(c)
 		var wg sync.WaitGroup
@@ -167,9 +166,9 @@ func (u *User) ListCollections(ctx context.Context, slog *slog.Logger) ([]*chrom
 	return cols, nil
 }
 
-func (u *User) SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error) {
+func (u *User) SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]types.QueryDocument, error) {
 	slog = slog.With("user", u)
-	docs := make([]vecdb.QueryDocument, 0)
+	docs := make([]types.QueryDocument, 0)
 	for _, c := range u.Collections {
 		c, err := c.SearchVecDB(ctx, slog, collection, query, maxResults)
 		if err != nil {

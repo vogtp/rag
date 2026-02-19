@@ -13,6 +13,7 @@ import (
 	"github.com/vogtp/langchaingo/documentloaders"
 	"github.com/vogtp/langchaingo/textsplitter"
 	"github.com/vogtp/rag/pkg/cfg"
+	"github.com/vogtp/rag/pkg/types"
 	vecdb "github.com/vogtp/rag/pkg/vecDB"
 )
 
@@ -25,7 +26,7 @@ func (hse HttpStatusError) Error() string {
 	return fmt.Sprintf("status not OK: %v (%s)", hse.StatusCode, hse.Status)
 }
 
-func SplitFromLink(ctx context.Context, link string) ([]vecdb.EmbeddDocument, error) {
+func SplitFromLink(ctx context.Context, link string) ([]types.EmbeddDocument, error) {
 	// slog := slog.With("pdf.url", link)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, link, nil)
 	if err != nil {
@@ -53,7 +54,7 @@ func SplitFromLink(ctx context.Context, link string) ([]vecdb.EmbeddDocument, er
 	return SplitFromReaderAt(ctx, ra, ra.Size(), vecdb.MetaURL, link)
 }
 
-func SplitFromFile(ctx context.Context, path string) ([]vecdb.EmbeddDocument, error) {
+func SplitFromFile(ctx context.Context, path string) ([]types.EmbeddDocument, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("open pdf %q: %v", path, err)
@@ -77,7 +78,7 @@ func SplitFromFile(ctx context.Context, path string) ([]vecdb.EmbeddDocument, er
 	return docs, nil
 }
 
-func SplitFromReaderAt(ctx context.Context, ra io.ReaderAt, size int64, idKey string, idValue string) ([]vecdb.EmbeddDocument, error) {
+func SplitFromReaderAt(ctx context.Context, ra io.ReaderAt, size int64, idKey string, idValue string) ([]types.EmbeddDocument, error) {
 
 	loader := documentloaders.NewPDF(ra, size)
 	split := textsplitter.NewRecursiveCharacter()
@@ -89,12 +90,12 @@ func SplitFromReaderAt(ctx context.Context, ra io.ReaderAt, size int64, idKey st
 		// slog.Warn("Cannot split PDF", "err", err, "size", size)
 		return nil, fmt.Errorf("split PDF: %w", err)
 	}
-	ret := make([]vecdb.EmbeddDocument, 0, len(docs))
+	ret := make([]types.EmbeddDocument, 0, len(docs))
 	for _, d := range docs {
 		if len(d.PageContent) < 10 {
 			continue
 		}
-		doc := vecdb.EmbeddDocument{
+		doc := types.EmbeddDocument{
 			Title:       filepath.Base(idValue),
 			IDMetaKey:   idKey,
 			IDMetaValue: idValue,

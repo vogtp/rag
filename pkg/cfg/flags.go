@@ -35,9 +35,6 @@ const (
 	// ModelEmbedding is the default model used for embeddings
 	ModelEmbedding = "model.embedding"
 
-	// OllamaHosts is an URL
-	ollamaHosts = "ollama.hosts"
-
 	// ChromaContainerName the name of the chroma container
 	ChromaContainerName = "chroma.container.name"
 	// ChromaUrl the URL where chroma can be reached

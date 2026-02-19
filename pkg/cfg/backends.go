@@ -3,16 +3,19 @@ package cfg
 //go:generate stringer -type=BackendApiType --trimprefix BackendApiType
 import (
 	"fmt"
+	"net/http"
 	"strings"
 
+	"github.com/graze/go-throttled"
 	"github.com/spf13/viper"
+	"golang.org/x/time/rate"
 )
 
 const backendsKey = "backends"
 
 type Backend struct {
 	Name   string         `yaml:"name"`
-	API    BackendApi     `yaml:"api"`
+	API    *BackendApi    `yaml:"api"`
 	Models []BackendModel `yaml:"models"`
 }
 
@@ -36,16 +39,17 @@ const (
 )
 
 type BackendApi struct {
-	URL     string `yaml:"URL"`
-	Key     string `yaml:"key"`
-	Type    string `yaml:"type"`
-	APIType BackendApiType
+	URL              string  `yaml:"URL"`
+	Key              string  `yaml:"key"`
+	Type             string  `yaml:"type"`
+	Requests_per_sec float64 `yaml:"requests_per_sec"`
+	APIType          BackendApiType
 }
 
 type BackendModel struct {
 	Name string `yaml:"name"`
 	Type string `yaml:"type"`
-	API  BackendApi
+	API  *BackendApi
 }
 
 func GetBackends() (*Backends, error) {
@@ -66,7 +70,7 @@ func GetBackends() (*Backends, error) {
 			err = fmt.Errorf("unknown backend api type %q: %w", be.API.Type, err)
 		}
 		for j := range be.Models {
-			be.Models[j].API = be.API
+			be.Models[j].API = api
 		}
 	}
 	backends = &Backends{backends: beLst}
@@ -99,6 +103,9 @@ func (bes Backends) Model(name string) *BackendModel {
 	return nil
 }
 
-// func (bes Backends) Model(name string) (types.Model, error) {
-
-// }
+func (ba BackendApi) RateLimitedHTTPClient() *http.Client {
+	if ba.Requests_per_sec <= 0 {
+		return http.DefaultClient
+	}
+	return throttled.Client(rate.NewLimiter(rate.Limit(ba.Requests_per_sec), 1))
+}

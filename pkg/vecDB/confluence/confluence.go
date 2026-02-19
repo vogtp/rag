@@ -25,7 +25,7 @@ type Config struct {
 }
 
 // GetDocuments retrives confluence spaces and generates vecdb.EmbeddDocuments
-func (c *confluence) GetDocuments(ctx context.Context, _ *slog.Logger) (chan *vecdb.EmbeddDocument, error) {
+func (c *confluence) GetDocuments(ctx context.Context, _ *slog.Logger) (chan *types.EmbeddDocument, error) {
 	go c.query(ctx)
 	return c.out, nil
 }
@@ -36,7 +36,7 @@ func New(ctx context.Context, slog *slog.Logger, config Config) (types.DocRetriv
 	conf := confluence{
 		slog:          slog.With("confluence_url", baseURL),
 		baseURL:       baseURL,
-		out:           make(chan *vecdb.EmbeddDocument, 3),
+		out:           make(chan *types.EmbeddDocument, 3),
 		accessKey:     config.Key,
 		queryLimit:    100,
 		spaces:        config.Spaces,
@@ -51,7 +51,7 @@ func New(ctx context.Context, slog *slog.Logger, config Config) (types.DocRetriv
 type confluence struct {
 	slog          *slog.Logger
 	baseURL       string
-	out           chan *vecdb.EmbeddDocument
+	out           chan *types.EmbeddDocument
 	api           *conflu.API
 	accessKey     string
 	queryLimit    int
@@ -144,7 +144,7 @@ func (c *confluence) querySpace(ctx context.Context, spaceKey string) {
 			slog.Debug("processing confluence document", "title", d.Title)
 			//	txt := html2text.HTML2Text(d.Body.View.Value)
 			bodyMD, pdfLinks := parsePage(slog, d.Body.View.Value)
-			doc := vecdb.EmbeddDocument{
+			doc := types.EmbeddDocument{
 				Title:       d.Title,
 				URL:         c.getURL(d.Links.WebUI),
 				Document:    bodyMD,

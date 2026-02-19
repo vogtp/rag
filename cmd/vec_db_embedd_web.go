@@ -52,7 +52,7 @@ func scapper2vecDB(ctx context.Context, url string, collectionName string) error
 	}
 
 	slog := logger.New()
-	client, err := vecdb.New(ctx, slog, viper.GetString(cfg.ModelEmbedding), vecdb.WithOllamaAddress(cfg.GetOllamaHost(ctx, slog)))
+	client, err := vecdb.New(ctx, slog, viper.GetString(cfg.ModelEmbedding))
 	if err != nil {
 		return fmt.Errorf("Failed to create vector DB: %w", err)
 	}

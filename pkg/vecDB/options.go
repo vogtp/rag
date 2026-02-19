@@ -9,13 +9,6 @@ func WithChromaAddress(addr string) Option {
 	}
 }
 
-func WithOllamaAddress(addr string) Option {
-	return func(vd *VecDB) {
-		vd.slog = vd.slog.With("ollama", addr)
-		vd.ollamaAddr = addr
-	}
-}
-
 func WithEmbeddingsModel(model string) Option {
 	return func(vd *VecDB) {
 		vd.slog = vd.slog.With("model", model)

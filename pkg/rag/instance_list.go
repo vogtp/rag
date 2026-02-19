@@ -11,7 +11,6 @@ import (
 	"github.com/spf13/viper"
 	"github.com/vogtp/rag/pkg/cfg"
 	"github.com/vogtp/rag/pkg/types"
-	vecdb "github.com/vogtp/rag/pkg/vecDB"
 )
 
 var _ (types.Instance) = (*instanceList)(nil)
@@ -95,7 +94,7 @@ func (i *instanceList) UpdateIntervall() time.Duration {
 	return d
 }
 
-func (i *instanceList) Embbed(ctx context.Context, _ *slog.Logger, filters ...vecdb.Filter) error {
+func (i *instanceList) Embbed(ctx context.Context, _ *slog.Logger, filters ...types.Filter) error {
 	for _, r := range i.rags {
 		if err := r.Embbed(ctx, i.slog, filters...); err != nil {
 			i.slog.Warn("Cannot embed rag list member", "err", err, "rag.name", r.DisplayName())
@@ -104,8 +103,8 @@ func (i *instanceList) Embbed(ctx context.Context, _ *slog.Logger, filters ...ve
 	return nil
 }
 
-func (i *instanceList) GetDocuments(ctx context.Context, slog *slog.Logger) (chan *vecdb.EmbeddDocument, error) {
-	c := make(chan *vecdb.EmbeddDocument, 10)
+func (i *instanceList) GetDocuments(ctx context.Context, slog *slog.Logger) (chan *types.EmbeddDocument, error) {
+	c := make(chan *types.EmbeddDocument, 10)
 	go func() {
 		defer close(c)
 		var wg sync.WaitGroup
@@ -141,8 +140,8 @@ func (i *instanceList) ListCollections(ctx context.Context, _ *slog.Logger) ([]*
 	return cols, nil
 }
 
-func (i *instanceList) SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]vecdb.QueryDocument, error) {
-	docs := make([]vecdb.QueryDocument, 0)
+func (i *instanceList) SearchVecDB(ctx context.Context, slog *slog.Logger, collection string, query string, maxResults int) ([]types.QueryDocument, error) {
+	docs := make([]types.QueryDocument, 0)
 	for _, r := range i.rags {
 		c, err := r.SearchVecDB(ctx, slog, collection, query, maxResults)
 		if err != nil {
