@@ -6,9 +6,9 @@ const (
 	// VersionMajor major version
 	VersionMajor = 0
 	// VersionMinor minor version
-	VersionMinor = 5
+	VersionMinor = 6
 	// VersionPatch patch level
-	VersionPatch = 7
+	VersionPatch = 0
 )
 
 var (
