@@ -184,7 +184,7 @@ func (c *Collection) Embbed(ctx context.Context, slog *slog.Logger, filters ...t
 	log("Finished embedding", "doc.count", cnt, "duration", d.String(), "duration_s", d.Seconds())
 	if dbInstance != nil {
 		// this should only be nil in  tests
-		c.NextDBUpdate = time.Now().Add(c.UpdateIntervall())
+		c.CalculateNextDBUpdate(time.Now())
 		c.StartDBUpdate = time.Time{}
 		col := Collection{StartDBUpdate: c.StartDBUpdate, NextDBUpdate: c.NextDBUpdate}
 		if _, err := gorm.G[Collection](dbInstance.db).Where("id = ?", c.ID).Updates(ctx, col); err != nil {
@@ -222,4 +222,17 @@ func (c *Collection) ListCollections(ctx context.Context, slog *slog.Logger) ([]
 		collections = append(collections, col)
 	}
 	return collections, nil
+}
+
+func (c *Collection) CalculateNextDBUpdate(last time.Time) {
+	c.NextDBUpdate = last.Add(c.UpdateIntervall())
+	h := c.NextDBUpdate.Hour()
+	if h > 19 || h < 6 {
+		return
+	}
+	if h > 12 {
+		c.NextDBUpdate = c.NextDBUpdate.Add(8 * time.Hour)
+	} else {
+		c.NextDBUpdate = c.NextDBUpdate.Add(-6 * time.Hour)
+	}
 }
