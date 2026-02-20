@@ -16,6 +16,8 @@ func Test_main(t *testing.T) {
 		t.Fatalf("Loading model: %v", err)
 	}
 	e, err := m.CreateEmbedding(t.Context(), []string{"test"})
-	t.Errorf("emedding: %v", err)
+	if err != nil {
+		t.Errorf("emedding: %v", err)
+	}
 	fmt.Printf("Embedding: %+v\n", e)
 }
