@@ -43,3 +43,32 @@ var vecDbUpdate = &cobra.Command{
 		return nil
 	},
 }
+
+var vecDbUpdateCheck = &cobra.Command{
+	Use:   "check",
+	Short: "Check which collections would be updated",
+
+	Aliases: []string{"c", "which"},
+	Long:    ``,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
+		slog := slog.Default()
+		_, err := startChroma(ctx, slog)
+		if err != nil {
+			return fmt.Errorf("start chroma: %w", err)
+		}
+		userCfg, err := usercfg.Create(ctx, slog, usercfg.DBFileName)
+		if err != nil {
+			return err
+		}
+		cols, err := userCfg.CollectionsToUpdate(ctx, time.Now())
+		if err != nil {
+			return err
+		}
+		fmt.Println("Collections to update:")
+		for _, c := range cols {
+			fmt.Printf("  %s (%s)\n", c.Collectionname, time.Since(c.StartDBUpdate).Truncate(time.Hour))
+		}
+		return nil
+	},
+}

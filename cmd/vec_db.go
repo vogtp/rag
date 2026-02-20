@@ -19,6 +19,7 @@ import (
 
 func addVecDB() {
 	rootCmd.AddCommand(vecDbCmd)
+	vecDbUpdate.AddCommand(vecDbUpdateCheck)
 	vecDbCmd.AddCommand(vecDbUpdate)
 	vecDbCmd.AddCommand(vecDbStartChromaCmd)
 	vecDbCmd.AddCommand(vecDbStopChromaCmd)
