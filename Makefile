@@ -11,7 +11,7 @@ GO_CMD=go
 # Branch specific config
 BRANCH=$(shell git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
 # prod -> main branch
-host_main=its-a-hack.its.unibas.ch
+host_main=its-rag.its.unibas.ch
 user_main=root
 path_main=/srv/intrasearch/
 service_main=intrasearch
