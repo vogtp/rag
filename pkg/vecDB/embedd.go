@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/amikos-tech/chroma-go/types"
+	"github.com/google/uuid"
 	"github.com/vogtp/rag/pkg/logger"
 	ragtypes "github.com/vogtp/rag/pkg/types"
 )
@@ -57,7 +58,7 @@ func (v *VecDB) Embedd(ctx context.Context, slog *slog.Logger, collectionName st
 		slog.Info("No collections name given")
 		return 0, fmt.Errorf("no collection name to embed to")
 	}
-	slogBase := slog
+	slogBase := slog.With("tracingID", uuid.NewString())
 	embedder, err := v.GetEmbeddingFunc(ctx)
 	if err != nil {
 		return 0, err
