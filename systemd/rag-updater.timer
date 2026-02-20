@@ -5,6 +5,7 @@ Description=RAG Collection update service
 OnStartupSec=6s
 OnUnitActiveSec=3s
 Unit=%i.service
+User=intrasearch
 
 [Install]
 WantedBy=multi-user.target
